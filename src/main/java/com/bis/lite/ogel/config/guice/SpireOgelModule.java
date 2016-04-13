@@ -1,0 +1,22 @@
+package com.bis.lite.ogel.config.guice;
+
+import com.bis.lite.ogel.client.SpireOgelClient;
+import com.bis.lite.ogel.config.MainApplicationConfiguration;
+import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.name.Named;
+
+public class SpireOgelModule extends AbstractModule {
+
+    @Provides
+    @Named("soapUrl")
+    public String provideSpireOgelUrl(MainApplicationConfiguration configuration) {
+        return configuration.getSoapUrl();
+    }
+
+    @Override
+    protected void configure() {
+        System.out.println("Inside Guice Module Config");
+
+    }
+}

@@ -1,0 +1,50 @@
+package com.bis.lite.ogel.controller;
+
+import com.bis.lite.ogel.model.SpireOgel;
+import com.bis.lite.ogel.service.SpireOgelService;
+import com.codahale.metrics.annotation.Timed;
+import com.google.inject.Inject;
+import io.dropwizard.jersey.caching.CacheControl;
+import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
+import org.glassfish.jersey.message.internal.OutboundMessageContext;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+@Path("/applicable-ogels")
+@Produces(MediaType.APPLICATION_JSON)
+public class SpireOgelController {
+
+    private final SpireOgelService ogelService;
+
+    @Inject
+    public SpireOgelController(SpireOgelService ogelService) {
+        this.ogelService = ogelService;
+    }
+
+    @GET
+    @Timed
+    @CacheControl(maxAge = 1, maxAgeUnit = TimeUnit.DAYS)
+    public Response getOgelList(@QueryParam("controlCode") String controlCode,
+                                @QueryParam("sourceCountry") String sourceCountry,
+                                @QueryParam("destinationCountry") String destinationCountry) {
+
+        final List<SpireOgel> matchedSpireOgels = ogelService.findOgel(controlCode, destinationCountry);
+        if (matchedSpireOgels != null) {
+            if (matchedSpireOgels.isEmpty()) {
+                return OutboundJaxrsResponse.noContent().build();
+            }
+            OutboundMessageContext messageContext = new OutboundMessageContext();
+            messageContext.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+            messageContext.setEntity(matchedSpireOgels);
+            return new OutboundJaxrsResponse(Response.Status.OK, messageContext);
+        }
+        return OutboundJaxrsResponse.serverError().build();
+    }
+}
