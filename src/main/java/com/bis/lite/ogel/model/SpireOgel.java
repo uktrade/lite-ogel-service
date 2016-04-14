@@ -66,6 +66,7 @@ public class SpireOgel implements Serializable {
                 "ogelCode='" + ogelCode + '\'' +
                 ", description='" + description + '\'' +
                 ", link='" + link + '\'' +
+                ", includedCountries=" + includedCountries + '\'' +
                 ", excludedCountries=" + excludedCountries +
                 '}';
     }
