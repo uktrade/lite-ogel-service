@@ -31,8 +31,8 @@ public class SpireOgelService {
 
     private static final String CACHE_KEY = "ogelList";
 
-    public List<SpireOgel> findOgel(String controlCode, String destinationCountryId) {
-        Cache cache = cacheManager.getCache("cache1");
+    public List<SpireOgel> findOgel(String controlCode, String destinationCountryId, List<String> activityTypes) {
+        Cache cache = cacheManager.getCache("ogelCache");
         try {
             List<SpireOgel> ogelsList;
             if (cache.get(CACHE_KEY) == null) {
@@ -44,7 +44,7 @@ public class SpireOgelService {
                 System.out.println("Found in the cache. Will retrieve the cached value");
                 ogelsList = (List<SpireOgel>) cache.get(CACHE_KEY).getObjectValue();
             }
-            return SpireOgelFilter.filterSpireOgels(ogelsList, controlCode, destinationCountryId);
+            return SpireOgelFilter.filterSpireOgels(ogelsList, controlCode, destinationCountryId, activityTypes);
         } catch (SOAPException e) {
             //TODO better error handling
             e.printStackTrace();

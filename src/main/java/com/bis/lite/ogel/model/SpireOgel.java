@@ -1,23 +1,26 @@
 package com.bis.lite.ogel.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.List;
 
 public class SpireOgel implements Serializable {
 
-    private String ogelCode;
+    private String id;
     private String description;
     private String link;
     private List<String> ratingCodes;
     private List<Country> includedCountries;
     private List<Country> excludedCountries;
+    private String category;
 
-    public String getOgelCode() {
-        return ogelCode;
+    public String getId() {
+        return id;
     }
 
-    public void setOgelCode(String ogelCode) {
-        this.ogelCode = ogelCode;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getDescription() {
@@ -44,6 +47,7 @@ public class SpireOgel implements Serializable {
         this.ratingCodes = ratingCodes;
     }
 
+    @JsonIgnore
     public List<Country> getIncludedCountries() {
         return includedCountries;
     }
@@ -52,6 +56,7 @@ public class SpireOgel implements Serializable {
         this.includedCountries = includedCountries;
     }
 
+    @JsonIgnore
     public List<Country> getExcludedCountries() {
         return excludedCountries;
     }
@@ -60,14 +65,22 @@ public class SpireOgel implements Serializable {
         this.excludedCountries = excludedCountries;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     @Override
     public String toString() {
         return "SpireOgel{" +
-                "ogelCode='" + ogelCode + '\'' +
+                "id='" + id + '\'' +
                 ", description='" + description + '\'' +
                 ", link='" + link + '\'' +
-                ", includedCountries=" + includedCountries + '\'' +
-                ", excludedCountries=" + excludedCountries +
+                ", ratingCodes=" + ratingCodes +
+                ", category='" + category + '\'' +
                 '}';
     }
 
@@ -78,14 +91,14 @@ public class SpireOgel implements Serializable {
 
         SpireOgel spireOgel = (SpireOgel) o;
 
-        if (!ogelCode.equals(spireOgel.ogelCode)) return false;
+        if (!id.equals(spireOgel.id)) return false;
         return description.equals(spireOgel.description);
 
     }
 
     @Override
     public int hashCode() {
-        int result = ogelCode.hashCode();
+        int result = id.hashCode();
         result = 31 * result + description.hashCode();
         return result;
     }

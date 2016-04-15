@@ -34,7 +34,7 @@ public class SpireOgelSOAPUnmarshallerTest {
         final List<SpireOgel> spireOgelList = new SpireOgelSOAPUnmarshaller().parseSoapBody(nodeList);
         assertTrue(!spireOgelList.isEmpty());
         assertEquals(55, spireOgelList.size());
-        assertEquals("OGL0", spireOgelList.get(0).getOgelCode());
+        assertEquals("OGL0", spireOgelList.get(0).getId());
         assertTrue(spireOgelList.get(0).getDescription().contains("Access Overseas to Software"));
 
     }

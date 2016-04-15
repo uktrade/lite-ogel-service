@@ -8,9 +8,11 @@ import java.util.stream.Collectors;
 
 public class SpireOgelFilter {
 
-    public static List<SpireOgel> filterSpireOgels(List<SpireOgel> ogelsList, String controlCode, String destinationCountryId) {
+    public static List<SpireOgel> filterSpireOgels(List<SpireOgel> ogelsList, String rating,
+                                                   String destinationCountryId, List<String> categorites) {
         return ogelsList.stream().filter(
-                ogel -> (ogel.getRatingCodes().contains(controlCode)) &&
+                ogel -> (ogel.getRatingCodes().contains(rating)) &&
+                        categorites.contains(ogel.getCategory()) &&
                         ((!ogel.getExcludedCountries().isEmpty() &&
                                 ogel.getExcludedCountries().stream().noneMatch(c -> countryMatchesDestination(c, destinationCountryId)))
                                 || (!ogel.getIncludedCountries().isEmpty() &&
@@ -21,4 +23,5 @@ public class SpireOgelFilter {
     private static final Boolean countryMatchesDestination(Country country, String destination) {
         return country.getId().equalsIgnoreCase(destination);
     }
+
 }

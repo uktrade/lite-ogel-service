@@ -1,10 +1,15 @@
 package com.bis.lite.ogel.client.unmarshall;
 
+import com.google.inject.Inject;
+
 import com.bis.lite.ogel.model.Country;
 import com.bis.lite.ogel.model.SpireOgel;
-import com.google.inject.Inject;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPException;
@@ -13,14 +18,13 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SpireOgelSOAPUnmarshaller {
-    List<SpireOgel> spireOgelList = new ArrayList<>();
+
     private static final String codeExpression = "OGEL_TYPE_REF";
     private static final String nameExpression = "NAME";
     private static final String linkToOgelExpression = "LINK_TO_OGL";
+    private static final String CATEGORY_EXPRESSION = "OGL_ACTIVITY";
     private static final String RATING_LIST_EXPRESSION = "CONDITIONS_LIST/CONDITION/RATINGS_LIST";
     private static final String EXCLUDED_COUNTRIES_EXPRESSION = "CONDITIONS_LIST/CONDITION/DEST_COUNTRY_EXCLUDE_LIST";
     private static final String INCLUDED_COUNTRIES_EXPRESSION = "CONDITIONS_LIST/CONDITION/DEST_COUNTRY_INCLUDE_LIST";
@@ -41,6 +45,7 @@ public class SpireOgelSOAPUnmarshaller {
     }
 
     public List<SpireOgel> parseSoapBody(NodeList nodeList) throws XPathExpressionException {
+        List<SpireOgel> spireOgelList = new ArrayList<>();
         nodeList = nodeList.item(0).getChildNodes();
         XPath xpath = XPathFactory.newInstance().newXPath();
 
@@ -48,18 +53,21 @@ public class SpireOgelSOAPUnmarshaller {
             long tStart = System.currentTimeMillis();
             SpireOgel currentOgel = new SpireOgel();
             Node currentOgelNode = nodeList.item(i);
-            currentOgel.setOgelCode(((Node) xpath.evaluate(codeExpression, currentOgelNode, XPathConstants.NODE)).getTextContent());
+            currentOgel.setId(((Node) xpath.evaluate(codeExpression, currentOgelNode, XPathConstants.NODE)).getTextContent());
             currentOgel.setDescription(((Node) xpath.evaluate(nameExpression, currentOgelNode, XPathConstants.NODE)).getTextContent());
             final Node linkToOgelNode = (Node) xpath.evaluate(linkToOgelExpression, currentOgelNode, XPathConstants.NODE);
             if (linkToOgelNode != null) {
-                currentOgel.setLink((linkToOgelNode).getTextContent());
+                currentOgel.setLink(linkToOgelNode.getTextContent());
+            }
+            final Node ogelCategoryNode = (Node) xpath.evaluate(CATEGORY_EXPRESSION, currentOgelNode, XPathConstants.NODE);
+            if (ogelCategoryNode != null) {
+                currentOgel.setCategory(ogelCategoryNode.getTextContent());
             }
             final Node ratingsNode = (Node) xpath.evaluate(RATING_LIST_EXPRESSION, currentOgelNode, XPathConstants.NODE);
             NodeList ratingsListNode = ratingsNode.getChildNodes();
             if (ratingsListNode != null) {
                 List<String> ratingsList = new ArrayList<>();
-                //TODO change limit to length below
-                for (int j = 1; j < 4; j = j + 2) {
+                for (int j = 1; j < ratingsListNode.getLength(); j = j + 2) {
                     Node ratingNode = ratingsListNode.item(j);
                     if (ratingNode != null) {
                         ratingsList.add(((Node) xpath.evaluate(RATING_CODE_EXPRESSION, ratingNode, XPathConstants.NODE)).getTextContent());

@@ -1,5 +1,6 @@
 package com.bis.lite.ogel.controller;
 
+import com.bis.lite.ogel.model.CategoryType;
 import com.bis.lite.ogel.model.SpireOgel;
 import com.bis.lite.ogel.service.SpireOgelService;
 import com.codahale.metrics.annotation.Timed;
@@ -8,10 +9,12 @@ import io.dropwizard.jersey.caching.CacheControl;
 import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
 import org.glassfish.jersey.message.internal.OutboundMessageContext;
 
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -31,11 +34,18 @@ public class SpireOgelController {
     @GET
     @Timed
     @CacheControl(maxAge = 1, maxAgeUnit = TimeUnit.DAYS)
-    public Response getOgelList(@QueryParam("controlCode") String controlCode,
-                                @QueryParam("sourceCountry") String sourceCountry,
-                                @QueryParam("destinationCountry") String destinationCountry) {
+    public Response getOgelList(@NotNull @QueryParam("controlCode") String controlCode,
+                                @NotNull @QueryParam("sourceCountry") String sourceCountry,
+                                @NotNull @QueryParam("destinationCountry") String destinationCountry,
+                                @NotNull @QueryParam("activityType") List<String> activityTypes) {
 
-        final List<SpireOgel> matchedSpireOgels = ogelService.findOgel(controlCode, destinationCountry);
+        for(String category : activityTypes){
+            if(!categoryTypeExists(category)){
+                throw new WebApplicationException("Invalid Activity Type", 400);
+            }
+        }
+
+        final List<SpireOgel> matchedSpireOgels = ogelService.findOgel(controlCode, destinationCountry, activityTypes);
         if (matchedSpireOgels != null) {
             if (matchedSpireOgels.isEmpty()) {
                 return OutboundJaxrsResponse.noContent().build();
@@ -46,5 +56,14 @@ public class SpireOgelController {
             return new OutboundJaxrsResponse(Response.Status.OK, messageContext);
         }
         return OutboundJaxrsResponse.serverError().build();
+    }
+
+    private static final Boolean categoryTypeExists(String activityType){
+        for (CategoryType type : CategoryType.values()) {
+            if (type.name().equals(activityType)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
