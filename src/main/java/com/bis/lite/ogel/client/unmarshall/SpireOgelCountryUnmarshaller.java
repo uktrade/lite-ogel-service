@@ -22,11 +22,10 @@ public class SpireOgelCountryUnmarshaller {
         NodeList specialCountriesNodeChildList = specialCountriesNode.getChildNodes();
         if (specialCountriesNodeChildList != null) {
             List<Country> excludedCountriesList = new ArrayList<>();
-            //TODO change below limit
-            for (int k = 1; k < 10; k = k + 2) {
+            for (int k = 1; k < specialCountriesNodeChildList.getLength(); k = k + 2) {
                 if (specialCountriesNodeChildList.getLength() > 0) {
                     System.out.println("index: " + k);
-                    Node excludedCountryNode = specialCountriesNodeChildList.item(k);
+                    Node excludedCountryNode = specialCountriesNodeChildList.item(k).cloneNode(true);
                     if (excludedCountryNode != null) {
                         Country priviligedCountry = new Country();
                         priviligedCountry.setId(((Node) xpath.evaluate(COUNTRY_CODE_EXPRESSION,

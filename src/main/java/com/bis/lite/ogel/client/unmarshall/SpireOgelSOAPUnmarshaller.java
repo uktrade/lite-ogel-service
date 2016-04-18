@@ -30,29 +30,23 @@ public class SpireOgelSOAPUnmarshaller {
     private static final String INCLUDED_COUNTRIES_EXPRESSION = "CONDITIONS_LIST/CONDITION/DEST_COUNTRY_INCLUDE_LIST";
     private static final String RATING_CODE_EXPRESSION = "RATING_NAME";
 
-    @Inject
-    public SpireOgelSOAPUnmarshaller() {
-        System.out.println("inside unmarshaller");
-    }
-
     public List<SpireOgel> execute(SOAPMessage message) throws SOAPException, XPathExpressionException {
 
         final SOAPBody soapBody = message.getSOAPBody();
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodeList = (NodeList) xpath.evaluate("//OGEL_TYPES_LIST", soapBody, XPathConstants.NODESET);
 
-        return parseSoapBody(nodeList);
+        return parseSoapBody(nodeList, xpath);
     }
 
-    public List<SpireOgel> parseSoapBody(NodeList nodeList) throws XPathExpressionException {
+    public List<SpireOgel> parseSoapBody(NodeList nodeList, XPath xpath) throws XPathExpressionException {
         List<SpireOgel> spireOgelList = new ArrayList<>();
         nodeList = nodeList.item(0).getChildNodes();
-        XPath xpath = XPathFactory.newInstance().newXPath();
 
         for (int i = 1; i < nodeList.getLength(); i = i + 2) {
             long tStart = System.currentTimeMillis();
             SpireOgel currentOgel = new SpireOgel();
-            Node currentOgelNode = nodeList.item(i);
+            Node currentOgelNode = nodeList.item(i).cloneNode(true);
             currentOgel.setId(((Node) xpath.evaluate(codeExpression, currentOgelNode, XPathConstants.NODE)).getTextContent());
             currentOgel.setDescription(((Node) xpath.evaluate(nameExpression, currentOgelNode, XPathConstants.NODE)).getTextContent());
             final Node linkToOgelNode = (Node) xpath.evaluate(linkToOgelExpression, currentOgelNode, XPathConstants.NODE);
@@ -67,7 +61,7 @@ public class SpireOgelSOAPUnmarshaller {
             NodeList ratingsListNode = ratingsNode.getChildNodes();
             if (ratingsListNode != null) {
                 List<String> ratingsList = new ArrayList<>();
-                for (int j = 1; j < ratingsListNode.getLength(); j = j + 2) {
+                for (int j = 1; j < 50; j = j + 2) {
                     Node ratingNode = ratingsListNode.item(j);
                     if (ratingNode != null) {
                         ratingsList.add(((Node) xpath.evaluate(RATING_CODE_EXPRESSION, ratingNode, XPathConstants.NODE)).getTextContent());

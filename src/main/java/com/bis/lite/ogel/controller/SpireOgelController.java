@@ -38,7 +38,6 @@ public class SpireOgelController {
                                 @NotNull @QueryParam("sourceCountry") String sourceCountry,
                                 @NotNull @QueryParam("destinationCountry") String destinationCountry,
                                 @NotNull @QueryParam("activityType") List<String> activityTypes) {
-
         for(String category : activityTypes){
             if(!categoryTypeExists(category)){
                 throw new WebApplicationException("Invalid Activity Type", 400);

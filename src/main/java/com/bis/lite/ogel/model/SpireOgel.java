@@ -39,6 +39,7 @@ public class SpireOgel implements Serializable {
         this.link = link;
     }
 
+    @JsonIgnore
     public List<String> getRatingCodes() {
         return ratingCodes;
     }
