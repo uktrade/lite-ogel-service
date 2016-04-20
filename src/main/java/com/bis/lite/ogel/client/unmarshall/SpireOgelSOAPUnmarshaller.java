@@ -30,6 +30,7 @@ public class SpireOgelSOAPUnmarshaller {
     private static final String CONDITIONS_LIST_EXPRESSION = "CONDITIONS_LIST";
     private static final String EXCLUDED_COUNTRIES_EXPRESSION = "DEST_COUNTRY_EXCLUDE_LIST";
     private static final String INCLUDED_COUNTRIES_EXPRESSION = "DEST_COUNTRY_INCLUDE_LIST";
+    private static final String CONDITION_NO_EXPRESSION = "CONDITION_NO";
 
     public List<SpireOgel> execute(SOAPMessage message) throws SOAPException, XPathExpressionException {
 
@@ -78,6 +79,8 @@ public class SpireOgelSOAPUnmarshaller {
                                         spireOgelCountryUnmarshaller.getIncludedAndExcludedCountries(xpath, singleConditionNode, INCLUDED_COUNTRIES_EXPRESSION);
                                 ogelCondition.setExcludedCountries(excludedCountriesList);
                                 ogelCondition.setIncludedCountries(includedCountriesList);
+                                ogelCondition.setId(Integer.parseInt(((Node) xpath.evaluate(CONDITION_NO_EXPRESSION,
+                                        singleConditionNode, XPathConstants.NODE)).getTextContent()));
                             }
                             ogelConditions.add(ogelCondition);
                         }

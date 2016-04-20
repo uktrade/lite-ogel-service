@@ -23,7 +23,7 @@ public class SpireOgelRatingUnmarshaller {
         final Node ratingListNode = (Node) xpath.evaluate(xPathExpression, ogelNode, XPathConstants.NODE);
         NodeList conditionsListNode = ratingListNode.getChildNodes();
         for (int j = 0; j < conditionsListNode.getLength(); j++) {
-            Node ratingNode = conditionsListNode.item(j);
+            Node ratingNode = conditionsListNode.item(j).cloneNode(true);
             if (ratingNode != null) {
                 if (ratingNode.getNodeType() == Node.ELEMENT_NODE) {
                     Rating newRating = new Rating();
