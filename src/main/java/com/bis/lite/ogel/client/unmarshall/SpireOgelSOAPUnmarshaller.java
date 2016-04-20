@@ -1,8 +1,9 @@
 package com.bis.lite.ogel.client.unmarshall;
 
-import com.google.inject.Inject;
-
+import com.bis.lite.ogel.model.CategoryType;
 import com.bis.lite.ogel.model.Country;
+import com.bis.lite.ogel.model.OgelCondition;
+import com.bis.lite.ogel.model.Rating;
 import com.bis.lite.ogel.model.SpireOgel;
 
 import org.w3c.dom.Node;
@@ -25,10 +26,10 @@ public class SpireOgelSOAPUnmarshaller {
     private static final String nameExpression = "NAME";
     private static final String linkToOgelExpression = "LINK_TO_OGL";
     private static final String CATEGORY_EXPRESSION = "OGL_ACTIVITY";
-    private static final String RATING_LIST_EXPRESSION = "CONDITIONS_LIST/CONDITION/RATINGS_LIST";
-    private static final String EXCLUDED_COUNTRIES_EXPRESSION = "CONDITIONS_LIST/CONDITION/DEST_COUNTRY_EXCLUDE_LIST";
-    private static final String INCLUDED_COUNTRIES_EXPRESSION = "CONDITIONS_LIST/CONDITION/DEST_COUNTRY_INCLUDE_LIST";
-    private static final String RATING_CODE_EXPRESSION = "RATING_NAME";
+    private static final String RATING_LIST_EXPRESSION = "RATINGS_LIST";
+    private static final String CONDITIONS_LIST_EXPRESSION = "CONDITIONS_LIST";
+    private static final String EXCLUDED_COUNTRIES_EXPRESSION = "DEST_COUNTRY_EXCLUDE_LIST";
+    private static final String INCLUDED_COUNTRIES_EXPRESSION = "DEST_COUNTRY_INCLUDE_LIST";
 
     public List<SpireOgel> execute(SOAPMessage message) throws SOAPException, XPathExpressionException {
 
@@ -43,44 +44,53 @@ public class SpireOgelSOAPUnmarshaller {
         List<SpireOgel> spireOgelList = new ArrayList<>();
         nodeList = nodeList.item(0).getChildNodes();
 
-        for (int i = 1; i < nodeList.getLength(); i = i + 2) {
+        for (int i = 0; i < nodeList.getLength(); i++) {
             long tStart = System.currentTimeMillis();
             SpireOgel currentOgel = new SpireOgel();
             Node currentOgelNode = nodeList.item(i).cloneNode(true);
-            currentOgel.setId(((Node) xpath.evaluate(codeExpression, currentOgelNode, XPathConstants.NODE)).getTextContent());
-            currentOgel.setDescription(((Node) xpath.evaluate(nameExpression, currentOgelNode, XPathConstants.NODE)).getTextContent());
-            final Node linkToOgelNode = (Node) xpath.evaluate(linkToOgelExpression, currentOgelNode, XPathConstants.NODE);
-            if (linkToOgelNode != null) {
-                currentOgel.setLink(linkToOgelNode.getTextContent());
-            }
-            final Node ogelCategoryNode = (Node) xpath.evaluate(CATEGORY_EXPRESSION, currentOgelNode, XPathConstants.NODE);
-            if (ogelCategoryNode != null) {
-                currentOgel.setCategory(ogelCategoryNode.getTextContent());
-            }
-            final Node ratingsNode = (Node) xpath.evaluate(RATING_LIST_EXPRESSION, currentOgelNode, XPathConstants.NODE);
-            NodeList ratingsListNode = ratingsNode.getChildNodes();
-            if (ratingsListNode != null) {
-                List<String> ratingsList = new ArrayList<>();
-                for (int j = 1; j < 50; j = j + 2) {
-                    Node ratingNode = ratingsListNode.item(j);
-                    if (ratingNode != null) {
-                        ratingsList.add(((Node) xpath.evaluate(RATING_CODE_EXPRESSION, ratingNode, XPathConstants.NODE)).getTextContent());
-                    }
+            if (currentOgelNode.getNodeType() == Node.ELEMENT_NODE) {
+                currentOgel.setId(((Node) xpath.evaluate(codeExpression, currentOgelNode, XPathConstants.NODE)).getTextContent());
+                currentOgel.setDescription(((Node) xpath.evaluate(nameExpression, currentOgelNode, XPathConstants.NODE)).getTextContent());
+                final Node linkToOgelNode = (Node) xpath.evaluate(linkToOgelExpression, currentOgelNode, XPathConstants.NODE);
+                if (linkToOgelNode != null) {
+                    currentOgel.setLink(linkToOgelNode.getTextContent());
                 }
-                currentOgel.setRatingCodes(ratingsList);
+                final Node ogelCategoryNode = (Node) xpath.evaluate(CATEGORY_EXPRESSION, currentOgelNode, XPathConstants.NODE);
+                if (ogelCategoryNode != null) {
+                    currentOgel.setCategory(CategoryType.valueOf(ogelCategoryNode.getTextContent()));
+                }
+                final Node conditionsNode = (Node) xpath.evaluate(CONDITIONS_LIST_EXPRESSION, currentOgelNode, XPathConstants.NODE);
+                NodeList conditionsListNode = conditionsNode.getChildNodes();
+                if (conditionsListNode != null) {
+                    List<OgelCondition> ogelConditions = new ArrayList<>();
+                    for (int j = 0; j < conditionsListNode.getLength(); j++) {
+                        OgelCondition ogelCondition = new OgelCondition();
+                        Node singleConditionNode = conditionsListNode.item(j);
+                        if(singleConditionNode.getNodeType() == Node.ELEMENT_NODE) {
+                            if (singleConditionNode != null) {
+                                final SpireOgelRatingUnmarshaller spireOgelRatingUnmarshaller = new SpireOgelRatingUnmarshaller();
+                                final List<Rating> ratingsList = spireOgelRatingUnmarshaller.getRatingsFromRatingsList(xpath, singleConditionNode, RATING_LIST_EXPRESSION);
+                                ogelCondition.setRatingList(ratingsList);
+                                final SpireOgelCountryUnmarshaller spireOgelCountryUnmarshaller = new SpireOgelCountryUnmarshaller();
+                                final List<Country> excludedCountriesList =
+                                        spireOgelCountryUnmarshaller.getIncludedAndExcludedCountries(xpath, singleConditionNode, EXCLUDED_COUNTRIES_EXPRESSION);
+                                final List<Country> includedCountriesList =
+                                        spireOgelCountryUnmarshaller.getIncludedAndExcludedCountries(xpath, singleConditionNode, INCLUDED_COUNTRIES_EXPRESSION);
+                                ogelCondition.setExcludedCountries(excludedCountriesList);
+                                ogelCondition.setIncludedCountries(includedCountriesList);
+                            }
+                            ogelConditions.add(ogelCondition);
+                        }
+                    }
+                    currentOgel.setOgelConditions(ogelConditions);
+                }
+                long tEnd = System.currentTimeMillis();
+                long tDelta = tEnd - tStart;
+                double elapsedSeconds = tDelta / 1000.0;
+                System.out.println("New Ogel Added to the List in " + elapsedSeconds + " seconds " + currentOgel);
+
+                spireOgelList.add(currentOgel);
             }
-            final SpireOgelCountryUnmarshaller spireOgelCountryUnmarshaller = new SpireOgelCountryUnmarshaller();
-            final List<Country> excludedCountriesList = spireOgelCountryUnmarshaller.getIncludedAndExcludedCountries(xpath, currentOgelNode, EXCLUDED_COUNTRIES_EXPRESSION);
-            final List<Country> includedCountriesList = spireOgelCountryUnmarshaller.getIncludedAndExcludedCountries(xpath, currentOgelNode, INCLUDED_COUNTRIES_EXPRESSION);
-            currentOgel.setExcludedCountries(excludedCountriesList);
-            currentOgel.setIncludedCountries(includedCountriesList);
-
-            long tEnd = System.currentTimeMillis();
-            long tDelta = tEnd - tStart;
-            double elapsedSeconds = tDelta / 1000.0;
-            System.out.println("New Ogel Added to the List in " + elapsedSeconds + " seconds " + currentOgel);
-
-            spireOgelList.add(currentOgel);
         }
         return spireOgelList;
     }

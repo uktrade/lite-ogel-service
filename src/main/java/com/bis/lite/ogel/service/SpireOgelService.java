@@ -2,6 +2,7 @@ package com.bis.lite.ogel.service;
 
 import com.bis.lite.ogel.client.SpireOgelClient;
 import com.bis.lite.ogel.client.unmarshall.SpireOgelSOAPUnmarshaller;
+import com.bis.lite.ogel.model.CategoryType;
 import com.bis.lite.ogel.model.SpireOgel;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -31,7 +32,7 @@ public class SpireOgelService {
 
     private static final String CACHE_KEY = "ogelList";
 
-    public List<SpireOgel> findOgel(String controlCode, String destinationCountryId, List<String> activityTypes) {
+    public List<SpireOgel> findOgel(String controlCode, String destinationCountryId, List<CategoryType> activityTypes) {
         Cache cache = cacheManager.getCache("ogelCache");
         try {
             List<SpireOgel> ogelsList;

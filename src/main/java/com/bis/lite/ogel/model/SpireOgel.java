@@ -10,10 +10,9 @@ public class SpireOgel implements Serializable {
     private String id;
     private String description;
     private String link;
-    private List<String> ratingCodes;
-    private List<Country> includedCountries;
-    private List<Country> excludedCountries;
-    private String category;
+    private List<OgelCondition> ogelConditions;
+    private CategoryType category;
+    //private List<RatingCondition> ratingConditions;
 
     public String getId() {
         return id;
@@ -39,50 +38,21 @@ public class SpireOgel implements Serializable {
         this.link = link;
     }
 
-    @JsonIgnore
-    public List<String> getRatingCodes() {
-        return ratingCodes;
-    }
-
-    public void setRatingCodes(List<String> ratingCodes) {
-        this.ratingCodes = ratingCodes;
-    }
-
-    @JsonIgnore
-    public List<Country> getIncludedCountries() {
-        return includedCountries;
-    }
-
-    public void setIncludedCountries(List<Country> includedCountries) {
-        this.includedCountries = includedCountries;
-    }
-
-    @JsonIgnore
-    public List<Country> getExcludedCountries() {
-        return excludedCountries;
-    }
-
-    public void setExcludedCountries(List<Country> excludedCountries) {
-        this.excludedCountries = excludedCountries;
-    }
-
-    public String getCategory() {
+    public CategoryType getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(CategoryType category) {
         this.category = category;
     }
 
-    @Override
-    public String toString() {
-        return "SpireOgel{" +
-                "id='" + id + '\'' +
-                ", description='" + description + '\'' +
-                ", link='" + link + '\'' +
-                ", ratingCodes=" + ratingCodes +
-                ", category='" + category + '\'' +
-                '}';
+    @JsonIgnore
+    public List<OgelCondition> getOgelConditions() {
+        return ogelConditions;
+    }
+
+    public void setOgelConditions(List<OgelCondition> ogelConditions) {
+        this.ogelConditions = ogelConditions;
     }
 
     @Override
@@ -102,5 +72,16 @@ public class SpireOgel implements Serializable {
         int result = id.hashCode();
         result = 31 * result + description.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "SpireOgel{" +
+                "id='" + id + '\'' +
+                ", description='" + description + '\'' +
+                ", link='" + link + '\'' +
+                ", ogelConditions=" + ogelConditions +
+                ", category='" + category + '\'' +
+                '}';
     }
 }

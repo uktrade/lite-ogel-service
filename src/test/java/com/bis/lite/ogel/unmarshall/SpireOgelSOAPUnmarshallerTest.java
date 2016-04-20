@@ -31,7 +31,7 @@ public class SpireOgelSOAPUnmarshallerTest {
         XPath xPath =  XPathFactory.newInstance().newXPath();
         NodeList nodeList = (NodeList) xPath.compile("//OGEL_TYPES_LIST").evaluate(document, XPathConstants.NODESET);
 
-        final List<SpireOgel> spireOgelList = new SpireOgelSOAPUnmarshaller().parseSoapBody(nodeList);
+        final List<SpireOgel> spireOgelList = new SpireOgelSOAPUnmarshaller().parseSoapBody(nodeList, xPath);
         assertTrue(!spireOgelList.isEmpty());
         assertEquals(55, spireOgelList.size());
         assertEquals("OGL0", spireOgelList.get(0).getId());
