@@ -1,3 +1,14 @@
+# Logging settings.
+logging:
+
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: INFO
+
+  appenders:
+    - type: console
+      threshold: INFO
+      target: stderr
+
 soapUrl: https://spiredevalpha.fivium.co.uk/spirefox4dev/fox/ispire/SPIRE_OGEL_TYPES
 soapUserName: bisdev.api@test.com
 soapPassword: dev
