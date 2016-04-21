@@ -12,13 +12,13 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 
-public class SpireOgelRatingUnmarshaller {
+public class SpireOgelRatingUnmarshaller implements SpireOgelUnmarshaller{
 
     private static final String RATING_CODE_EXPRESSION = "RATING_NAME";
     private static final String RATING_CONDITION_EXPRESSION = "CONDITIONAL_RATING";
 
-
-    public List<Rating> getRatingsFromRatingsList(XPath xpath, Node ogelNode, String xPathExpression) throws XPathExpressionException {
+    @Override
+    public List<Rating> unmarshall(XPath xpath, Node ogelNode, String xPathExpression) throws XPathExpressionException {
         List<Rating> ratingsList = new ArrayList<>();
         final Node ratingListNode = (Node) xpath.evaluate(xPathExpression, ogelNode, XPathConstants.NODE);
         NodeList conditionsListNode = ratingListNode.getChildNodes();

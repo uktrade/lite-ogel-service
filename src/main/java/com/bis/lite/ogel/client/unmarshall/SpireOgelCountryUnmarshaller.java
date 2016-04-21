@@ -10,14 +10,14 @@ import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpireOgelCountryUnmarshaller {
+public class SpireOgelCountryUnmarshaller implements SpireOgelUnmarshaller {
 
     private static final String COUNTRY_CODE_EXPRESSION = "COUNTRY_ID";
     private static final String COUNTRY_SET_ID_EXPRESSION = "COUNTRY_SET_ID";
     private static final String COUNTRY_NAME_EXPRESSION = "COUNTRY_NAME";
 
-
-    public List<Country> getIncludedAndExcludedCountries(XPath xpath, Node ogelNode, String xPathExpression) throws XPathExpressionException {
+    @Override
+    public List<Country> unmarshall(XPath xpath, Node ogelNode, String xPathExpression) throws XPathExpressionException {
         final Node specialCountriesNode = (Node) xpath.evaluate(xPathExpression, ogelNode, XPathConstants.NODE);
         NodeList specialCountriesNodeChildList = specialCountriesNode.getChildNodes();
         if (specialCountriesNodeChildList != null) {

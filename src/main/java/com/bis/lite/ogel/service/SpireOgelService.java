@@ -57,4 +57,8 @@ public class SpireOgelService {
         }
         return null;
     }
+
+    public void setCacheManager(CacheManager cacheManager){
+        this.cacheManager = cacheManager;
+    }
 }

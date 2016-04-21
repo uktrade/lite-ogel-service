@@ -9,13 +9,12 @@ import com.bis.lite.ogel.model.SpireOgel;
 import com.bis.lite.ogel.service.SpireOgelService;
 import com.bis.lite.ogel.util.SpireOgelTestUtility;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import io.dropwizard.testing.junit.ResourceTestRule;
@@ -31,15 +29,13 @@ import io.dropwizard.testing.junit.ResourceTestRule;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SpireOgelControllerTest {
 
     private static final SpireOgelService service = Mockito.mock(SpireOgelService.class);
-    private static final CacheManager cacheManager = Mockito.mock(CacheManager.class);
-    private static final Cache cache = Mockito.mock(Cache.class);
     List<SpireOgel> spireOgels;
 
     @Before
@@ -63,7 +59,6 @@ public class SpireOgelControllerTest {
         SpireOgel firstOgel = SpireOgelTestUtility.createOgel("OGL0", "description", conditionsList, CategoryType.TECH);
         spireOgels = Arrays.asList(firstOgel);
         when(service.findOgel(anyString(), anyString(), anyListOf(CategoryType.class))).thenReturn(spireOgels);
-        when(cacheManager.getCache(anyString())).thenReturn(cache);
     }
 
     @ClassRule

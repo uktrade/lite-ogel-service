@@ -16,10 +16,15 @@ public class SpireOgelClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpireOgelClient.class);
     private String soapUrl;
+    String soapClientUserName;
+    String soapClientPassword;
 
     @Inject
-    public SpireOgelClient(@Named("soapUrl")String soapUrl) {
+    public SpireOgelClient(@Named("soapUrl")String soapUrl, @Named("soapUserName") String clientUserName,
+                           @Named("soapPassword") String clientPassword) {
         this.soapUrl = soapUrl;
+        this.soapClientUserName = clientUserName;
+        this.soapClientPassword = clientPassword;
     }
 
     public SOAPMessage executeRequest() throws SOAPException, UnsupportedEncodingException {
@@ -62,7 +67,7 @@ public class SpireOgelClient {
         MimeHeaders headers = soapMessage.getMimeHeaders();
         headers.addHeader("SOAPAction", "http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_OGEL_TYPES/" + "getCompanies");
 
-        String authorization = Base64.getEncoder().encodeToString("bisdev.api@test.com:dev".getBytes("utf-8"));
+        String authorization = Base64.getEncoder().encodeToString((soapClientUserName + ":" + soapClientPassword).getBytes("utf-8"));
         headers.addHeader("Authorization", "Basic " + authorization);
         soapMessage.saveChanges();
 

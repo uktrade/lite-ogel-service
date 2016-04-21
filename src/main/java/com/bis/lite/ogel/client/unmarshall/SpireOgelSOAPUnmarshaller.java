@@ -60,33 +60,10 @@ public class SpireOgelSOAPUnmarshaller {
                 if (ogelCategoryNode != null) {
                     currentOgel.setCategory(CategoryType.valueOf(ogelCategoryNode.getTextContent()));
                 }
-                final Node conditionsNode = (Node) xpath.evaluate(CONDITIONS_LIST_EXPRESSION, currentOgelNode, XPathConstants.NODE);
-                NodeList conditionsListNode = conditionsNode.getChildNodes();
-                if (conditionsListNode != null) {
-                    List<OgelCondition> ogelConditions = new ArrayList<>();
-                    for (int j = 0; j < conditionsListNode.getLength(); j++) {
-                        OgelCondition ogelCondition = new OgelCondition();
-                        Node singleConditionNode = conditionsListNode.item(j);
-                        if(singleConditionNode.getNodeType() == Node.ELEMENT_NODE) {
-                            if (singleConditionNode != null) {
-                                final SpireOgelRatingUnmarshaller spireOgelRatingUnmarshaller = new SpireOgelRatingUnmarshaller();
-                                final List<Rating> ratingsList = spireOgelRatingUnmarshaller.getRatingsFromRatingsList(xpath, singleConditionNode, RATING_LIST_EXPRESSION);
-                                ogelCondition.setRatingList(ratingsList);
-                                final SpireOgelCountryUnmarshaller spireOgelCountryUnmarshaller = new SpireOgelCountryUnmarshaller();
-                                final List<Country> excludedCountriesList =
-                                        spireOgelCountryUnmarshaller.getIncludedAndExcludedCountries(xpath, singleConditionNode, EXCLUDED_COUNTRIES_EXPRESSION);
-                                final List<Country> includedCountriesList =
-                                        spireOgelCountryUnmarshaller.getIncludedAndExcludedCountries(xpath, singleConditionNode, INCLUDED_COUNTRIES_EXPRESSION);
-                                ogelCondition.setExcludedCountries(excludedCountriesList);
-                                ogelCondition.setIncludedCountries(includedCountriesList);
-                                ogelCondition.setId(Integer.parseInt(((Node) xpath.evaluate(CONDITION_NO_EXPRESSION,
-                                        singleConditionNode, XPathConstants.NODE)).getTextContent()));
-                            }
-                            ogelConditions.add(ogelCondition);
-                        }
-                    }
-                    currentOgel.setOgelConditions(ogelConditions);
-                }
+                final SpireOgelConditionUnmarshaller conditionUnmarshaller = new SpireOgelConditionUnmarshaller();
+                List<OgelCondition> ogelConditions = conditionUnmarshaller.unmarshall(xpath, currentOgelNode, CONDITIONS_LIST_EXPRESSION); //= new ArrayList<>();
+                currentOgel.setOgelConditions(ogelConditions);
+
                 long tEnd = System.currentTimeMillis();
                 long tDelta = tEnd - tStart;
                 double elapsedSeconds = tDelta / 1000.0;
