@@ -3,24 +3,25 @@ package com.bis.lite.ogel.client;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.soap.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
 public class SpireOgelClient {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(SpireOgelClient.class);
     private String soapUrl;
     String soapClientUserName;
     String soapClientPassword;
 
     @Inject
-    public SpireOgelClient(@Named("soapUrl")String soapUrl, @Named("soapUserName") String clientUserName,
+    public SpireOgelClient(@Named("soapUrl") String soapUrl, @Named("soapUserName") String clientUserName,
                            @Named("soapPassword") String clientPassword) {
         this.soapUrl = soapUrl;
         this.soapClientUserName = clientUserName;
@@ -29,25 +30,16 @@ public class SpireOgelClient {
 
     public SOAPMessage executeRequest() throws SOAPException, UnsupportedEncodingException {
 
-        SOAPConnection soapConnection = null;
+        SOAPConnectionFactory soapConnectionFactory = SOAPConnectionFactory.newInstance();
+        SOAPConnection soapConnection = soapConnectionFactory.createConnection();
 
-        try {
-            SOAPConnectionFactory soapConnectionFactory = SOAPConnectionFactory.newInstance();
-            soapConnection = soapConnectionFactory.createConnection();
+        SOAPMessage request = createRequest();
+        LOGGER.debug(messageAsString(request));
 
-            SOAPMessage request = createRequest();
-            LOGGER.debug(messageAsString(request));
+        SOAPMessage response = soapConnection.call(request, soapUrl);
+        LOGGER.debug(messageAsString(response));
 
-            SOAPMessage response = soapConnection.call(request, soapUrl);
-            LOGGER.debug(messageAsString(response));
-
-            return response;
-
-        } finally {
-            if (soapConnection != null) {
-                soapConnection.close();
-            }
-        }
+        return response;
     }
 
     private SOAPMessage createRequest() throws SOAPException, UnsupportedEncodingException {
@@ -80,7 +72,7 @@ public class SpireOgelClient {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             soapMessage.writeTo(outputStream);
             return outputStream.toString();
-        } catch(IOException | SOAPException e) {
+        } catch (IOException | SOAPException e) {
             return null;
         }
     }

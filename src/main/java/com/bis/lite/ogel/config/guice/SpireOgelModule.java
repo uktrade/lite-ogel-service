@@ -1,10 +1,10 @@
 package com.bis.lite.ogel.config.guice;
 
-import com.bis.lite.ogel.client.SpireOgelClient;
-import com.bis.lite.ogel.config.MainApplicationConfiguration;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
+
+import com.bis.lite.ogel.config.MainApplicationConfiguration;
 
 public class SpireOgelModule extends AbstractModule {
 
@@ -30,6 +30,18 @@ public class SpireOgelModule extends AbstractModule {
     @Named("cacheTimeout")
     public String provideCacheTimeoutInSeconds(MainApplicationConfiguration configuration){
         return configuration.getCacheTimeout();
+    }
+
+    @Provides
+    @Named("cronCacheRefreshJobInterval")
+    public String provideCacheRefreshInterval(MainApplicationConfiguration configuration){
+        return configuration.getCronCacheRefreshJobInterval();
+    }
+
+    @Provides
+    @Named("cronCacheRefreshJobInterval")
+    public String provideFastCacheRefreshInterval(MainApplicationConfiguration configuration){
+        return configuration.getCronFastCacheRefreshJobInterval();
     }
 
     @Override

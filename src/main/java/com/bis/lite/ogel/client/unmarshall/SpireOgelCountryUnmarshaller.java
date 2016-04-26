@@ -24,7 +24,6 @@ public class SpireOgelCountryUnmarshaller implements SpireOgelUnmarshaller {
             List<Country> excludedCountriesList = new ArrayList<>();
             for (int k = 1; k < specialCountriesNodeChildList.getLength(); k = k + 2) {
                 if (specialCountriesNodeChildList.getLength() > 0) {
-                    System.out.println("index: " + k);
                     Node excludedCountryNode = specialCountriesNodeChildList.item(k).cloneNode(true);
                     if (excludedCountryNode != null) {
                         Country priviligedCountry = new Country();

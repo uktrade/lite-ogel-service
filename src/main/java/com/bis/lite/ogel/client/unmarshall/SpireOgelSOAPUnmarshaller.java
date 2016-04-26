@@ -26,11 +26,7 @@ public class SpireOgelSOAPUnmarshaller {
     private static final String nameExpression = "NAME";
     private static final String linkToOgelExpression = "LINK_TO_OGL";
     private static final String CATEGORY_EXPRESSION = "OGL_ACTIVITY";
-    private static final String RATING_LIST_EXPRESSION = "RATINGS_LIST";
     private static final String CONDITIONS_LIST_EXPRESSION = "CONDITIONS_LIST";
-    private static final String EXCLUDED_COUNTRIES_EXPRESSION = "DEST_COUNTRY_EXCLUDE_LIST";
-    private static final String INCLUDED_COUNTRIES_EXPRESSION = "DEST_COUNTRY_INCLUDE_LIST";
-    private static final String CONDITION_NO_EXPRESSION = "CONDITION_NO";
 
     public List<SpireOgel> execute(SOAPMessage message) throws SOAPException, XPathExpressionException {
 
@@ -38,15 +34,18 @@ public class SpireOgelSOAPUnmarshaller {
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList nodeList = (NodeList) xpath.evaluate("//OGEL_TYPES_LIST", soapBody, XPathConstants.NODESET);
 
-        return parseSoapBody(nodeList, xpath);
+        if (nodeList != null) {
+            return parseSoapBody(nodeList, xpath);
+        }
+        return null;
     }
 
     public List<SpireOgel> parseSoapBody(NodeList nodeList, XPath xpath) throws XPathExpressionException {
         List<SpireOgel> spireOgelList = new ArrayList<>();
         nodeList = nodeList.item(0).getChildNodes();
-
+        long tStart = System.currentTimeMillis();
         for (int i = 0; i < nodeList.getLength(); i++) {
-            long tStart = System.currentTimeMillis();
+
             SpireOgel currentOgel = new SpireOgel();
             Node currentOgelNode = nodeList.item(i).cloneNode(true);
             if (currentOgelNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -63,15 +62,13 @@ public class SpireOgelSOAPUnmarshaller {
                 final SpireOgelConditionUnmarshaller conditionUnmarshaller = new SpireOgelConditionUnmarshaller();
                 List<OgelCondition> ogelConditions = conditionUnmarshaller.unmarshall(xpath, currentOgelNode, CONDITIONS_LIST_EXPRESSION); //= new ArrayList<>();
                 currentOgel.setOgelConditions(ogelConditions);
-
-                long tEnd = System.currentTimeMillis();
-                long tDelta = tEnd - tStart;
-                double elapsedSeconds = tDelta / 1000.0;
-                System.out.println("New Ogel Added to the List in " + elapsedSeconds + " seconds " + currentOgel);
-
                 spireOgelList.add(currentOgel);
             }
         }
+        long tEnd = System.currentTimeMillis();
+        long tDelta = tEnd - tStart;
+        double elapsedSeconds = tDelta / 1000.0;
+        System.out.println("New Ogel list has been retrieved in " + elapsedSeconds + " seconds ");
         return spireOgelList;
     }
 }

@@ -13,3 +13,5 @@ soapUrl: https://spiredevalpha.fivium.co.uk/spirefox4dev/fox/ispire/SPIRE_OGEL_T
 soapUserName: bisdev.api@test.com
 soapPassword: dev
 cacheTimeout: 1000
+cronCacheRefreshJobInterval: 0/200 * * * * ?
+cronFastCacheRefreshJobInterval: 0/10 * * * * ?

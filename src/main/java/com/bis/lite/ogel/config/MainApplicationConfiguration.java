@@ -14,6 +14,14 @@ public class MainApplicationConfiguration extends Configuration{
 
     @NotEmpty
     @JsonProperty
+    private String cronCacheRefreshJobInterval;
+
+    @NotEmpty
+    @JsonProperty
+    private String cronFastCacheRefreshJobInterval;
+
+    @NotEmpty
+    @JsonProperty
     private String soapUserName;
 
     @NotEmpty
@@ -43,5 +51,13 @@ public class MainApplicationConfiguration extends Configuration{
 
     public String getCacheTimeout() {
         return cacheTimeout;
+    }
+
+    public String getCronCacheRefreshJobInterval() {
+        return cronCacheRefreshJobInterval;
+    }
+
+    public String getCronFastCacheRefreshJobInterval() {
+        return cronFastCacheRefreshJobInterval;
     }
 }
