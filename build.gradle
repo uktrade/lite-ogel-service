@@ -7,18 +7,18 @@ apply plugin: 'application'
 sourceCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 dependencies {
-    compile 'io.dropwizard:dropwizard-core:0.9.2',
-            'com.hubspot.dropwizard:dropwizard-guice:0.8.4.0',
-            'net.sf.ehcache:ehcache:2.10.1',
-            'org.quartz-scheduler:quartz:2.2.1'
+  compile 'io.dropwizard:dropwizard-core:0.9.2',
+      'com.hubspot.dropwizard:dropwizard-guice:0.8.4.0',
+      'net.sf.ehcache:ehcache:2.10.1',
+      'com.fiestacabin.dropwizard.quartz:dropwizard-quartz:0.7.2'
 
-    testCompile 'junit:junit:4.12',
-            'org.mockito:mockito-all:1.9.5',
-            'io.dropwizard:dropwizard-testing:0.9.2'
+  testCompile 'junit:junit:4.12',
+      'org.mockito:mockito-all:1.9.5',
+      'io.dropwizard:dropwizard-testing:0.9.2'
 }
 
 mainClassName = "com.bis.lite.ogel.Main"

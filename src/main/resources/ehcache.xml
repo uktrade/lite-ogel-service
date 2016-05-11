@@ -2,16 +2,15 @@
          xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="true"
          monitoring="autodetect" dynamicConfig="true">
 
-    <diskStore path="user.dir" />
+  <diskStore path="user.dir"/>
 
-    <cache name="ogelCache"
-           maxEntriesLocalHeap="1000"
-           maxEntriesLocalDisk="10000"
-           eternal="true"
-           diskSpoolBufferSizeMB="20"
-           timeToIdleSeconds="0" timeToLiveSeconds="0"
-           memoryStoreEvictionPolicy="LFU"
-           transactionalMode="off">
-        <persistence strategy="localTempSwap" />
-    </cache>
+  <cache name="ogelCache"
+         maxEntriesLocalHeap="1000"
+         eternal="true"
+         diskSpoolBufferSizeMB="20"
+         timeToIdleSeconds="0" timeToLiveSeconds="0"
+         memoryStoreEvictionPolicy="LFU"
+         transactionalMode="off">
+    <persistence strategy="localTempSwap"/>
+  </cache>
 </ehcache>
