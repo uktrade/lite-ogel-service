@@ -6,7 +6,7 @@ import uk.gov.bis.lite.ogel.database.unmarshall.LocalOgelLookUpDeserializer;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(using = LocalOgelLookUpDeserializer.class)
-public class LocalSpireOgel {
+public class LocalOgel {
 
   private String id;
   private String name;

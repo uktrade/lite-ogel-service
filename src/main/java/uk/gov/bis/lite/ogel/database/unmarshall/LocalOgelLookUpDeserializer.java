@@ -5,20 +5,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalSpireOgel;
+import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.OgelSummary;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalOgelLookUpDeserializer extends JsonDeserializer<LocalSpireOgel> {
+public class LocalOgelLookUpDeserializer extends JsonDeserializer<LocalOgel> {
   @Override
-  public LocalSpireOgel deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-    LocalSpireOgel localSpireOgel = new LocalSpireOgel();
+  public LocalOgel deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+    LocalOgel localOgel = new LocalOgel();
     OgelSummary summary = new OgelSummary();
     JsonNode node = jp.getCodec().readTree(jp);
-    localSpireOgel.setName(node.get("name").asText());
+    localOgel.setName(node.get("name").asText());
     List<String> canList = getConditionList(node, "canList");
     List<String> cantList = getConditionList(node, "cantList");
     List<String> mustList = getConditionList(node, "mustList");
@@ -27,8 +27,8 @@ public class LocalOgelLookUpDeserializer extends JsonDeserializer<LocalSpireOgel
     summary.setCantList(cantList);
     summary.setMustList(mustList);
     summary.setHowToUseList(howToUseList);
-    localSpireOgel.setSummary(summary);
-    return localSpireOgel;
+    localOgel.setSummary(summary);
+    return localOgel;
   }
 
   private List<String> getConditionList(JsonNode node, String fieldName){

@@ -10,8 +10,8 @@ import net.sf.ehcache.CacheManager;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
-import uk.gov.bis.lite.ogel.database.LocalSpireOgelFlatFileImpl;
-import uk.gov.bis.lite.ogel.database.dao.LocalSpireOgelDAO;
+import uk.gov.bis.lite.ogel.database.LocalOgelFlatFileImpl;
+import uk.gov.bis.lite.ogel.database.dao.LocalOgelDAO;
 
 public class GuiceModule extends AbstractModule {
 
@@ -44,7 +44,7 @@ public class GuiceModule extends AbstractModule {
     System.out.println("Inside Guice Module Config");
     bind(SchedulerConfiguration.class).toInstance(new SchedulerConfiguration("uk.gov.bis.lite.ogel"));
     bind(CacheManager.class).toInstance(CacheManager.create());
-    bind(LocalSpireOgelDAO.class).toInstance(new LocalSpireOgelFlatFileImpl());
+    bind(LocalOgelDAO.class).toInstance(new LocalOgelFlatFileImpl());
   }
 
   @Provides

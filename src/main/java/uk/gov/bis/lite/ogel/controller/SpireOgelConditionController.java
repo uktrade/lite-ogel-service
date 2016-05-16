@@ -5,9 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
 import org.glassfish.jersey.message.internal.OutboundMessageContext;
+import uk.gov.bis.lite.ogel.model.OgelFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalSpireOgel;
-import uk.gov.bis.lite.ogel.service.LocalSpireOgelService;
+import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
+import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 import java.io.IOException;
@@ -34,25 +35,27 @@ import javax.xml.xpath.XPathExpressionException;
 public class SpireOgelConditionController {
 
   private final SpireOgelService ogelService;
-  private final LocalSpireOgelService localSpireOgelService;
+  private final LocalOgelService localOgelService;
 
   @Inject
-  public SpireOgelConditionController(SpireOgelService ogelService, LocalSpireOgelService localOgelService) {
+  public SpireOgelConditionController(SpireOgelService ogelService, LocalOgelService localOgelService) {
     this.ogelService = ogelService;
-    this.localSpireOgelService = localOgelService;
+    this.localOgelService = localOgelService;
   }
 
   @GET
   @Path("{id}")
   public Response getOgelByOgelID(@NotNull @PathParam("id") String ogelId)
       throws SOAPException, XPathExpressionException, UnsupportedEncodingException {
-    final List<LocalSpireOgel> allLocalOgels = (List<LocalSpireOgel>) localSpireOgelService.getAllLocalOgels();
+    final List<LocalOgel> allLocalOgels = (List<LocalOgel>) localOgelService.getAllLocalOgels();
     List<SpireOgel> ogelList = ogelService.getAllOgels();
 
-    ogelList.stream().
-        forEach(o -> o.setLocalSpireOgel(getMatchingLocalSpireOgel(allLocalOgels, o.getId()).orElse(null)));
+    List<OgelFullView> viewList = new ArrayList<>();
 
-    final Optional<SpireOgel> matchingSpireOgel = ogelList.stream().filter(o -> o.getId().equalsIgnoreCase(ogelId)).findAny();
+    ogelList.stream().
+        forEach(o -> viewList.add( new OgelFullView(o, (getMatchingLocalSpireOgel(allLocalOgels, o.getId()).orElse(null)))));
+
+    final Optional<OgelFullView> matchingSpireOgel = viewList.stream().filter(v -> v.getSpireOgel().getId().equalsIgnoreCase(ogelId)).findAny();
     if (matchingSpireOgel.isPresent()) {
       OutboundMessageContext messageContext = new OutboundMessageContext();
       messageContext.setMediaType(MediaType.APPLICATION_JSON_TYPE);
@@ -63,15 +66,15 @@ public class SpireOgelConditionController {
     }
   }
 
-  private Optional<LocalSpireOgel> getMatchingLocalSpireOgel(List<LocalSpireOgel> allLocalOgels, String ogelID) {
+  private Optional<LocalOgel> getMatchingLocalSpireOgel(List<LocalOgel> allLocalOgels, String ogelID) {
     return allLocalOgels.stream().filter(lo -> ogelID.equalsIgnoreCase(lo.getId())).findAny();
   }
 
   @PUT
   @Path("{id}/summary-data/{conditionFieldName}")
   @Consumes(MediaType.APPLICATION_JSON)
-  public LocalSpireOgel updateOgelCondition(@NotNull @PathParam("id") String ogelId,
-                                            @NotNull @PathParam("conditionFieldName") String conditionFieldName, String message) {
+  public LocalOgel updateOgelCondition(@NotNull @PathParam("id") String ogelId,
+                                       @NotNull @PathParam("conditionFieldName") String conditionFieldName, String message) {
     ObjectMapper mapper = new ObjectMapper();
     List<String> updateConditionDataList = new ArrayList<>();
     try {
@@ -80,8 +83,9 @@ public class SpireOgelConditionController {
         updateConditionDataList.add(jsonConditionArrayIterator.next().asText());
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      Response.serverError().
+          entity("An unknown error occurred while updating the ogel condition list for ogel " + ogelId + "\n" + e.getMessage()).build();
     }
-    return localSpireOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName);
+    return localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName);
   }
 }
