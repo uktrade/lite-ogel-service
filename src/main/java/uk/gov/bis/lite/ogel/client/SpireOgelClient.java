@@ -42,7 +42,11 @@ public class SpireOgelClient {
     SOAPMessage request = createRequest();
     LOGGER.debug(messageAsString(request));
 
+    final long tStart = System.currentTimeMillis();
     SOAPMessage response = soapConnection.call(request, soapUrl);
+    long tEnd = System.currentTimeMillis();
+    long tDelta = tEnd - tStart;
+    System.out.println("New Ogel list has been retrieved from Spire in " + tDelta / 1000.0 + " seconds ");
     LOGGER.debug(messageAsString(response));
 
     return response;
@@ -52,7 +56,11 @@ public class SpireOgelClient {
 
     MessageFactory messageFactory = MessageFactory.newInstance();
     SOAPMessage soapMessage = messageFactory.createMessage();
+    final long tStart = System.currentTimeMillis();
     SOAPPart soapPart = soapMessage.getSOAPPart();
+    long tEnd = System.currentTimeMillis();
+    long tDelta = tEnd - tStart;
+    System.out.println("Getting the soap body out of soap response took " + tDelta / 1000.0 + " seconds ");
 
     // SOAP Envelope
     SOAPEnvelope envelope = soapPart.getEnvelope();

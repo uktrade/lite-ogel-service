@@ -65,7 +65,7 @@ public class SpireOgelSOAPUnmarshaller {
     long tEnd = System.currentTimeMillis();
     long tDelta = tEnd - tStart;
     double elapsedSeconds = tDelta / 1000.0;
-    System.out.println("New Ogel list has been retrieved in " + elapsedSeconds + " seconds ");
+    System.out.println("The unmarshalling of the Spire Response took " + elapsedSeconds + " seconds ");
     return spireOgelList;
   }
 }

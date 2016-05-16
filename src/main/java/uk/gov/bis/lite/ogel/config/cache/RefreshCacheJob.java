@@ -1,5 +1,7 @@
 package uk.gov.bis.lite.ogel.config.cache;
 
+import static uk.gov.bis.lite.ogel.Main.CACHE_KEY;
+
 import com.fiestacabin.dropwizard.quartz.Scheduled;
 import com.google.inject.Inject;
 import net.sf.ehcache.CacheException;
@@ -19,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 @DisallowConcurrentExecution
 @PersistJobDataAfterExecution
-@Scheduled(interval = 30, unit = TimeUnit.SECONDS)
+@Scheduled(interval = 1, unit = TimeUnit.HOURS)
 public class RefreshCacheJob implements Job {
   private static final Logger LOGGER = LoggerFactory.getLogger(RefreshCacheJob.class);
 
@@ -34,7 +36,7 @@ public class RefreshCacheJob implements Job {
       SelfPopulatingCache cache = (SelfPopulatingCache) ogelCache;
       try {
         LOGGER.info("Cache Refreshing Job is Executing.");
-        cache.refresh("ogelList");
+        cache.refresh(CACHE_KEY);
       } catch (CacheException e) {
         LOGGER.error("An error occurred while trying to call EhCache Refresh ", e);
       }
