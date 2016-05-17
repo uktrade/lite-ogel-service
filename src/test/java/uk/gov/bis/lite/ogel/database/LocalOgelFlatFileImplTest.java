@@ -15,7 +15,7 @@ public class LocalOgelFlatFileImplTest {
 
   @Test
   public void testDatabasePopulation(){
-    final List<LocalOgel> localOgels = populator.getAllLocalSpireOgels();
+    final List<LocalOgel> localOgels = populator.getAllLocalOgels();
     assertTrue(!localOgels.isEmpty());
     final LocalOgel firstLocalOgel = localOgels.get(0);
     assertEquals("Open general export licence (chemicals)", firstLocalOgel.getName());

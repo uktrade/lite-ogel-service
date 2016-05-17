@@ -19,7 +19,7 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   private static List<LocalOgel> localOgels;
 
   @Override
-  public List<LocalOgel> getAllLocalSpireOgels() {
+  public List<LocalOgel> getAllLocalOgels() {
     if (localOgels == null) {
       try {
         LOGGER.info("Storing the values retrieved from {}", LOCAL_OGEL_CONDITION_DATA_FILE);
@@ -46,17 +46,17 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   }
 
   @Override
-  public LocalOgel getSpireOgelById(String ogelID) {
+  public LocalOgel getOgelById(String ogelID) {
     if (localOgels == null) {
-      getAllLocalSpireOgels();
+      getAllLocalOgels();
     }
     return localOgels.stream().filter(o -> o.getId().equalsIgnoreCase(ogelID)).findAny()
         .orElseThrow(() -> new RuntimeException("Local Spire Could not be found with given id " + ogelID));
   }
 
   @Override
-  public LocalOgel updateSpireOgelCanList(String ogelID, List<String> updateData, String fieldName) {
-    final LocalOgel foundOgelCondition = getSpireOgelById(ogelID);
+  public LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) {
+    final LocalOgel foundOgelCondition = getOgelById(ogelID);
     switch (fieldName) {
       case "canList":
         foundOgelCondition.getSummary().setCanList(updateData);

@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface LocalOgelDAO {
 
-  List<LocalOgel> getAllLocalSpireOgels();
+  List<LocalOgel> getAllLocalOgels();
 
-  LocalOgel getSpireOgelById(String ogelID);
+  LocalOgel getOgelById(String ogelID);
 
-  LocalOgel updateSpireOgelCanList(String ogelID, List<String> updateData, String fieldName);
+  LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName);
 }

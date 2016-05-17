@@ -14,10 +14,10 @@ public class LocalOgelService {
   private LocalOgelDAO localOgelDAO;
 
   public List<?> getAllLocalOgels() {
-    return localOgelDAO.getAllLocalSpireOgels();
+    return localOgelDAO.getAllLocalOgels();
   }
 
   public LocalOgel updateSpireOgelCondition(String ogelID, List<String> newConditionList, String conditionField) {
-    return localOgelDAO.updateSpireOgelCanList(ogelID, newConditionList, conditionField);
+    return localOgelDAO.updateOgelConditionList(ogelID, newConditionList, conditionField);
   }
 }

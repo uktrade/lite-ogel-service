@@ -52,7 +52,7 @@ public class SpireOgelConditionResource {
     List<OgelFullView> viewList = new ArrayList<>();
 
     ogelList.stream().
-        forEach(o -> viewList.add( new OgelFullView(o, (getMatchingLocalSpireOgel(allLocalOgels, o.getId()).orElse(null)))));
+        forEach(o -> viewList.add( new OgelFullView(o, (getMatchingLocalOgel(allLocalOgels, o.getId()).orElse(null)))));
 
     final Optional<OgelFullView> matchingSpireOgel = viewList.stream().filter(v -> v.getSpireOgel().getId().equalsIgnoreCase(ogelId)).findAny();
     if (matchingSpireOgel.isPresent()) {
@@ -62,7 +62,7 @@ public class SpireOgelConditionResource {
     }
   }
 
-  private Optional<LocalOgel> getMatchingLocalSpireOgel(List<LocalOgel> allLocalOgels, String ogelID) {
+  private Optional<LocalOgel> getMatchingLocalOgel(List<LocalOgel> allLocalOgels, String ogelID) {
     return allLocalOgels.stream().filter(lo -> ogelID.equalsIgnoreCase(lo.getId())).findAny();
   }
 
