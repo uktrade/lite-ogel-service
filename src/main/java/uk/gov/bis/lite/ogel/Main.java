@@ -3,6 +3,7 @@ package uk.gov.bis.lite.ogel;
 import com.fiestacabin.dropwizard.quartz.GuiceJobFactory;
 import com.fiestacabin.dropwizard.quartz.ManagedScheduler;
 import com.fiestacabin.dropwizard.quartz.SchedulerConfiguration;
+import com.google.inject.Stage;
 import com.hubspot.dropwizard.guice.GuiceBundle;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
@@ -18,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.config.cache.CacheConfig;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
+import uk.gov.bis.lite.ogel.resource.SpireOgelConditionResource;
+import uk.gov.bis.lite.ogel.resource.SpireOgelResource;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 public class Main extends Application<MainApplicationConfiguration> {
@@ -37,6 +40,8 @@ public class Main extends Application<MainApplicationConfiguration> {
 
     final CacheManager cacheManager = CacheManager.getInstance();
     final SpireOgelService ogelService = guiceBundle.getInjector().createChildInjector().getInstance(SpireOgelService.class);
+    environment.jersey().register(SpireOgelResource.class);
+    environment.jersey().register(SpireOgelConditionResource.class);
 
     Cache customCache = cacheManager.getCache(CACHE_NAME);
     SelfPopulatingCache selfPopulatingCache = null;
@@ -63,9 +68,8 @@ public class Main extends Application<MainApplicationConfiguration> {
   public void initialize(Bootstrap<MainApplicationConfiguration> bootstrap) {
     guiceBundle = GuiceBundle.<MainApplicationConfiguration>newBuilder()
         .addModule(new GuiceModule())
-        .enableAutoConfig(getClass().getPackage().getName())
         .setConfigClass(MainApplicationConfiguration.class)
-        .build();
+        .build(Stage.DEVELOPMENT);
 
     bootstrap.addBundle(guiceBundle);
   }

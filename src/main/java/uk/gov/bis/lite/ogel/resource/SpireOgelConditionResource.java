@@ -1,10 +1,8 @@
-package uk.gov.bis.lite.ogel.controller;
+package uk.gov.bis.lite.ogel.resource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
-import org.glassfish.jersey.message.internal.OutboundMessageContext;
 import uk.gov.bis.lite.ogel.model.OgelFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
@@ -25,6 +23,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.soap.SOAPException;
@@ -32,20 +31,20 @@ import javax.xml.xpath.XPathExpressionException;
 
 @Path("/ogel")
 @Produces(MediaType.APPLICATION_JSON)
-public class SpireOgelConditionController {
+public class SpireOgelConditionResource {
 
   private final SpireOgelService ogelService;
   private final LocalOgelService localOgelService;
 
   @Inject
-  public SpireOgelConditionController(SpireOgelService ogelService, LocalOgelService localOgelService) {
+  public SpireOgelConditionResource(SpireOgelService ogelService, LocalOgelService localOgelService) {
     this.ogelService = ogelService;
     this.localOgelService = localOgelService;
   }
 
   @GET
   @Path("{id}")
-  public Response getOgelByOgelID(@NotNull @PathParam("id") String ogelId)
+  public OgelFullView getOgelByOgelID(@NotNull @PathParam("id") String ogelId)
       throws SOAPException, XPathExpressionException, UnsupportedEncodingException {
     final List<LocalOgel> allLocalOgels = (List<LocalOgel>) localOgelService.getAllLocalOgels();
     List<SpireOgel> ogelList = ogelService.getAllOgels();
@@ -57,12 +56,9 @@ public class SpireOgelConditionController {
 
     final Optional<OgelFullView> matchingSpireOgel = viewList.stream().filter(v -> v.getSpireOgel().getId().equalsIgnoreCase(ogelId)).findAny();
     if (matchingSpireOgel.isPresent()) {
-      OutboundMessageContext messageContext = new OutboundMessageContext();
-      messageContext.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-      messageContext.setEntity(matchingSpireOgel.get());
-      return new OutboundJaxrsResponse(Response.Status.OK, messageContext);
+      return matchingSpireOgel.get();
     } else {
-      return Response.status(404).entity("Given Ogel ID is not found").type(MediaType.APPLICATION_JSON_TYPE).build();
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
   }
 

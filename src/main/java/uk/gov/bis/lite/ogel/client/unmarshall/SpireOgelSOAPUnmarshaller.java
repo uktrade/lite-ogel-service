@@ -1,5 +1,6 @@
 package uk.gov.bis.lite.ogel.client.unmarshall;
 
+import com.google.common.base.Stopwatch;
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.OgelCondition;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
@@ -8,6 +9,7 @@ import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPException;
@@ -40,7 +42,7 @@ public class SpireOgelSOAPUnmarshaller {
   public List<SpireOgel> parseSoapBody(NodeList nodeList, XPath xpath) throws XPathExpressionException {
     List<SpireOgel> spireOgelList = new ArrayList<>();
     nodeList = nodeList.item(0).getChildNodes();
-    long tStart = System.currentTimeMillis();
+    final Stopwatch stopwatch = Stopwatch.createStarted();
     for (int i = 0; i < nodeList.getLength(); i++) {
 
       SpireOgel currentOgel = new SpireOgel();
@@ -62,10 +64,8 @@ public class SpireOgelSOAPUnmarshaller {
         spireOgelList.add(currentOgel);
       }
     }
-    long tEnd = System.currentTimeMillis();
-    long tDelta = tEnd - tStart;
-    double elapsedSeconds = tDelta / 1000.0;
-    System.out.println("The unmarshalling of the Spire Response took " + elapsedSeconds + " seconds ");
+    stopwatch.stop();
+    System.out.println("The unmarshalling of the Spire Response took " + stopwatch.elapsed(TimeUnit.SECONDS) + " seconds ");
     return spireOgelList;
   }
 }

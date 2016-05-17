@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.ogel.controller;
+package uk.gov.bis.lite.ogel.resource;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -15,21 +15,20 @@ import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 import java.util.Collections;
 
 import javax.ws.rs.core.Response;
 import javax.xml.soap.SOAPException;
 import javax.xml.xpath.XPathExpressionException;
 
-public class SpireOgelConditionControllerTest {
+public class SpireOgelConditionResourceTest {
 
   private static final SpireOgelService ogelSpireService = Mockito.mock(SpireOgelService.class);
   private static final LocalOgelService ogelLocalService = Mockito.mock(LocalOgelService.class);
 
   @ClassRule
   public static final ResourceTestRule resources = ResourceTestRule.builder()
-      .addResource(new SpireOgelConditionController(ogelSpireService, ogelLocalService))
+      .addResource(new SpireOgelConditionResource(ogelSpireService, ogelLocalService))
       .build();
 
   @Test

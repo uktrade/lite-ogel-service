@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.ogel.controller;
+package uk.gov.bis.lite.ogel.resource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -32,7 +32,7 @@ import java.util.Map;
 import javax.ws.rs.core.Response;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SpireOgelControllerTest {
+public class SpireOgelResourceTest {
 
   private static final SpireOgelService service = Mockito.mock(SpireOgelService.class);
   List<SpireOgel> spireOgels;
@@ -60,7 +60,7 @@ public class SpireOgelControllerTest {
 
   @ClassRule
   public static final ResourceTestRule resources = ResourceTestRule.builder()
-      .addResource(new SpireOgelController(service))
+      .addResource(new SpireOgelResource(service))
       .build();
 
   @Test
