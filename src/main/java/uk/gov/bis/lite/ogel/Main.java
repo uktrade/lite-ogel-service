@@ -11,7 +11,6 @@ import io.dropwizard.setup.Environment;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.constructs.blocking.SelfPopulatingCache;
-import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
@@ -44,12 +43,8 @@ public class Main extends Application<MainApplicationConfiguration> {
     environment.jersey().register(SpireOgelConditionResource.class);
 
     Cache customCache = cacheManager.getCache(CACHE_NAME);
-    SelfPopulatingCache selfPopulatingCache = null;
-    try {
-      selfPopulatingCache = new CacheConfig().createSelfPopulatingCacheFromEhCache(customCache, ogelService, sf.getScheduler());
-    } catch (SchedulerException e) {
-      e.printStackTrace();
-    }
+    SelfPopulatingCache selfPopulatingCache = new CacheConfig().createSelfPopulatingCacheFromEhCache(customCache, ogelService);
+
     cacheManager.replaceCacheWithDecoratedCache(customCache, selfPopulatingCache);
     //populate the cache for the first time
     selfPopulatingCache.get(CACHE_KEY);

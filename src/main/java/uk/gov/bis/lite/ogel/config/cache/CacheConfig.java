@@ -16,7 +16,7 @@ import java.util.List;
 public class CacheConfig {
   private static final Logger LOGGER = LoggerFactory.getLogger(CacheConfig.class);
 
-  public SelfPopulatingCache createSelfPopulatingCacheFromEhCache(Cache customCache, SpireOgelService ogelService, Scheduler scheduler) {
+  public SelfPopulatingCache createSelfPopulatingCacheFromEhCache(Cache customCache, SpireOgelService ogelService) {
     SelfPopulatingCache selfPopulatingCache = new SelfPopulatingCache(customCache, key -> {
       if (CACHE_KEY.equals(key)) {
         try {
