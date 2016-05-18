@@ -15,6 +15,7 @@ import uk.gov.bis.lite.ogel.model.SpireOgel;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
@@ -37,7 +38,7 @@ public class SpireOgelService {
   }
 
   public List<SpireOgel> findOgel(String controlCode, String destinationCountryId, List<CategoryType> activityTypes) {
-    Ehcache cache = cacheManager.getEhcache(Main.CACHE_NAME);
+    final Ehcache cache = cacheManager.getEhcache(Main.CACHE_NAME);
     if (cache.get(CACHE_KEY) != null) {
       List<SpireOgel> ogelsList = (List<SpireOgel>) cache.get(CACHE_KEY).getObjectValue();
       return SpireOgelFilter.filterSpireOgels(ogelsList, controlCode, destinationCountryId, activityTypes);
@@ -46,7 +47,7 @@ public class SpireOgelService {
   }
 
   public List<SpireOgel> getAllOgels() throws XPathExpressionException, SOAPException, UnsupportedEncodingException {
-    Ehcache cache = cacheManager.getEhcache(Main.CACHE_NAME);
+    final Ehcache cache = cacheManager.getEhcache(Main.CACHE_NAME);
     final List<SpireOgel> cacheSpireOgelList = (List<SpireOgel>) cache.get(CACHE_KEY).getObjectValue();
     if (!cacheSpireOgelList.isEmpty()) {
       return cacheSpireOgelList;
@@ -58,6 +59,9 @@ public class SpireOgelService {
   public List<SpireOgel> initializeCache() throws XPathExpressionException, SOAPException, UnsupportedEncodingException {
     final SOAPMessage soapMessage = client.executeRequest();
     return unmarshaller.execute(soapMessage);
+  }
 
+  public Optional<SpireOgel> findSpireOgelById(List<SpireOgel> ogelList, String id){
+    return ogelList.stream().filter(ogel -> ogel.getId().equalsIgnoreCase(id)).findFirst();
   }
 }

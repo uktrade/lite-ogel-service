@@ -49,28 +49,22 @@ public class SpireOgelConditionResource {
     final List<LocalOgel> allLocalOgels = (List<LocalOgel>) localOgelService.getAllLocalOgels();
     List<SpireOgel> ogelList = ogelService.getAllOgels();
 
-    List<OgelFullView> viewList = new ArrayList<>();
+    final Optional<SpireOgel> spireOgelFound = ogelService.findSpireOgelById(ogelList, ogelId);
+    final Optional<LocalOgel> localOgelFound = localOgelService.findLocalOgelById(allLocalOgels, ogelId);
 
-    ogelList.stream().
-        forEach(o -> viewList.add( new OgelFullView(o, (getMatchingLocalOgel(allLocalOgels, o.getId()).orElse(null)))));
-
-    final Optional<OgelFullView> matchingSpireOgel = viewList.stream().filter(v -> v.getSpireOgel().getId().equalsIgnoreCase(ogelId)).findAny();
-    if (matchingSpireOgel.isPresent()) {
-      return matchingSpireOgel.get();
-    } else {
+    if (!spireOgelFound.isPresent() && !localOgelFound.isPresent()) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
+    } else {
+      return new OgelFullView(spireOgelFound.orElseThrow(() -> new WebApplicationException("Spire Ogel Not Found", 404)),
+          localOgelFound.orElseThrow(() -> new WebApplicationException("Local Ogel Not Found", 404)));
     }
-  }
-
-  private Optional<LocalOgel> getMatchingLocalOgel(List<LocalOgel> allLocalOgels, String ogelID) {
-    return allLocalOgels.stream().filter(lo -> ogelID.equalsIgnoreCase(lo.getId())).findAny();
   }
 
   @PUT
   @Path("{id}/summary-data/{conditionFieldName}")
   @Consumes(MediaType.APPLICATION_JSON)
-  public LocalOgel updateOgelCondition(@NotNull @PathParam("id") String ogelId,
-                                       @NotNull @PathParam("conditionFieldName") String conditionFieldName, String message) {
+  public Response updateOgelCondition(@NotNull @PathParam("id") String ogelId,
+                                      @NotNull @PathParam("conditionFieldName") String conditionFieldName, String message) {
     ObjectMapper mapper = new ObjectMapper();
     List<String> updateConditionDataList = new ArrayList<>();
     try {
@@ -80,8 +74,12 @@ public class SpireOgelConditionResource {
       }
     } catch (IOException e) {
       Response.serverError().
-          entity("An unknown error occurred while updating the ogel condition list for ogel " + ogelId + "\n" + e.getMessage()).build();
+          entity("An unknown error occurred updating the ogel condition list for ogel " + ogelId + "\n" + e.getMessage()).build();
     }
-    return localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName);
+    try {
+      return Response.accepted(localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName)).build();
+    } catch (Exception e) {
+      return Response.notModified("Update Request Unsuccessful " + e.getMessage()).build();
+    }
   }
 }

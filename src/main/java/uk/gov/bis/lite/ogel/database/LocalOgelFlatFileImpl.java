@@ -32,9 +32,7 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
 
         for (LocalOgel localOgel : localOgelList) {
           localOgelLookUpList.stream().filter(localLookUp -> localOgel.getName().equalsIgnoreCase(localLookUp.getName()))
-              .forEach(localLookUp -> {
-                localOgel.setId(localLookUp.getId());
-              });
+              .forEach(localLookUp -> localOgel.setId(localLookUp.getId()));
         }
         localOgels = localOgelList;
         return localOgelList;
@@ -55,7 +53,7 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   }
 
   @Override
-  public LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) {
+  public LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) throws Exception {
     final LocalOgel foundOgelCondition = getOgelById(ogelID);
     switch (fieldName) {
       case "canList":
@@ -71,7 +69,8 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
         foundOgelCondition.getSummary().setHowToUseList(updateData);
         break;
       default:
-        LOGGER.error("Update operation unsuccessful. Invalid data field name " + fieldName);
+        LOGGER.error("Update operation unsuccessful. Invalid condition field name " + fieldName);
+        throw new Exception("Invalid local ogel condition parameter " + fieldName);
     }
     return foundOgelCondition;
   }
