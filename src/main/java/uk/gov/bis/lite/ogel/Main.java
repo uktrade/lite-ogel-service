@@ -28,7 +28,7 @@ public class Main extends Application<MainApplicationConfiguration> {
   public static final String CACHE_KEY = "ogelList";
   private GuiceBundle<MainApplicationConfiguration> guiceBundle;
 
-  SchedulerFactory sf = new StdSchedulerFactory();
+  private SchedulerFactory sf = new StdSchedulerFactory();
 
   public static void main(String[] args) throws Exception {
     new Main().run(args);
@@ -64,7 +64,7 @@ public class Main extends Application<MainApplicationConfiguration> {
     guiceBundle = GuiceBundle.<MainApplicationConfiguration>newBuilder()
         .addModule(new GuiceModule())
         .setConfigClass(MainApplicationConfiguration.class)
-        .build(Stage.DEVELOPMENT);
+        .build(Stage.PRODUCTION);
 
     bootstrap.addBundle(guiceBundle);
   }

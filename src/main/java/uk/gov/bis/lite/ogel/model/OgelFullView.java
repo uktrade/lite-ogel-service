@@ -9,8 +9,8 @@ import uk.gov.bis.lite.ogel.model.localOgel.OgelSummary;
 @JsonPropertyOrder({"id", "description", "link", "summary"})
 public class OgelFullView {
 
-  private SpireOgel spireOgel;
-  private LocalOgel localOgel;
+  private final SpireOgel spireOgel;
+  private final LocalOgel localOgel;
 
   public OgelFullView(SpireOgel spireOgel, LocalOgel localOgel) {
     this.spireOgel = spireOgel;
@@ -22,17 +22,9 @@ public class OgelFullView {
     return spireOgel;
   }
 
-  public void setSpireOgel(SpireOgel spireOgel) {
-    this.spireOgel = spireOgel;
-  }
-
   @JsonIgnore
   public LocalOgel getLocalOgel() {
     return localOgel;
-  }
-
-  public void setLocalOgel(LocalOgel localOgel) {
-    this.localOgel = localOgel;
   }
 
   @JsonProperty("id")
