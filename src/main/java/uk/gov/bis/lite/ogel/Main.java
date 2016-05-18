@@ -46,8 +46,6 @@ public class Main extends Application<MainApplicationConfiguration> {
     SelfPopulatingCache selfPopulatingCache = new CacheConfig().createSelfPopulatingCacheFromEhCache(customCache, ogelService);
 
     cacheManager.replaceCacheWithDecoratedCache(customCache, selfPopulatingCache);
-    //populate the cache for the first time
-    selfPopulatingCache.get(CACHE_KEY);
 
     final GuiceJobFactory guiceJobFactory = guiceBundle.getInjector().getInstance(GuiceJobFactory.class);
     final SchedulerConfiguration schedulerConfiguration = guiceBundle.getInjector().getInstance(SchedulerConfiguration.class);
