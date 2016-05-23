@@ -1,9 +1,9 @@
-package uk.gov.bis.lite.ogel.database;
+package uk.gov.bis.lite.ogel.database.dao;
 
 import com.google.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.bis.lite.ogel.database.dao.LocalOgelDAO;
+import uk.gov.bis.lite.ogel.database.ListJsonMapper;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgelLookUp;
 
@@ -73,5 +73,14 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
         throw new Exception("Invalid local ogel condition parameter " + fieldName);
     }
     return foundOgelCondition;
+  }
+
+  @Override
+  public void insertLocalOgel(LocalOgel localOgel) {
+  }
+
+  @Override
+  public void createDatabase() {
+
   }
 }

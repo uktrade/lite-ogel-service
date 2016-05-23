@@ -5,6 +5,7 @@ import static junit.framework.TestCase.assertTrue;
 
 import org.junit.Test;
 import uk.gov.bis.lite.ogel.database.dao.LocalOgelDAO;
+import uk.gov.bis.lite.ogel.database.dao.LocalOgelFlatFileImpl;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 
 import java.util.List;

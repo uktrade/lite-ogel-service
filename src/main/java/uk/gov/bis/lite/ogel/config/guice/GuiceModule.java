@@ -1,6 +1,5 @@
 package uk.gov.bis.lite.ogel.config.guice;
 
-import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import com.fiestacabin.dropwizard.quartz.SchedulerConfiguration;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -10,8 +9,9 @@ import net.sf.ehcache.CacheManager;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
-import uk.gov.bis.lite.ogel.database.LocalOgelFlatFileImpl;
+import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.database.dao.LocalOgelDAO;
+import uk.gov.bis.lite.ogel.database.dao.SqliteLocalOgelDAOImpl;
 
 public class GuiceModule extends AbstractModule {
 
@@ -44,7 +44,7 @@ public class GuiceModule extends AbstractModule {
     System.out.println("Inside Guice Module Config");
     bind(SchedulerConfiguration.class).toInstance(new SchedulerConfiguration("uk.gov.bis.lite.ogel"));
     bind(CacheManager.class).toInstance(CacheManager.create());
-    bind(LocalOgelDAO.class).toInstance(new LocalOgelFlatFileImpl());
+    bind(LocalOgelDAO.class).toInstance(new SqliteLocalOgelDAOImpl());
   }
 
   @Provides

@@ -8,8 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-class ListJsonMapper {
-  List<?> mapToListFromJson(String resourceName, Class expected) throws IOException {
+public class ListJsonMapper {
+  public List<?> mapToListFromJson(String resourceName, Class expected) throws IOException {
     final String pathToLocalSpireOgelResource = this.getClass().getClassLoader().getResource(resourceName).getPath();
     String localOgelDataString = new String(Files.readAllBytes(Paths.get(pathToLocalSpireOgelResource)));
 
