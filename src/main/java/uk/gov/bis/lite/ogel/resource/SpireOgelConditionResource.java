@@ -1,5 +1,9 @@
 package uk.gov.bis.lite.ogel.resource;
 
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -55,8 +59,8 @@ public class SpireOgelConditionResource {
     if (!spireOgelFound.isPresent() && !localOgelFound.isPresent()) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     } else {
-      return new OgelFullView(spireOgelFound.orElseThrow(() -> new WebApplicationException("Spire Ogel Not Found", 404)),
-          localOgelFound.orElseThrow(() -> new WebApplicationException("Local Ogel Not Found", 404)));
+      return new OgelFullView(spireOgelFound.orElseThrow(() -> new WebApplicationException("Spire Ogel Not Found", INTERNAL_SERVER_ERROR)),
+          localOgelFound.orElseThrow(() -> new WebApplicationException("Local Ogel Not Found", INTERNAL_SERVER_ERROR)));
     }
   }
 
@@ -64,7 +68,7 @@ public class SpireOgelConditionResource {
   @Path("{id}/summary-data/{conditionFieldName}")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response updateOgelCondition(@NotNull @PathParam("id") String ogelId,
-                                      @NotNull @PathParam("conditionFieldName") String conditionFieldName, String message) {
+                                      @NotNull @PathParam("conditionFieldName") String conditionFieldName, String message) throws IOException {
     ObjectMapper mapper = new ObjectMapper();
     List<String> updateConditionDataList = new ArrayList<>();
     try {
@@ -73,8 +77,10 @@ public class SpireOgelConditionResource {
         updateConditionDataList.add(jsonConditionArrayIterator.next().asText());
       }
     } catch (IOException e) {
-      Response.serverError().
-          entity("An unknown error occurred updating the ogel condition list for ogel " + ogelId + "\n" + e.getMessage()).build();
+      if (e instanceof JsonProcessingException) {
+        return Response.status(BAD_REQUEST.getStatusCode()).build();
+      }
+      throw e;
     }
     try {
       return Response.accepted(localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName)).build();
