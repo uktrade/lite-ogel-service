@@ -70,7 +70,7 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
         break;
       default:
         LOGGER.error("Update operation unsuccessful. Invalid condition field name " + fieldName);
-        throw new Exception("Invalid local ogel condition parameter " + fieldName);
+        throw new RuntimeException("Invalid local ogel condition parameter " + fieldName);
     }
     return foundOgelCondition;
   }

@@ -20,13 +20,9 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
     List<LocalOgel> ogels = new ArrayList<>();
     try (Connection connection = DriverManager.getConnection(DB_URL);
          PreparedStatement selectOgelSt = connection.prepareStatement("SELECT ID, NAME FROM LOCAL_OGEL");
-         PreparedStatement selectCanConditionSt = connection.prepareStatement("SELECT * FROM CAN_LIST WHERE OGELID=?");
-         PreparedStatement selectCantConditionSt = connection.prepareStatement("SELECT * FROM CANT_LIST WHERE OGELID=?");
-         PreparedStatement selectMustConditionSt = connection.prepareStatement("SELECT * FROM MUST_LIST WHERE OGELID=?");
-         PreparedStatement selectHowToConditionSt = connection.prepareStatement("SELECT * FROM HOW_TO_USE_LIST WHERE OGELID=?");
-         ResultSet rs = selectOgelSt.executeQuery();
+         PreparedStatement selectFromConditionSt = connection.prepareStatement("SELECT * FROM CONDITION_LIST WHERE OGELID=? AND TYPE=?");
+         ResultSet rs = selectOgelSt.executeQuery()
     ) {
-
       LocalOgel ogel;
       while (rs.next()) {
         ogel = new LocalOgel();
@@ -34,10 +30,10 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
         ogel.setName(rs.getString("NAME"));
 
         OgelSummary summary = new OgelSummary();
-        summary.setCanList(getConditions(selectCanConditionSt, ogel.getId()));
-        summary.setCantList(getConditions(selectCantConditionSt, ogel.getId()));
-        summary.setMustList(getConditions(selectMustConditionSt, ogel.getId()));
-        summary.setHowToUseList(getConditions(selectHowToConditionSt, ogel.getId()));
+        summary.setCanList(getConditions(selectFromConditionSt, ogel.getId(), "canList"));
+        summary.setCantList(getConditions(selectFromConditionSt, ogel.getId(), "cantList"));
+        summary.setMustList(getConditions(selectFromConditionSt, ogel.getId(), "mustList"));
+        summary.setHowToUseList(getConditions(selectFromConditionSt, ogel.getId(), "howToUseList"));
 
         ogel.setSummary(summary);
         ogels.add(ogel);
@@ -48,12 +44,13 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
     return ogels;
   }
 
-  private List<String> getConditions(PreparedStatement st, String ogelId) throws SQLException {
+  private List<String> getConditions(PreparedStatement st, String ogelId, String type) throws SQLException {
     st.setString(1, ogelId);
+    st.setString(2, type);
     final ResultSet resultSet = st.executeQuery();
     List<String> conditionList = new ArrayList<>();
     while (resultSet.next()) {
-      final String condition = resultSet.getString(2);
+      final String condition = resultSet.getString(3);
       conditionList.add(condition);
     }
     return conditionList;
@@ -61,12 +58,29 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
 
   @Override
   public LocalOgel getOgelById(String ogelID) {
-    return null;
+    return getAllLocalOgels().stream().filter(o -> o.getId().equalsIgnoreCase(ogelID)).findFirst().
+        orElseThrow(() -> new RuntimeException("Local Spire Could not be found with given id " + ogelID));
   }
 
   @Override
   public LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) throws Exception {
-    return null;
+    try (Connection connection = DriverManager.getConnection(DB_URL);
+         PreparedStatement deletePS = connection.prepareStatement("DELETE FROM CONDITION_LIST WHERE OGELID = ? AND TYPE = ?");
+         PreparedStatement insertPS = connection.prepareStatement("INSERT INTO CONDITION_LIST(OGELID, TYPE, CONDITION) VALUES (?, ?, ?)")) {
+      connection.setAutoCommit(false);
+      deletePS.setString(1, ogelID);
+      deletePS.setString(2, fieldName);
+      deletePS.executeUpdate();
+
+      updateData.stream().forEach(u -> insertConditionListForOgel(insertPS, ogelID, fieldName, u));
+      /*insertPS.setString(1, ogelID);
+      insertPS.setString(2, fieldName);
+      insertPS.setString(3, updateData.get(0));
+      insertPS.executeUpdate();*/
+
+      connection.commit();
+    }
+    return getOgelById(ogelID);
   }
 
   @Override
@@ -75,25 +89,22 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
         Connection connection = DriverManager.getConnection(DB_URL);
 
         PreparedStatement statement = connection.prepareStatement("INSERT INTO LOCAL_OGEL(ID, NAME) VALUES (?, ?)");
-        PreparedStatement canListStatement = connection.prepareStatement("INSERT INTO CAN_LIST(OGELID, CONDITION) VALUES (?, ?)");
-        PreparedStatement cantListStatement = connection.prepareStatement("INSERT INTO CANT_LIST(OGELID, CONDITION) VALUES (?, ?)");
-        PreparedStatement mustListStatement = connection.prepareStatement("INSERT INTO MUST_LIST(OGELID, CONDITION) VALUES (?, ?)");
-        PreparedStatement howToDoListStatement = connection.prepareStatement("INSERT INTO HOW_TO_USE_LIST(OGELID, CONDITION) VALUES (?, ?)");
+        PreparedStatement conditionListPS = connection.prepareStatement("INSERT INTO CONDITION_LIST(OGELID, TYPE, CONDITION) VALUES (?, ?, ?)");
     ) {
       statement.setString(1, localOgel.getId());
       statement.setString(2, localOgel.getName());
       statement.executeUpdate();
       localOgel.getSummary().getCanList().stream().forEach(condition -> {
-        insertConditionListForOgel(canListStatement, localOgel.getId(), condition);
+        insertConditionListForOgel(conditionListPS, localOgel.getId(), "canList", condition);
       });
       localOgel.getSummary().getCantList().stream().forEach(condition -> {
-        insertConditionListForOgel(cantListStatement, localOgel.getId(), condition);
+        insertConditionListForOgel(conditionListPS, localOgel.getId(), "cantList", condition);
       });
       localOgel.getSummary().getMustList().stream().forEach(condition -> {
-        insertConditionListForOgel(mustListStatement, localOgel.getId(), condition);
+        insertConditionListForOgel(conditionListPS, localOgel.getId(), "mustList", condition);
       });
       localOgel.getSummary().getHowToUseList().stream().forEach(condition -> {
-        insertConditionListForOgel(howToDoListStatement, localOgel.getId(), condition);
+        insertConditionListForOgel(conditionListPS, localOgel.getId(), "howToUseList", condition);
       });
     } catch (SQLException e) {
       e.printStackTrace();
@@ -105,25 +116,20 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
     try (
         Connection connection = DriverManager.getConnection(DB_URL);
         PreparedStatement localOgelTableStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS LOCAL_OGEL(ID TEXT, NAME TEXT)");
-        PreparedStatement canListTableStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS CAN_LIST(OGELID TEXT, CONDITION TEXT)");
-        PreparedStatement cantListTableStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS CANT_LIST(OGELID TEXT, CONDITION TEXT)");
-        PreparedStatement mustListTableStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS MUST_LIST(OGELID TEXT, CONDITION TEXT)");
-        PreparedStatement howToUseListTableStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS HOW_TO_USE_LIST(OGELID TEXT, CONDITION TEXT)");
+        PreparedStatement canListTableStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS CONDITION_LIST(OGELID TEXT, TYPE TEXT, CONDITION TEXT)")
     ) {
       localOgelTableStatement.execute();
       canListTableStatement.execute();
-      cantListTableStatement.execute();
-      mustListTableStatement.execute();
-      howToUseListTableStatement.execute();
     } catch (SQLException e) {
       e.printStackTrace();
     }
   }
 
-  private void insertConditionListForOgel(PreparedStatement ps, String id, String condition) {
+  private void insertConditionListForOgel(PreparedStatement ps, String id, String type, String condition) {
     try {
       ps.setString(1, id);
-      ps.setString(2, condition);
+      ps.setString(2, type);
+      ps.setString(3, condition);
       ps.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();
