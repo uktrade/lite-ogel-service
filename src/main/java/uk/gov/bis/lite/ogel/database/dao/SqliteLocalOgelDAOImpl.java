@@ -56,7 +56,6 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   public void insertLocalOgel(LocalOgel localOgel) {
     try (final Handle handle = jdbi.open()) {
       handle.execute("INSERT INTO LOCAL_OGEL(ID, NAME) VALUES (?, ?)", localOgel.getId(), localOgel.getName());
-      handle.execute("INSERT INTO CONDITION_LIST(OGELID, TYPE, CONDITION) VALUES (?, ?, ?)", localOgel.getId(), "canList", "");
       localOgel.getSummary().getCanList().stream().forEach(condition -> {
         insertConditionListForOgel(handle, localOgel.getId(), "canList", condition);
       });
@@ -80,7 +79,6 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   @Override
   @SqlUpdate("CREATE TABLE IF NOT EXISTS CONDITION_LIST(OGELID TEXT, TYPE TEXT, CONDITION TEXT)")
   public void createConditionListTable() {
-
   }
 
   private void insertConditionListForOgel(Handle handle, String id, String type, String condition) {

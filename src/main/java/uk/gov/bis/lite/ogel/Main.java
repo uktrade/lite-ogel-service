@@ -58,9 +58,10 @@ public class Main extends Application<MainApplicationConfiguration> {
     final Handle handle = jdbi.open();
     final LocalOgelDAO localOgelDAO = handle.attach(SqliteLocalOgelDAOImpl.class);
     try {
-      populateLocalOgelDatabase(localOgelDAO);
+      final List<LocalOgel> localOgels = LocalOgelDBUtil.retrieveAllOgelsFromJSON();
+      localOgels.stream().forEach(localOgelDAO::insertLocalOgel);
     } catch (IOException e) {
-      LOGGER.error("An error occurred trying to initialize the database", e);
+      LOGGER.error("An error occurred trying to populating the database", e);
     }
 
     environment.jersey().register(SpireOgelResource.class);
@@ -101,12 +102,5 @@ public class Main extends Application<MainApplicationConfiguration> {
         return new FlywayFactory(); //should create a default flyway factory
       }
     });*/
-  }
-
-  private void populateLocalOgelDatabase(LocalOgelDAO localOgelDAO) throws IOException {
-    localOgelDAO.createLocalOgelTable();
-    localOgelDAO.createConditionListTable();
-    final List<LocalOgel> localOgels = LocalOgelDBUtil.retrieveAllOgelsFromJSON();
-    localOgels.stream().forEach(localOgelDAO::insertLocalOgel);
   }
 }
