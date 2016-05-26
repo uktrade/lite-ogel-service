@@ -21,14 +21,14 @@ import javax.ws.rs.core.Response;
 import javax.xml.soap.SOAPException;
 import javax.xml.xpath.XPathExpressionException;
 
-public class SpireOgelConditionResourceTest {
+public class SpireMergedOgelViewResourceTest {
 
   private static final SpireOgelService ogelSpireService = Mockito.mock(SpireOgelService.class);
   private static final LocalOgelService ogelLocalService = Mockito.mock(LocalOgelService.class);
 
   @ClassRule
   public static final ResourceTestRule resources = ResourceTestRule.builder()
-      .addResource(new SpireOgelConditionResource(ogelSpireService, ogelLocalService))
+      .addResource(new SpireMergedOgelViewResource(ogelSpireService, ogelLocalService))
       .build();
 
   @Test

@@ -9,6 +9,7 @@ import uk.gov.bis.lite.ogel.model.localOgel.LocalOgelLookUp;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Singleton
 public class LocalOgelFlatFileImpl implements LocalOgelDAO {
@@ -18,7 +19,7 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
 
   private static List<LocalOgel> localOgels;
 
-  @Override
+  //@Override
   public List<LocalOgel> getAllLocalOgels() {
     if (localOgels == null) {
       try {
@@ -44,35 +45,34 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   }
 
   @Override
-  public LocalOgel getOgelById(String ogelID) {
+  public Optional<LocalOgel> getOgelById(String ogelID) {
     if (localOgels == null) {
       getAllLocalOgels();
     }
-    return localOgels.stream().filter(o -> o.getId().equalsIgnoreCase(ogelID)).findAny()
-        .orElseThrow(() -> new RuntimeException("Local Spire Could not be found with given id " + ogelID));
+    return localOgels.stream().filter(o -> o.getId().equalsIgnoreCase(ogelID)).findFirst();
   }
 
   @Override
   public LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) throws Exception {
-    final LocalOgel foundOgelCondition = getOgelById(ogelID);
+    final Optional<LocalOgel> foundOgelCondition = getOgelById(ogelID);
     switch (fieldName) {
       case "canList":
-        foundOgelCondition.getSummary().setCanList(updateData);
+        foundOgelCondition.get().getSummary().setCanList(updateData);
         break;
       case "cantList":
-        foundOgelCondition.getSummary().setCantList(updateData);
+        foundOgelCondition.get().getSummary().setCantList(updateData);
         break;
       case "mustList":
-        foundOgelCondition.getSummary().setMustList(updateData);
+        foundOgelCondition.get().getSummary().setMustList(updateData);
         break;
       case "howToUseList":
-        foundOgelCondition.getSummary().setHowToUseList(updateData);
+        foundOgelCondition.get().getSummary().setHowToUseList(updateData);
         break;
       default:
         LOGGER.error("Update operation unsuccessful. Invalid condition field name " + fieldName);
         throw new RuntimeException("Invalid local ogel condition parameter " + fieldName);
     }
-    return foundOgelCondition;
+    return foundOgelCondition.get();
   }
 
   @Override
@@ -80,7 +80,12 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   }
 
   @Override
-  public void createDatabase() {
+  public void createLocalOgelTable() {
+
+  }
+
+  @Override
+  public void createConditionListTable() {
 
   }
 }

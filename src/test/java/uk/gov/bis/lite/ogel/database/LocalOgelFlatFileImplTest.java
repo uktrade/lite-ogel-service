@@ -4,7 +4,6 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
 import org.junit.Test;
-import uk.gov.bis.lite.ogel.database.dao.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.database.dao.LocalOgelFlatFileImpl;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 
@@ -12,7 +11,7 @@ import java.util.List;
 
 public class LocalOgelFlatFileImplTest {
 
-  private LocalOgelDAO populator = new LocalOgelFlatFileImpl();
+  private LocalOgelFlatFileImpl populator = new LocalOgelFlatFileImpl();
 
   @Test
   public void testDatabasePopulation(){

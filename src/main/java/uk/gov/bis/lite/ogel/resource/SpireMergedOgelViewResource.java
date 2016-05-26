@@ -35,13 +35,13 @@ import javax.xml.xpath.XPathExpressionException;
 
 @Path("/ogel")
 @Produces(MediaType.APPLICATION_JSON)
-public class SpireOgelConditionResource {
+public class SpireMergedOgelViewResource {
 
   private final SpireOgelService ogelService;
   private final LocalOgelService localOgelService;
 
   @Inject
-  public SpireOgelConditionResource(SpireOgelService ogelService, LocalOgelService localOgelService) {
+  public SpireMergedOgelViewResource(SpireOgelService ogelService, LocalOgelService localOgelService) {
     this.ogelService = ogelService;
     this.localOgelService = localOgelService;
   }
@@ -50,11 +50,10 @@ public class SpireOgelConditionResource {
   @Path("{id}")
   public OgelFullView getOgelByOgelID(@NotNull @PathParam("id") String ogelId)
       throws SOAPException, XPathExpressionException, UnsupportedEncodingException {
-    final List<LocalOgel> allLocalOgels = (List<LocalOgel>) localOgelService.getAllLocalOgels();
     List<SpireOgel> ogelList = ogelService.getAllOgels();
 
     final Optional<SpireOgel> spireOgelFound = ogelService.findSpireOgelById(ogelList, ogelId);
-    final Optional<LocalOgel> localOgelFound = localOgelService.findLocalOgelById(allLocalOgels, ogelId);
+    final Optional<LocalOgel> localOgelFound = localOgelService.findLocalOgelById(ogelId);
 
     if (!spireOgelFound.isPresent() && !localOgelFound.isPresent()) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);

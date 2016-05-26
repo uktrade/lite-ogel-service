@@ -14,15 +14,11 @@ public class LocalOgelService {
   @Inject
   private LocalOgelDAO localOgelDAO;
 
-  public List<?> getAllLocalOgels() {
-    return localOgelDAO.getAllLocalOgels();
-  }
-
   public LocalOgel updateSpireOgelCondition(String ogelID, List<String> newConditionList, String conditionField) throws Exception {
     return localOgelDAO.updateOgelConditionList(ogelID, newConditionList, conditionField);
   }
 
-  public Optional<LocalOgel> findLocalOgelById(List<LocalOgel> ogelList, String id) {
-    return ogelList.stream().filter(lo -> id.equalsIgnoreCase(lo.getId())).findAny();
+  public Optional<LocalOgel> findLocalOgelById(String id) {
+    return localOgelDAO.getOgelById(id);
   }
 }
