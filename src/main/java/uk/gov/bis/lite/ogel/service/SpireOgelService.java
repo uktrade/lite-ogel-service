@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
-import org.apache.log4j.Logger;
 import uk.gov.bis.lite.ogel.Main;
 import uk.gov.bis.lite.ogel.client.SpireOgelClient;
 import uk.gov.bis.lite.ogel.client.unmarshall.SpireOgelSOAPUnmarshaller;
@@ -15,7 +14,6 @@ import uk.gov.bis.lite.ogel.model.SpireOgel;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Optional;
 
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
@@ -25,8 +23,6 @@ import javax.xml.xpath.XPathExpressionException;
 public class SpireOgelService {
   private SpireOgelClient client;
   private SpireOgelSOAPUnmarshaller unmarshaller;
-
-  final static Logger logger = Logger.getLogger(SpireOgelService.class);
 
   @Inject
   private CacheManager cacheManager;
@@ -61,7 +57,7 @@ public class SpireOgelService {
     return unmarshaller.execute(soapMessage);
   }
 
-  public Optional<SpireOgel> findSpireOgelById(List<SpireOgel> ogelList, String id){
-    return ogelList.stream().filter(ogel -> ogel.getId().equalsIgnoreCase(id)).findFirst();
+  public SpireOgel findSpireOgelById(List<SpireOgel> ogelList, String id) {
+    return ogelList.stream().filter(ogel -> ogel.getId().equalsIgnoreCase(id)).findFirst().orElse(null);
   }
 }

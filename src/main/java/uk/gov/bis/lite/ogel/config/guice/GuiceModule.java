@@ -5,10 +5,13 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+import io.dropwizard.jdbi.DBIFactory;
+import io.dropwizard.setup.Environment;
 import net.sf.ehcache.CacheManager;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
+import org.skife.jdbi.v2.DBI;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.database.dao.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.database.dao.SqliteLocalOgelDAOImpl;
@@ -44,7 +47,14 @@ public class GuiceModule extends AbstractModule {
     System.out.println("Inside Guice Module Config");
     bind(SchedulerConfiguration.class).toInstance(new SchedulerConfiguration("uk.gov.bis.lite.ogel"));
     bind(CacheManager.class).toInstance(CacheManager.create());
-    bind(LocalOgelDAO.class).toInstance(new SqliteLocalOgelDAOImpl());
+    bind(LocalOgelDAO.class).to(SqliteLocalOgelDAOImpl.class);
+  }
+
+  @Provides
+  @Named("jdbi")
+  public DBI provideDataSourceJdbi(Environment environment, MainApplicationConfiguration configuration) {
+    final DBIFactory factory = new DBIFactory();
+    return factory.build(environment, configuration.getDataSourceFactory(), "sqlite");
   }
 
   @Provides

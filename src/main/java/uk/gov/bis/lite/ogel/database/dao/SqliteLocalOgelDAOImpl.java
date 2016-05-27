@@ -1,26 +1,44 @@
 package uk.gov.bis.lite.ogel.database.dao;
 
-import static uk.gov.bis.lite.ogel.Main.jdbi;
-
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
-import org.skife.jdbi.v2.sqlobject.SqlUpdate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.gov.bis.lite.ogel.Main;
+import uk.gov.bis.lite.ogel.database.utility.LocalOgelDBUtil;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.OgelSummary;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
+  private DBI jdbi;
+  private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+
+  @Inject
+  public SqliteLocalOgelDAOImpl(@Named("jdbi") DBI jdbi) {
+    this.jdbi = jdbi;
+    try {
+      final List<LocalOgel> localOgels = LocalOgelDBUtil.retrieveAllOgelsFromJSON();
+      localOgels.stream().forEach(o -> insertLocalOgel(o));
+    } catch (IOException e) {
+      e.printStackTrace();
+      LOGGER.warn("An error occurred while populating the database ", e);
+    }
+  }
 
   @Override
-  public Optional<LocalOgel> getOgelById(String ogelID) {
+  public LocalOgel getOgelById(String ogelID) {
     LocalOgel ogel = new LocalOgel();
     try (final Handle handle = jdbi.open()) {
       final Map<String, Object> objectMap = handle.createQuery("SELECT ID, NAME FROM LOCAL_OGEL WHERE ID=:id").bind("id", ogelID).first();
-      if (objectMap.get("id") == null) {
-        return Optional.empty();
+      if (objectMap.isEmpty()) {
+        return null;
       }
       ogel.setId(objectMap.get("id").toString());
       ogel.setName(objectMap.get("name").toString());
@@ -30,7 +48,7 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
       summary.setMustList(getConditionList(handle, ogelID, "mustList"));
       summary.setHowToUseList(getConditionList(handle, ogelID, "howToUseList"));
       ogel.setSummary(summary);
-      return Optional.of(ogel);
+      return ogel;
     }
   }
 
@@ -49,7 +67,7 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
       updateData.stream().forEach(u -> insertConditionListForOgel(handle, ogelID, fieldName, u));
       handle.getConnection().commit();
     }
-    return getOgelById(ogelID).get();
+    return getOgelById(ogelID);
   }
 
   @Override
@@ -69,16 +87,6 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
         insertConditionListForOgel(handle, localOgel.getId(), "howToUseList", condition);
       });
     }
-  }
-
-  @Override
-  @SqlUpdate("CREATE TABLE IF NOT EXISTS LOCAL_OGEL(ID TEXT, NAME TEXT)")
-  public void createLocalOgelTable() {
-  }
-
-  @Override
-  @SqlUpdate("CREATE TABLE IF NOT EXISTS CONDITION_LIST(OGELID TEXT, TYPE TEXT, CONDITION TEXT)")
-  public void createConditionListTable() {
   }
 
   private void insertConditionListForOgel(Handle handle, String id, String type, String condition) {

@@ -1,14 +1,11 @@
 package uk.gov.bis.lite.ogel.service;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import uk.gov.bis.lite.ogel.database.dao.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 
 import java.util.List;
-import java.util.Optional;
 
-@Singleton
 public class LocalOgelService {
 
   @Inject
@@ -18,7 +15,7 @@ public class LocalOgelService {
     return localOgelDAO.updateOgelConditionList(ogelID, newConditionList, conditionField);
   }
 
-  public Optional<LocalOgel> findLocalOgelById(String id) {
+  public LocalOgel findLocalOgelById(String id) {
     return localOgelDAO.getOgelById(id);
   }
 }
