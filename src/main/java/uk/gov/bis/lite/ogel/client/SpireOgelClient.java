@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.bis.lite.ogel.database.exception.SOAPParseException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,45 +37,57 @@ public class SpireOgelClient {
     this.soapClientPassword = clientPassword;
   }
 
-  public SOAPMessage executeRequest() throws SOAPException, UnsupportedEncodingException {
+  public SOAPMessage executeRequest() {
 
-    SOAPConnectionFactory soapConnectionFactory = SOAPConnectionFactory.newInstance();
-    SOAPConnection soapConnection = soapConnectionFactory.createConnection();
+    SOAPConnectionFactory soapConnectionFactory;
+    try {
+      soapConnectionFactory = SOAPConnectionFactory.newInstance();
+      SOAPConnection soapConnection = soapConnectionFactory.createConnection();
 
-    SOAPMessage request = createRequest();
-    LOGGER.debug(messageAsString(request));
+      SOAPMessage request = createRequest();
+      LOGGER.debug(messageAsString(request));
 
-    final Stopwatch stopwatch = Stopwatch.createStarted();
-    SOAPMessage response = soapConnection.call(request, soapUrl);
-    stopwatch.stop();
-    System.out.println("New Ogel list has been retrieved from Spire in " + stopwatch.elapsed(TimeUnit.SECONDS) + " seconds ");
-    LOGGER.debug(messageAsString(response));
-
-    return response;
+      final Stopwatch stopwatch = Stopwatch.createStarted();
+      SOAPMessage response = soapConnection.call(request, soapUrl);
+      stopwatch.stop();
+      System.out.println("New Ogel list has been retrieved from Spire in " + stopwatch.elapsed(TimeUnit.SECONDS) + " seconds ");
+      LOGGER.debug(messageAsString(response));
+      return response;
+    } catch (SOAPException e) {
+      throw new SOAPParseException("An error occurred establishing the connection with SOAP client", e);
+    }
   }
 
-  private SOAPMessage createRequest() throws SOAPException, UnsupportedEncodingException {
+  private SOAPMessage createRequest() {
 
-    MessageFactory messageFactory = MessageFactory.newInstance();
-    SOAPMessage soapMessage = messageFactory.createMessage();
-    SOAPPart soapPart = soapMessage.getSOAPPart();
+    MessageFactory messageFactory;
+    try {
+      messageFactory = MessageFactory.newInstance();
 
-    // SOAP Envelope
-    SOAPEnvelope envelope = soapPart.getEnvelope();
-    envelope.addNamespaceDeclaration("spir", "http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_OGEL_TYPES/");
+      SOAPMessage soapMessage = messageFactory.createMessage();
+      SOAPPart soapPart = soapMessage.getSOAPPart();
 
-    // SOAP Body
-    SOAPBody soapBody = envelope.getBody();
-    soapBody.addChildElement("getOgelTypes", "spir");
+      // SOAP Envelope
+      SOAPEnvelope envelope = soapPart.getEnvelope();
+      envelope.addNamespaceDeclaration("spir", "http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_OGEL_TYPES/");
 
-    MimeHeaders headers = soapMessage.getMimeHeaders();
-    headers.addHeader("SOAPAction", "http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_OGEL_TYPES/" + "getCompanies");
+      // SOAP Body
+      SOAPBody soapBody = envelope.getBody();
+      soapBody.addChildElement("getOgelTypes", "spir");
 
-    String authorization = Base64.getEncoder().encodeToString((soapClientUserName + ":" + soapClientPassword).getBytes("utf-8"));
-    headers.addHeader("Authorization", "Basic " + authorization);
-    soapMessage.saveChanges();
+      MimeHeaders headers = soapMessage.getMimeHeaders();
+      headers.addHeader("SOAPAction", "http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_OGEL_TYPES/" + "getCompanies");
 
-    return soapMessage;
+      String authorization = Base64.getEncoder().encodeToString((soapClientUserName + ":" + soapClientPassword).getBytes("utf-8"));
+      headers.addHeader("Authorization", "Basic " + authorization);
+      soapMessage.saveChanges();
+
+      return soapMessage;
+    } catch (SOAPException e) {
+      throw new SOAPParseException("An error occurred creating the SOAP request for retrieving Spire Ogels ", e);
+    } catch (UnsupportedEncodingException e) {
+      throw new SOAPParseException("Unsupported Encoding type", e);
+    }
   }
 
 

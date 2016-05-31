@@ -1,8 +1,8 @@
 package uk.gov.bis.lite.ogel.database.exception;
 
-public class LocalOgelNotFoundException extends Exception {
+public class LocalOgelNotFoundException extends RuntimeException {
 
-  public LocalOgelNotFoundException() {
-    super("An unexpected error occurred");
+  public LocalOgelNotFoundException(String ogelID) {
+    super("An unexpected error occurred. Failed to find local OGEL entry with ID: " + ogelID);
   }
 }

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
 import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
+import uk.gov.bis.lite.ogel.database.exception.SOAPParseException;
 import uk.gov.bis.lite.ogel.model.OgelFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
@@ -15,7 +16,6 @@ import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,8 +29,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.soap.SOAPException;
-import javax.xml.xpath.XPathExpressionException;
 
 @Path("/ogel")
 @Produces(MediaType.APPLICATION_JSON)
@@ -49,7 +47,7 @@ public class SpireMergedOgelViewResource {
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public OgelFullView getOgelByOgelID(@NotNull @PathParam("id") String ogelId)
-      throws SOAPException, XPathExpressionException, UnsupportedEncodingException, OgelNotFoundException, LocalOgelNotFoundException {
+      throws OgelNotFoundException, LocalOgelNotFoundException, SOAPParseException {
     List<SpireOgel> ogelList = ogelService.getAllOgels();
     final SpireOgel foundSpireOgel = ogelService.findSpireOgelById(ogelList, ogelId);
     if (foundSpireOgel == null) {
@@ -57,7 +55,7 @@ public class SpireMergedOgelViewResource {
     }
     LocalOgel localOgelFound = localOgelService.findLocalOgelById(ogelId);
     if (localOgelFound == null) {
-      throw new LocalOgelNotFoundException();
+      throw new LocalOgelNotFoundException(ogelId);
     }
     OgelFullView ogelFullView = new OgelFullView();
     ogelFullView.setLocalOgel(localOgelFound);

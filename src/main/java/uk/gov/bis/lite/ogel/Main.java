@@ -21,6 +21,7 @@ import uk.gov.bis.lite.ogel.config.cache.CacheConfig;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
 import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundExceptionHandler;
 import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundExceptionHandler;
+import uk.gov.bis.lite.ogel.database.exception.SOAPParseExceptionHandler;
 import uk.gov.bis.lite.ogel.resource.SpireMergedOgelViewResource;
 import uk.gov.bis.lite.ogel.resource.SpireOgelResource;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
@@ -46,6 +47,7 @@ public class Main extends Application<MainApplicationConfiguration> {
     environment.jersey().register(SpireMergedOgelViewResource.class);
     environment.jersey().register(OgelNotFoundExceptionHandler.class);
     environment.jersey().register(LocalOgelNotFoundExceptionHandler.class);
+    environment.jersey().register(SOAPParseExceptionHandler.class);
 
     Cache customCache = cacheManager.getCache(CACHE_NAME);
     SelfPopulatingCache selfPopulatingCache = new CacheConfig().createSelfPopulatingCacheFromEhCache(customCache, ogelService);

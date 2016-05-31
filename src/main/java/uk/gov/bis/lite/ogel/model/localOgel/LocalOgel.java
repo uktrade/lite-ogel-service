@@ -10,7 +10,7 @@ public class LocalOgel {
 
   private String id;
   private String name;
-  private OgelSummary summary;
+  private OgelConditionSummary summary;
 
   public String getId() {
     return id;
@@ -28,11 +28,11 @@ public class LocalOgel {
     this.name = name;
   }
 
-  public OgelSummary getSummary() {
+  public OgelConditionSummary getSummary() {
     return summary;
   }
 
-  public void setSummary(OgelSummary summary) {
+  public void setSummary(OgelConditionSummary summary) {
     this.summary = summary;
   }
 }

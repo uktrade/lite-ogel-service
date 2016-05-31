@@ -12,12 +12,9 @@ import uk.gov.bis.lite.ogel.client.unmarshall.SpireOgelSOAPUnmarshaller;
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.xpath.XPathExpressionException;
 
 @Singleton
 public class SpireOgelService {
@@ -42,7 +39,7 @@ public class SpireOgelService {
     return null;
   }
 
-  public List<SpireOgel> getAllOgels() throws XPathExpressionException, SOAPException, UnsupportedEncodingException {
+  public List<SpireOgel> getAllOgels() {
     final Ehcache cache = cacheManager.getEhcache(Main.CACHE_NAME);
     final List<SpireOgel> cacheSpireOgelList = (List<SpireOgel>) cache.get(CACHE_KEY).getObjectValue();
     if (!cacheSpireOgelList.isEmpty()) {
@@ -52,7 +49,7 @@ public class SpireOgelService {
     }
   }
 
-  public List<SpireOgel> initializeCache() throws XPathExpressionException, SOAPException, UnsupportedEncodingException {
+  public List<SpireOgel> initializeCache()  {
     final SOAPMessage soapMessage = client.executeRequest();
     return unmarshaller.execute(soapMessage);
   }

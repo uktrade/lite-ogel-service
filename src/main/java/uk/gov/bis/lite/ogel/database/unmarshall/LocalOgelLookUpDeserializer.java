@@ -1,12 +1,11 @@
 package uk.gov.bis.lite.ogel.database.unmarshall;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.OgelSummary;
+import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ public class LocalOgelLookUpDeserializer extends JsonDeserializer<LocalOgel> {
   @Override
   public LocalOgel deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
     LocalOgel localOgel = new LocalOgel();
-    OgelSummary summary = new OgelSummary();
+    OgelConditionSummary summary = new OgelConditionSummary();
     JsonNode node = jp.getCodec().readTree(jp);
     localOgel.setName(node.get("name").asText());
     List<String> canList = getConditionList(node, "canList");

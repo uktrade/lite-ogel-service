@@ -17,7 +17,7 @@ import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundExceptionHandler;
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.OgelSummary;
+import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
@@ -48,7 +48,7 @@ public class SpireMergedOgelViewResourceTest {
     spireOgel.setCategory(CategoryType.REPAIR);
     LocalOgel localOgel = new LocalOgel();
     localOgel.setId("OGL1");
-    OgelSummary summary = new OgelSummary();
+    OgelConditionSummary summary = new OgelConditionSummary();
     summary.setCanList(Arrays.asList("cando1", "cando2", "cando3"));
     summary.setCantList(Arrays.asList("illegal1", "illegal2"));
     summary.setMustList(Arrays.asList("mustdo1", "mustdo2"));

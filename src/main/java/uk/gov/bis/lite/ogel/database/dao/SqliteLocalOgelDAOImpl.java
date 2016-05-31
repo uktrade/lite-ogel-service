@@ -4,12 +4,13 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
+import org.skife.jdbi.v2.sqlobject.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.Main;
 import uk.gov.bis.lite.ogel.database.utility.LocalOgelDBUtil;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.OgelSummary;
+import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
-  private DBI jdbi;
+  private final DBI jdbi;
   private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
   @Inject
@@ -42,35 +43,40 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
       }
       ogel.setId(objectMap.get("id").toString());
       ogel.setName(objectMap.get("name").toString());
-      OgelSummary summary = new OgelSummary();
-      summary.setCanList(getConditionList(handle, ogelID, "canList"));
-      summary.setCantList(getConditionList(handle, ogelID, "cantList"));
-      summary.setMustList(getConditionList(handle, ogelID, "mustList"));
-      summary.setHowToUseList(getConditionList(handle, ogelID, "howToUseList"));
+      OgelConditionSummary summary = getConditionList(handle, ogelID);
       ogel.setSummary(summary);
       return ogel;
     }
   }
 
-  private List<String> getConditionList(Handle handler, String ogelID, String type) {
-    final List<Map<String, Object>> list = handler.createQuery("SELECT * FROM CONDITION_LIST WHERE OGELID=:id AND TYPE=:type")
-        .bind("id", ogelID).bind("type", type).list();
-    return list.stream().map(cond -> cond.get("condition").toString()).collect(Collectors.toList());
+  private OgelConditionSummary getConditionList(Handle handler, String ogelID) {
+    final List<Map<String, Object>> list = handler.createQuery("SELECT * FROM CONDITION_LIST WHERE OGELID=:id ORDER BY ROWID")
+        .bind("id", ogelID).list();
+    OgelConditionSummary summary = new OgelConditionSummary();
+    summary.setCanList(getSpecificConditionList("canList", list));
+    summary.setCantList(getSpecificConditionList("cantList", list));
+    summary.setMustList(getSpecificConditionList("mustList", list));
+    summary.setHowToUseList(getSpecificConditionList("howToUseList", list));
+    return summary;
+  }
+
+  private List<String> getSpecificConditionList(String conditionType, List<Map<String, Object>> list) {
+    return list.stream().filter(c -> c.get("type").toString().equalsIgnoreCase(conditionType))
+        .map(cond -> cond.get("condition").toString()).collect(Collectors.toList());
   }
 
   @Override
+  @Transaction
   public LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) throws Exception {
     try (final Handle handle = jdbi.open()) {
-
-      handle.getConnection().setAutoCommit(false);
       handle.execute("DELETE FROM CONDITION_LIST WHERE OGELID = ? AND TYPE = ?", ogelID, fieldName);
       updateData.stream().forEach(u -> insertConditionListForOgel(handle, ogelID, fieldName, u));
-      handle.getConnection().commit();
     }
     return getOgelById(ogelID);
   }
 
   @Override
+  @Transaction
   public void insertLocalOgel(LocalOgel localOgel) {
     try (final Handle handle = jdbi.open()) {
       handle.execute("INSERT INTO LOCAL_OGEL(ID, NAME) VALUES (?, ?)", localOgel.getId(), localOgel.getName());
