@@ -8,6 +8,7 @@ import org.skife.jdbi.v2.sqlobject.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.Main;
+import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.database.utility.LocalOgelDBUtil;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
@@ -39,7 +40,7 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
     try (final Handle handle = jdbi.open()) {
       final Map<String, Object> objectMap = handle.createQuery("SELECT ID, NAME FROM LOCAL_OGEL WHERE ID=:id").bind("id", ogelID).first();
       if (objectMap.isEmpty()) {
-        return null;
+        throw new OgelNotFoundException(ogelID);
       }
       ogel.setId(objectMap.get("id").toString());
       ogel.setName(objectMap.get("name").toString());
