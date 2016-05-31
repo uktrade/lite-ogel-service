@@ -19,8 +19,7 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
 
   private static List<LocalOgel> localOgels;
 
-  //@Override
-  public List<LocalOgel> getAllLocalOgels() {
+  public List <LocalOgel> getAllLocalOgels() {
     if (localOgels == null) {
       try {
         LOGGER.info("Storing the values retrieved from {}", LOCAL_OGEL_CONDITION_DATA_FILE);

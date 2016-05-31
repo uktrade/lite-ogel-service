@@ -19,7 +19,7 @@ public class LocalOgelFlatFileImplTest {
     assertTrue(!localOgels.isEmpty());
     final LocalOgel firstLocalOgel = localOgels.get(0);
     assertEquals("Open general export licence (chemicals)", firstLocalOgel.getName());
-    assertEquals("16", firstLocalOgel.getId());
+    assertEquals("OGL16", firstLocalOgel.getId());
     assertTrue(firstLocalOgel.getSummary().getCantList().contains("Export more than 20kg of goods in a single shipment"));
   }
 }

@@ -1,11 +1,12 @@
 package uk.gov.bis.lite.ogel.resource;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -20,7 +21,8 @@ import uk.gov.bis.lite.ogel.model.localOgel.OgelSummary;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 
 import javax.ws.rs.core.Response;
@@ -40,22 +42,31 @@ public class SpireMergedOgelViewResourceTest {
       .build();
 
   @Test
-  public void getsExpectedSpireOgel() throws SOAPException, XPathExpressionException, UnsupportedEncodingException {
+  public void getsExpectedSpireOgel() throws SOAPException, XPathExpressionException, IOException {
     SpireOgel spireOgel = new SpireOgel();
     spireOgel.setId("OGL1");
     spireOgel.setCategory(CategoryType.REPAIR);
     LocalOgel localOgel = new LocalOgel();
     localOgel.setId("OGL1");
     OgelSummary summary = new OgelSummary();
-    summary.setCanList(Collections.singletonList("cando1, cando2, cando3"));
-    summary.setCantList(Collections.singletonList("illegal1, illegal2"));
-    summary.setMustList(Collections.singletonList("mustdo1, mustdo2"));
+    summary.setCanList(Arrays.asList("cando1", "cando2", "cando3"));
+    summary.setCantList(Arrays.asList("illegal1", "illegal2"));
+    summary.setMustList(Arrays.asList("mustdo1", "mustdo2"));
+    summary.setHowToUseList(Arrays.asList("howtoUse1", "howtoUse2"));
     localOgel.setSummary(summary);
-    //spireOgel.setLocalOgel(localOgel);
     when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
+    when(ogelSpireService.findSpireOgelById(anyList(), anyString())).thenCallRealMethod();
+    when(ogelLocalService.findLocalOgelById(anyString())).thenReturn(localOgel);
     final Response response = resources.client().target("/ogel/OGL1").request().get();
-    final SpireOgel spireOgelFromResponse = response.readEntity(SpireOgel.class);
-    assertNotNull(spireOgelFromResponse);
+    ObjectMapper objectMapper = new ObjectMapper();
+    //jackson won't auto deserialize the custom OgelFullView object
+    final JsonNode responseJsonNode = objectMapper.readTree(response.readEntity(String.class));
+    assertEquals("OGL1", responseJsonNode.get("id").asText());
+    assertEquals(3, responseJsonNode.get("summary").get("canList").size());
+    assertEquals("cando2", responseJsonNode.get("summary").get("canList").get(1).asText());
+    assertEquals("illegal1", responseJsonNode.get("summary").get("cantList").get(0).asText());
+    assertEquals(2, responseJsonNode.get("summary").get("mustList").size());
+
   }
 
   @Test

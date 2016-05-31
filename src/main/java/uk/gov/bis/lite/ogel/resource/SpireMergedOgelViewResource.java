@@ -47,6 +47,7 @@ public class SpireMergedOgelViewResource {
 
   @GET
   @Path("{id}")
+  @Produces(MediaType.APPLICATION_JSON)
   public OgelFullView getOgelByOgelID(@NotNull @PathParam("id") String ogelId)
       throws SOAPException, XPathExpressionException, UnsupportedEncodingException, OgelNotFoundException, LocalOgelNotFoundException {
     List<SpireOgel> ogelList = ogelService.getAllOgels();
@@ -58,7 +59,10 @@ public class SpireMergedOgelViewResource {
     if (localOgelFound == null) {
       throw new LocalOgelNotFoundException();
     }
-    return new OgelFullView(foundSpireOgel, localOgelFound);
+    OgelFullView ogelFullView = new OgelFullView();
+    ogelFullView.setLocalOgel(localOgelFound);
+    ogelFullView.setSpireOgel(foundSpireOgel);
+    return ogelFullView;
   }
 
   @PUT
