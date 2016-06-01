@@ -4,6 +4,7 @@ import com.google.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.database.ListJsonMapper;
+import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgelLookUp;
 
@@ -18,8 +19,7 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
 
   private static List<LocalOgel> localOgels;
 
-  @Override
-  public List<LocalOgel> getAllLocalOgels() {
+  public List <LocalOgel> getAllLocalOgels() {
     if (localOgels == null) {
       try {
         LOGGER.info("Storing the values retrieved from {}", LOCAL_OGEL_CONDITION_DATA_FILE);
@@ -44,12 +44,11 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   }
 
   @Override
-  public LocalOgel getOgelById(String ogelID) {
+  public LocalOgel getOgelById(String ogelID){
     if (localOgels == null) {
       getAllLocalOgels();
     }
-    return localOgels.stream().filter(o -> o.getId().equalsIgnoreCase(ogelID)).findAny()
-        .orElseThrow(() -> new RuntimeException("Local Spire Could not be found with given id " + ogelID));
+    return localOgels.stream().filter(o -> o.getId().equalsIgnoreCase(ogelID)).findFirst().orElse(null);
   }
 
   @Override
@@ -77,10 +76,5 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
 
   @Override
   public void insertLocalOgel(LocalOgel localOgel) {
-  }
-
-  @Override
-  public void createDatabase() {
-
   }
 }

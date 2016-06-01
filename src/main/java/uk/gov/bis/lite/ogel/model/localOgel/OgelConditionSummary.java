@@ -2,7 +2,7 @@ package uk.gov.bis.lite.ogel.model.localOgel;
 
 import java.util.List;
 
-public class OgelSummary {
+public class OgelConditionSummary {
   private List<String> canList;
   private List<String> cantList;
   private List<String> mustList;

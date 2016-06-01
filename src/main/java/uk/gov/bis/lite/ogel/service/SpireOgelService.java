@@ -6,27 +6,21 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
-import org.apache.log4j.Logger;
 import uk.gov.bis.lite.ogel.Main;
 import uk.gov.bis.lite.ogel.client.SpireOgelClient;
 import uk.gov.bis.lite.ogel.client.unmarshall.SpireOgelSOAPUnmarshaller;
+import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Optional;
 
-import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.xpath.XPathExpressionException;
 
 @Singleton
 public class SpireOgelService {
   private SpireOgelClient client;
   private SpireOgelSOAPUnmarshaller unmarshaller;
-
-  final static Logger logger = Logger.getLogger(SpireOgelService.class);
 
   @Inject
   private CacheManager cacheManager;
@@ -46,7 +40,7 @@ public class SpireOgelService {
     return null;
   }
 
-  public List<SpireOgel> getAllOgels() throws XPathExpressionException, SOAPException, UnsupportedEncodingException {
+  public List<SpireOgel> getAllOgels() {
     final Ehcache cache = cacheManager.getEhcache(Main.CACHE_NAME);
     final List<SpireOgel> cacheSpireOgelList = (List<SpireOgel>) cache.get(CACHE_KEY).getObjectValue();
     if (!cacheSpireOgelList.isEmpty()) {
@@ -56,12 +50,12 @@ public class SpireOgelService {
     }
   }
 
-  public List<SpireOgel> initializeCache() throws XPathExpressionException, SOAPException, UnsupportedEncodingException {
+  public List<SpireOgel> initializeCache()  {
     final SOAPMessage soapMessage = client.executeRequest();
     return unmarshaller.execute(soapMessage);
   }
 
-  public Optional<SpireOgel> findSpireOgelById(List<SpireOgel> ogelList, String id){
-    return ogelList.stream().filter(ogel -> ogel.getId().equalsIgnoreCase(id)).findFirst();
+  public SpireOgel findSpireOgelById(List<SpireOgel> ogelList, String id) throws OgelNotFoundException{
+    return ogelList.stream().filter(ogel -> ogel.getId().equalsIgnoreCase(id)).findFirst().orElseThrow(() -> new OgelNotFoundException(id));
   }
 }
