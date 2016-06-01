@@ -6,6 +6,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
 import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.database.exception.SOAPParseException;
@@ -33,6 +35,7 @@ import javax.ws.rs.core.Response;
 @Path("/ogel")
 @Produces(MediaType.APPLICATION_JSON)
 public class SpireMergedOgelViewResource {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SpireMergedOgelViewResource.class);
 
   private final SpireOgelService ogelService;
   private final LocalOgelService localOgelService;
@@ -67,16 +70,18 @@ public class SpireMergedOgelViewResource {
       while (jsonConditionArrayIterator.hasNext()) {
         updateConditionDataList.add(jsonConditionArrayIterator.next().asText());
       }
+    } catch (JsonProcessingException e) {
+      LOGGER.error("Badly formed Json request body {}", message, e);
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
     } catch (IOException e) {
-      if (e instanceof JsonProcessingException) {
-        return Response.status(BAD_REQUEST.getStatusCode()).build();
-      }
-      throw e;
+      LOGGER.error("An error occurred processing the PUT request for ogel with ID {}", ogelId, e);
+      throw new RuntimeException("An error occurred updating the Ogel.", e);
     }
     try {
       return Response.accepted(localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName)).build();
     } catch (Exception e) {
-      return Response.notModified("Update Request Unsuccessful " + e.getMessage()).build();
+      LOGGER.error("An error occurred processing the PUT request for ogel with ID {}", ogelId, e);
+      throw new RuntimeException("Update Request Unsuccessful " + e);
     }
   }
 }

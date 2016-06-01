@@ -12,8 +12,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
-import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundExceptionHandler;
-import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundExceptionHandler;
+import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
@@ -37,8 +36,8 @@ public class SpireMergedOgelViewResourceTest {
   @ClassRule
   public static final ResourceTestRule resources = ResourceTestRule.builder()
       .addResource(new SpireMergedOgelViewResource(ogelSpireService, ogelLocalService))
-      .addResource(new OgelNotFoundExceptionHandler())
-      .addResource(new LocalOgelNotFoundExceptionHandler())
+      .addResource(new OgelNotFoundException.OgelNotFoundExceptionHandler())
+      .addResource(new LocalOgelNotFoundException.LocalOgelNotFoundExceptionHandler())
       .build();
 
   @Test

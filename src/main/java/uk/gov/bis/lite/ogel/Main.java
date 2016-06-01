@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.config.cache.CacheConfig;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
-import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundExceptionHandler;
-import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundExceptionHandler;
+import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
+import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.database.exception.SOAPParseExceptionHandler;
 import uk.gov.bis.lite.ogel.resource.SpireMergedOgelViewResource;
 import uk.gov.bis.lite.ogel.resource.SpireOgelResource;
@@ -45,8 +45,8 @@ public class Main extends Application<MainApplicationConfiguration> {
 
     environment.jersey().register(SpireOgelResource.class);
     environment.jersey().register(SpireMergedOgelViewResource.class);
-    environment.jersey().register(OgelNotFoundExceptionHandler.class);
-    environment.jersey().register(LocalOgelNotFoundExceptionHandler.class);
+    environment.jersey().register(OgelNotFoundException.OgelNotFoundExceptionHandler.class);
+    environment.jersey().register(LocalOgelNotFoundException.LocalOgelNotFoundExceptionHandler.class);
     environment.jersey().register(SOAPParseExceptionHandler.class);
 
     Cache customCache = cacheManager.getCache(CACHE_NAME);
