@@ -14,6 +14,11 @@ public class OgelFullView implements Serializable {
   private SpireOgel spireOgel;
   private LocalOgel localOgel;
 
+  public OgelFullView(SpireOgel spireOgel, LocalOgel localOgel) {
+    this.spireOgel = spireOgel;
+    this.localOgel = localOgel;
+  }
+
   @JsonIgnore
   public SpireOgel getSpireOgel() {
     return spireOgel;
@@ -42,13 +47,5 @@ public class OgelFullView implements Serializable {
   @JsonProperty("link")
   public String getPdfLink() {
     return spireOgel.getLink();
-  }
-
-  public void setSpireOgel(SpireOgel spireOgel) {
-    this.spireOgel = spireOgel;
-  }
-
-  public void setLocalOgel(LocalOgel localOgel) {
-    this.localOgel = localOgel;
   }
 }

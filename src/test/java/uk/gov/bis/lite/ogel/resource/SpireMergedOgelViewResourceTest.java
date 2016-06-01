@@ -71,7 +71,7 @@ public class SpireMergedOgelViewResourceTest {
 
   @Test
   public void OgelNotFoundExceptionIsHandled() {
-    when(ogelSpireService.findSpireOgelById(anyList(), anyString())).thenReturn(null);
+    when(ogelSpireService.findSpireOgelById(anyList(), anyString())).thenCallRealMethod();
     final Response response = resources.client().target("/ogel/invalid").request().get();
     assertEquals(404, response.getStatus());
     assertEquals("No Ogel Found With Given Ogel ID: invalid", response.readEntity(String.class));
@@ -83,9 +83,9 @@ public class SpireMergedOgelViewResourceTest {
     spireOgel.setId("OGL1");
     spireOgel.setCategory(CategoryType.REPAIR);
     when(ogelSpireService.findSpireOgelById(anyList(), anyString())).thenReturn(spireOgel);
-    when(ogelLocalService.findLocalOgelById((anyString()))).thenReturn(null);
+    when(ogelLocalService.findLocalOgelById((anyString()))).thenThrow(new LocalOgelNotFoundException("unknown"));
     final Response response = resources.client().target("/ogel/unknown").request().get();
     assertEquals(500, response.getStatus());
-    assertEquals("An unexpected error occurred", response.readEntity(String.class));
+    assertEquals("An unexpected error occurred. Failed to find local OGEL entry with ID: unknown", response.readEntity(String.class));
   }
 }

@@ -9,6 +9,7 @@ import net.sf.ehcache.Ehcache;
 import uk.gov.bis.lite.ogel.Main;
 import uk.gov.bis.lite.ogel.client.SpireOgelClient;
 import uk.gov.bis.lite.ogel.client.unmarshall.SpireOgelSOAPUnmarshaller;
+import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 
@@ -54,7 +55,7 @@ public class SpireOgelService {
     return unmarshaller.execute(soapMessage);
   }
 
-  public SpireOgel findSpireOgelById(List<SpireOgel> ogelList, String id) {
-    return ogelList.stream().filter(ogel -> ogel.getId().equalsIgnoreCase(id)).findFirst().orElse(null);
+  public SpireOgel findSpireOgelById(List<SpireOgel> ogelList, String id) throws OgelNotFoundException{
+    return ogelList.stream().filter(ogel -> ogel.getId().equalsIgnoreCase(id)).findFirst().orElseThrow(() -> new OgelNotFoundException(id));
   }
 }

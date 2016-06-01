@@ -50,17 +50,8 @@ public class SpireMergedOgelViewResource {
       throws OgelNotFoundException, LocalOgelNotFoundException, SOAPParseException {
     List<SpireOgel> ogelList = ogelService.getAllOgels();
     final SpireOgel foundSpireOgel = ogelService.findSpireOgelById(ogelList, ogelId);
-    if (foundSpireOgel == null) {
-      throw new OgelNotFoundException(ogelId);
-    }
     LocalOgel localOgelFound = localOgelService.findLocalOgelById(ogelId);
-    if (localOgelFound == null) {
-      throw new LocalOgelNotFoundException(ogelId);
-    }
-    OgelFullView ogelFullView = new OgelFullView();
-    ogelFullView.setLocalOgel(localOgelFound);
-    ogelFullView.setSpireOgel(foundSpireOgel);
-    return ogelFullView;
+    return new OgelFullView(foundSpireOgel, localOgelFound);
   }
 
   @PUT
