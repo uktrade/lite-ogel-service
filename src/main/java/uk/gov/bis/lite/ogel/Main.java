@@ -7,6 +7,10 @@ import com.google.inject.Injector;
 import com.google.inject.Stage;
 import com.hubspot.dropwizard.guice.GuiceBundle;
 import io.dropwizard.Application;
+import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.AuthValueFactoryProvider;
+import io.dropwizard.auth.PrincipalImpl;
+import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import net.sf.ehcache.Cache;
@@ -24,6 +28,7 @@ import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.database.exception.SOAPParseExceptionHandler;
 import uk.gov.bis.lite.ogel.resource.SpireMergedOgelViewResource;
 import uk.gov.bis.lite.ogel.resource.SpireOgelResource;
+import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 public class Main extends Application<MainApplicationConfiguration> {
@@ -48,6 +53,14 @@ public class Main extends Application<MainApplicationConfiguration> {
     environment.jersey().register(OgelNotFoundException.OgelNotFoundExceptionHandler.class);
     environment.jersey().register(LocalOgelNotFoundException.LocalOgelNotFoundExceptionHandler.class);
     environment.jersey().register(SOAPParseExceptionHandler.class);
+    //Authorization and authentication handlers
+    environment.jersey().register(new AuthDynamicFeature(
+        new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
+            .setAuthenticator(new SimpleAuthenticator(configuration.getLogin(), configuration.getPassword()))
+            .setRealm("Basic Dropwizard Http Authentication")
+            .buildAuthFilter()));
+    //If you want to use @Auth to inject a custom Principal type into your resource
+    environment.jersey().register(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class));
 
     Cache customCache = cacheManager.getCache(CACHE_NAME);
     SelfPopulatingCache selfPopulatingCache = new CacheConfig().createSelfPopulatingCacheFromEhCache(customCache, ogelService);
