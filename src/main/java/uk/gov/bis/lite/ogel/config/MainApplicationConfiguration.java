@@ -2,21 +2,26 @@ package uk.gov.bis.lite.ogel.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
+import io.dropwizard.db.DataSourceFactory;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 public class MainApplicationConfiguration extends Configuration {
+
+  @Valid
+  @NotNull
+  @JsonProperty
+  private DataSourceFactory database = new DataSourceFactory();
+
+  public DataSourceFactory getDataSourceFactory() {
+    return database;
+  }
 
   @NotEmpty
   @JsonProperty
   private String soapUrl;
-
-  @NotEmpty
-  @JsonProperty
-  private String cronCacheRefreshJobInterval;
-
-  @NotEmpty
-  @JsonProperty
-  private String cronFastCacheRefreshJobInterval;
 
   @NotEmpty
   @JsonProperty
@@ -35,10 +40,6 @@ public class MainApplicationConfiguration extends Configuration {
     return soapUrl;
   }
 
-  public void setSoapUrl(String soapUrl) {
-    this.soapUrl = soapUrl;
-  }
-
   public String getSoapUserName() {
     return soapUserName;
   }
@@ -49,13 +50,5 @@ public class MainApplicationConfiguration extends Configuration {
 
   public String getCacheTimeout() {
     return cacheTimeout;
-  }
-
-  public String getCronCacheRefreshJobInterval() {
-    return cronCacheRefreshJobInterval;
-  }
-
-  public String getCronFastCacheRefreshJobInterval() {
-    return cronFastCacheRefreshJobInterval;
   }
 }

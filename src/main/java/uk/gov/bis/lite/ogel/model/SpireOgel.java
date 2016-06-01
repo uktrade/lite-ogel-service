@@ -1,25 +1,29 @@
 package uk.gov.bis.lite.ogel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SpireOgel implements Serializable {
 
+  @JsonIgnore
   private String id;
   private String description;
   private String link;
   private List<OgelCondition> ogelConditions;
+  @JsonIgnore
   private CategoryType category;
-  //private List<RatingCondition> ratingConditions;
 
   public String getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public SpireOgel setId(String id) {
     this.id = id;
+    return this;
   }
 
   public String getDescription() {
@@ -66,10 +70,7 @@ public class SpireOgel implements Serializable {
 
     SpireOgel spireOgel = (SpireOgel) o;
 
-    if (!id.equals(spireOgel.id)) {
-      return false;
-    }
-    return description.equals(spireOgel.description);
+    return id.equals(spireOgel.id) && description.equals(spireOgel.description);
 
   }
 

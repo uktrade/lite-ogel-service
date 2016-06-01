@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.ogel.controller;
+package uk.gov.bis.lite.ogel.resource;
 
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
@@ -24,12 +24,12 @@ import javax.ws.rs.core.Response;
 
 @Path("/applicable-ogels")
 @Produces(MediaType.APPLICATION_JSON)
-public class SpireOgelController {
+public class SpireOgelResource {
 
   private final SpireOgelService ogelService;
 
   @Inject
-  public SpireOgelController(SpireOgelService ogelService) {
+  public SpireOgelResource(SpireOgelService ogelService) {
     this.ogelService = ogelService;
   }
 
