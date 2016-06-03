@@ -102,10 +102,10 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
 
   @Override
   @Transaction
-  public void deleteOgel(LocalOgel localOgel) {
+  public void deleteOgel(String ogelID) {
     try (final Handle handle = jdbi.open()) {
-      handle.execute("DELETE FROM LOCAL_OGEL WHERE ID = ?", localOgel.getId());
-      handle.execute("DELETE FROM CONDITION_LIST WHERE OGELID = ? ", localOgel.getId());
+      handle.execute("DELETE FROM LOCAL_OGEL WHERE ID = ?", ogelID);
+      handle.execute("DELETE FROM CONDITION_LIST WHERE OGELID = ? ", ogelID);
     }
   }
 
@@ -117,7 +117,7 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
     } catch (LocalOgelNotFoundException e) {
       return insertLocalOgel(newOgel);
     }
-    deleteOgel(newOgel);
+    deleteOgel(newOgel.getId());
     return insertLocalOgel(newOgel);
   }
 

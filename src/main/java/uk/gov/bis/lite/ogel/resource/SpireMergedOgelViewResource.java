@@ -54,8 +54,7 @@ public class SpireMergedOgelViewResource {
   @Produces(MediaType.APPLICATION_JSON)
   public OgelFullView getOgelByOgelID(@NotNull @PathParam("id") String ogelId)
       throws OgelNotFoundException, LocalOgelNotFoundException, SOAPParseException {
-    List<SpireOgel> ogelList = ogelService.getAllOgels();
-    final SpireOgel foundSpireOgel = ogelService.findSpireOgelById(ogelList, ogelId);
+    final SpireOgel foundSpireOgel = ogelService.findSpireOgelById(ogelId);
     LocalOgel localOgelFound = localOgelService.findLocalOgelById(ogelId);
     return new OgelFullView(foundSpireOgel, localOgelFound);
   }
@@ -92,7 +91,7 @@ public class SpireMergedOgelViewResource {
   }
 
   @PUT
-  @Path("/edit/{id}")
+  @Path("/{id}")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response insertOrUpdateOgel(@Auth PrincipalImpl user,
                                      @NotNull @PathParam("id") String ogelId,
@@ -100,8 +99,7 @@ public class SpireMergedOgelViewResource {
     ObjectMapper objectMapper = new ObjectMapper();
     try {
       LocalOgel localOgel = objectMapper.readValue(message, LocalOgel.class);
-      List<SpireOgel> ogelList = ogelService.getAllOgels();
-      ogelService.findSpireOgelById(ogelList, ogelId);
+      ogelService.findSpireOgelById(ogelId);
 
       localOgelService.insertOrUpdateOgel(localOgel);
       return Response.status(Response.Status.CREATED).type(MediaType.APPLICATION_JSON).build();

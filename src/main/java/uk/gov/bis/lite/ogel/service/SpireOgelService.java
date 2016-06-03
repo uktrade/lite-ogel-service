@@ -50,12 +50,14 @@ public class SpireOgelService {
     }
   }
 
-  public List<SpireOgel> initializeCache()  {
+  public List<SpireOgel> initializeCache() {
     final SOAPMessage soapMessage = client.executeRequest();
     return unmarshaller.execute(soapMessage);
   }
 
-  public SpireOgel findSpireOgelById(List<SpireOgel> ogelList, String id) throws OgelNotFoundException{
-    return ogelList.stream().filter(ogel -> ogel.getId().equalsIgnoreCase(id)).findFirst().orElseThrow(() -> new OgelNotFoundException(id));
+  public SpireOgel findSpireOgelById(String id) throws OgelNotFoundException {
+    final List<SpireOgel> ogelList = getAllOgels();
+    return ogelList.stream().filter(ogel -> ogel.getId().equalsIgnoreCase(id)).findFirst()
+        .orElseThrow(() -> new OgelNotFoundException(id));
   }
 }

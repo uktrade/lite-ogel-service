@@ -3,7 +3,6 @@ package uk.gov.bis.lite.ogel.resource;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -80,7 +79,7 @@ public class SpireMergedOgelViewResourceTest {
   @Test
   public void getsExpectedSpireOgel() throws SOAPException, XPathExpressionException, IOException {
     when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
-    when(ogelSpireService.findSpireOgelById(anyListOf(SpireOgel.class), anyString())).thenCallRealMethod();
+    when(ogelSpireService.findSpireOgelById(anyString())).thenCallRealMethod();
     when(ogelLocalService.findLocalOgelById(anyString())).thenReturn(localOgel);
     final Response response = resources.client().target("/ogel/OGL1").request().get();
     ObjectMapper objectMapper = new ObjectMapper();
@@ -95,7 +94,7 @@ public class SpireMergedOgelViewResourceTest {
 
   @Test
   public void OgelNotFoundExceptionIsHandled() {
-    when(ogelSpireService.findSpireOgelById(anyListOf(SpireOgel.class), anyString())).thenCallRealMethod();
+    when(ogelSpireService.findSpireOgelById(anyString())).thenCallRealMethod();
     final Response response = resources.client().target("/ogel/invalid").request().get();
     assertEquals(404, response.getStatus());
     assertEquals("No Ogel Found With Given Ogel ID: invalid", response.readEntity(String.class));
@@ -106,7 +105,7 @@ public class SpireMergedOgelViewResourceTest {
     SpireOgel spireOgel = new SpireOgel();
     spireOgel.setId("OGL1");
     spireOgel.setCategory(CategoryType.REPAIR);
-    when(ogelSpireService.findSpireOgelById(anyListOf(SpireOgel.class), anyString())).thenReturn(spireOgel);
+    when(ogelSpireService.findSpireOgelById(anyString())).thenReturn(spireOgel);
     when(ogelLocalService.findLocalOgelById((anyString()))).thenThrow(new LocalOgelNotFoundException("unknown"));
     Response response = resources.client().target("/ogel/unknown").request().get();
     assertEquals(500, response.getStatus());
@@ -116,21 +115,21 @@ public class SpireMergedOgelViewResourceTest {
   @Test
   public void insertOrUpdateRequestIsHandledCorrectly() throws JsonProcessingException {
     when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
-    when(ogelSpireService.findSpireOgelById(anyListOf(SpireOgel.class), anyString())).thenCallRealMethod();
+    when(ogelSpireService.findSpireOgelById(anyString())).thenCallRealMethod();
     when(ogelLocalService.insertOrUpdateOgel(any(LocalOgel.class))).thenReturn(localOgel);
     HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("username", "password");
     Response response = resources.client().register(feature)
-        .target("/ogel/edit/OGL2").request(MediaType.APPLICATION_JSON).put(Entity.entity(localOgel, MediaType.APPLICATION_JSON));
+        .target("/ogel/OGL1").request(MediaType.APPLICATION_JSON).put(Entity.entity(localOgel, MediaType.APPLICATION_JSON));
     assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
   }
 
   @Test
   public void insertOrUpdateMissingSpireOgel(){
     when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
-    when(ogelSpireService.findSpireOgelById(anyListOf(SpireOgel.class), anyString())).thenCallRealMethod();
+    when(ogelSpireService.findSpireOgelById(anyString())).thenCallRealMethod();
     HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("username", "password");
     Response response = resources.client().register(feature)
-        .target("/ogel/edit/OGL2").request(MediaType.APPLICATION_JSON).put(Entity.entity(localOgel, MediaType.APPLICATION_JSON));
+        .target("/ogel/OGL2").request(MediaType.APPLICATION_JSON).put(Entity.entity(localOgel, MediaType.APPLICATION_JSON));
     assertNotNull(response);
     assertEquals(404, response.getStatus());
     assertEquals("No Ogel Found With Given Ogel ID: OGL2", response.readEntity(String.class));

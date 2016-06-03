@@ -74,7 +74,7 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   }
 
   @Override
-  public void deleteOgel(LocalOgel localOgel) {
+  public void deleteOgel(String id) {
   }
 
   @Override

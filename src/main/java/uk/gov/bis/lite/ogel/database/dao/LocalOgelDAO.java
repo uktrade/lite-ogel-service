@@ -13,7 +13,7 @@ public interface LocalOgelDAO {
 
   LocalOgel insertLocalOgel(LocalOgel localOgel);
 
-  void deleteOgel(LocalOgel localOgel);
+  void deleteOgel(String ogelID);
 
   LocalOgel insertOrUpdate(LocalOgel ogel);
 }
