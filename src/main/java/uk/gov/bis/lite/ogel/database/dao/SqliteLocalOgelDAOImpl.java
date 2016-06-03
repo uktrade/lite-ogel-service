@@ -43,7 +43,10 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
         throw new LocalOgelNotFoundException(ogelID);
       }
       ogel.setId(objectMap.get("id").toString());
-      ogel.setName(objectMap.get("name").toString());
+      //null check for when checking if localOgel exists with just ID
+      if (objectMap.get("name") != null) {
+        ogel.setName(objectMap.get("name").toString());
+      }
       OgelConditionSummary summary = getConditionList(handle, ogelID);
       ogel.setSummary(summary);
       return ogel;
@@ -78,7 +81,7 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
 
   @Override
   @Transaction
-  public void insertLocalOgel(LocalOgel localOgel) {
+  public LocalOgel insertLocalOgel(LocalOgel localOgel) {
     try (final Handle handle = jdbi.open()) {
       handle.execute("INSERT INTO LOCAL_OGEL(ID, NAME) VALUES (?, ?)", localOgel.getId(), localOgel.getName());
       localOgel.getSummary().getCanList().stream().forEach(condition -> {
@@ -94,6 +97,28 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
         insertConditionListForOgel(handle, localOgel.getId(), "howToUseList", condition);
       });
     }
+    return localOgel;
+  }
+
+  @Override
+  @Transaction
+  public void deleteOgel(LocalOgel localOgel) {
+    try (final Handle handle = jdbi.open()) {
+      handle.execute("DELETE FROM LOCAL_OGEL WHERE ID = ?", localOgel.getId());
+      handle.execute("DELETE FROM CONDITION_LIST WHERE OGELID = ? ", localOgel.getId());
+    }
+  }
+
+  @Override
+  @Transaction
+  public LocalOgel insertOrUpdate(LocalOgel newOgel) {
+    try {
+      getOgelById(newOgel.getId());
+    } catch (LocalOgelNotFoundException e) {
+      return insertLocalOgel(newOgel);
+    }
+    deleteOgel(newOgel);
+    return insertLocalOgel(newOgel);
   }
 
   private void insertConditionListForOgel(Handle handle, String id, String type, String condition) {

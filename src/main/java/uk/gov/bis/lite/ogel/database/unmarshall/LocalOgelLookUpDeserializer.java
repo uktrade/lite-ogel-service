@@ -17,7 +17,12 @@ public class LocalOgelLookUpDeserializer extends JsonDeserializer<LocalOgel> {
     LocalOgel localOgel = new LocalOgel();
     OgelConditionSummary summary = new OgelConditionSummary();
     JsonNode node = jp.getCodec().readTree(jp);
-    localOgel.setName(node.get("name").asText());
+    if (node.get("id") != null) {
+      localOgel.setId(node.get("id").asText());
+    }
+    if (node.get("name") != null) {
+      localOgel.setName(node.get("name").asText());
+    }
     List<String> canList = getConditionList(node, "canList");
     List<String> cantList = getConditionList(node, "cantList");
     List<String> mustList = getConditionList(node, "mustList");
@@ -30,7 +35,7 @@ public class LocalOgelLookUpDeserializer extends JsonDeserializer<LocalOgel> {
     return localOgel;
   }
 
-  private List<String> getConditionList(JsonNode node, String fieldName){
+  private List<String> getConditionList(JsonNode node, String fieldName) {
     final JsonNode canListNode = node.get(fieldName);
     List<String> conditionList = new ArrayList<>();
     for (final JsonNode objNode : canListNode) {

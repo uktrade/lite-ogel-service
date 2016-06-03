@@ -11,5 +11,9 @@ public interface LocalOgelDAO {
 
   LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) throws Exception;
 
-  void insertLocalOgel(LocalOgel localOgel);
+  LocalOgel insertLocalOgel(LocalOgel localOgel);
+
+  void deleteOgel(LocalOgel localOgel);
+
+  LocalOgel insertOrUpdate(LocalOgel ogel);
 }

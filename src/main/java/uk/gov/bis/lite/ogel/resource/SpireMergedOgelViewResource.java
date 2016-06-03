@@ -1,6 +1,7 @@
 package uk.gov.bis.lite.ogel.resource;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -63,7 +64,8 @@ public class SpireMergedOgelViewResource {
   @Path("{id}/summary-data/{conditionFieldName}")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response updateOgelCondition(
-      @Auth PrincipalImpl user, @NotNull @PathParam("id") String ogelId,
+      @Auth PrincipalImpl user,
+      @NotNull @PathParam("id") String ogelId,
       @NotNull @PathParam("conditionFieldName") String conditionFieldName, String message) throws
       IOException {
     ObjectMapper mapper = new ObjectMapper();
@@ -83,8 +85,33 @@ public class SpireMergedOgelViewResource {
     try {
       return Response.accepted(localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName)).build();
     } catch (Exception e) {
-      LOGGER.error("An error occurred processing the PUT request for ogel with ID {}", ogelId, e);
+      LOGGER.error("An unexpected error occurred processing updating the ogel with ID {}", ogelId, e);
       throw new RuntimeException("Update Request Unsuccessful " + e);
+    }
+  }
+
+  @PUT
+  @Path("/edit/{id}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response insertOrUpdateOgel(@Auth PrincipalImpl user,
+                                     @NotNull @PathParam("id") String ogelId,
+                                     String message) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    try {
+      List<SpireOgel> ogelList = ogelService.getAllOgels();
+      ogelService.findSpireOgelById(ogelList, ogelId);
+      LocalOgel localOgel = objectMapper.readValue(message, LocalOgel.class);
+      final LocalOgel newOgel = localOgelService.insertOrUpdateOgel(localOgel);
+      return Response.status(Response.Status.CREATED).entity(newOgel).type(MediaType.APPLICATION_JSON).build();
+    } catch (OgelNotFoundException e) {
+      LOGGER.error("There is no ogel found with ID {}", ogelId);
+      return Response.status(NOT_FOUND.getStatusCode()).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+    } catch (IOException e) {
+      LOGGER.error("An error occurred converting request body json to an object", e);
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
+    } catch (Exception e) {
+      LOGGER.error("An unexpected error occurred processing handling the insert new or update ogel request with ID {}", ogelId, e);
+      throw new RuntimeException("Request Unsuccessful " + e);
     }
   }
 }

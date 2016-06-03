@@ -4,7 +4,6 @@ import com.google.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.database.ListJsonMapper;
-import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgelLookUp;
 
@@ -75,6 +74,16 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   }
 
   @Override
-  public void insertLocalOgel(LocalOgel localOgel) {
+  public void deleteOgel(LocalOgel localOgel) {
+  }
+
+  @Override
+  public LocalOgel insertOrUpdate(LocalOgel ogel) {
+    return null;
+  }
+
+  @Override
+  public LocalOgel insertLocalOgel(LocalOgel localOgel) {
+    return localOgel;
   }
 }
