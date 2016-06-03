@@ -98,11 +98,12 @@ public class SpireMergedOgelViewResource {
                                      String message) {
     ObjectMapper objectMapper = new ObjectMapper();
     try {
-      List<SpireOgel> ogelList = ogelService.getAllOgels();
-      ogelService.findSpireOgelById(ogelList, ogelId);
       LocalOgel localOgel = objectMapper.readValue(message, LocalOgel.class);
-      final LocalOgel newOgel = localOgelService.insertOrUpdateOgel(localOgel);
-      return Response.status(Response.Status.CREATED).entity(newOgel).type(MediaType.APPLICATION_JSON).build();
+      List<SpireOgel> ogelList = ogelService.getAllOgels();
+      ogelService.findSpireOgelById(ogelList, localOgel.getId());
+
+      localOgelService.insertOrUpdateOgel(localOgel);
+      return Response.status(Response.Status.CREATED).type(MediaType.APPLICATION_JSON).build();
     } catch (OgelNotFoundException e) {
       LOGGER.error("There is no ogel found with ID {}", ogelId);
       return Response.status(NOT_FOUND.getStatusCode()).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();

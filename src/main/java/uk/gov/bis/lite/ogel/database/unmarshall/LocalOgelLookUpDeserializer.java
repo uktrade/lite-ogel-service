@@ -23,6 +23,9 @@ public class LocalOgelLookUpDeserializer extends JsonDeserializer<LocalOgel> {
     if (node.get("name") != null) {
       localOgel.setName(node.get("name").asText());
     }
+    if(node.get("summary") != null){
+      node = node.get("summary");
+    }
     List<String> canList = getConditionList(node, "canList");
     List<String> cantList = getConditionList(node, "cantList");
     List<String> mustList = getConditionList(node, "mustList");

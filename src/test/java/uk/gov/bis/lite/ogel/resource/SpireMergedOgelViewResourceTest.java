@@ -6,6 +6,7 @@ import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
@@ -17,6 +18,7 @@ import io.dropwizard.auth.PrincipalImpl;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.auth.basic.BasicCredentials;
 import io.dropwizard.testing.junit.ResourceTestRule;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -35,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.soap.SOAPException;
 import javax.xml.xpath.XPathExpressionException;
@@ -104,19 +107,20 @@ public class SpireMergedOgelViewResourceTest {
     spireOgel.setCategory(CategoryType.REPAIR);
     when(ogelSpireService.findSpireOgelById(anyListOf(SpireOgel.class), anyString())).thenReturn(spireOgel);
     when(ogelLocalService.findLocalOgelById((anyString()))).thenThrow(new LocalOgelNotFoundException("unknown"));
-    final Response response = resources.client().target("/ogel/unknown").request().get();
+    Response response = resources.client().target("/ogel/unknown").request().get();
     assertEquals(500, response.getStatus());
     assertEquals("An unexpected error occurred. Failed to find local OGEL entry with ID: unknown", response.readEntity(String.class));
   }
 
   @Test
-  public void insertOrUpdateRequestIsHandledCorrectly(){
+  public void insertOrUpdateRequestIsHandledCorrectly() throws JsonProcessingException {
     when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
     when(ogelSpireService.findSpireOgelById(anyListOf(SpireOgel.class), anyString())).thenCallRealMethod();
     when(ogelLocalService.insertOrUpdateOgel(any(LocalOgel.class))).thenReturn(localOgel);
-    final Response response = resources.client()
-        .target("/ogel/edit/OGL1").request().put(Entity.json(localOgel), Response.class);
-    assertEquals(Response.Status.CREATED, response.getStatus());
+    HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("username", "password");
+    Response response = resources.client().register(feature)
+        .target("/ogel/edit/OGL2").request(MediaType.APPLICATION_JSON).put(Entity.entity(localOgel, MediaType.APPLICATION_JSON));
+    assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
   }
 
   private static class TestAuthenticator implements Authenticator<BasicCredentials, PrincipalImpl> {
