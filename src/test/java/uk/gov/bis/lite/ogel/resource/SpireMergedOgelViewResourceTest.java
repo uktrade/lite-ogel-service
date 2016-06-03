@@ -1,5 +1,6 @@
 package uk.gov.bis.lite.ogel.resource;
 
+import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
@@ -121,6 +122,18 @@ public class SpireMergedOgelViewResourceTest {
     Response response = resources.client().register(feature)
         .target("/ogel/edit/OGL2").request(MediaType.APPLICATION_JSON).put(Entity.entity(localOgel, MediaType.APPLICATION_JSON));
     assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+  }
+
+  @Test
+  public void insertOrUpdateMissingSpireOgel(){
+    when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
+    when(ogelSpireService.findSpireOgelById(anyListOf(SpireOgel.class), anyString())).thenCallRealMethod();
+    HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("username", "password");
+    Response response = resources.client().register(feature)
+        .target("/ogel/edit/OGL2").request(MediaType.APPLICATION_JSON).put(Entity.entity(localOgel, MediaType.APPLICATION_JSON));
+    assertNotNull(response);
+    assertEquals(404, response.getStatus());
+    assertEquals("No Ogel Found With Given Ogel ID: OGL2", response.readEntity(String.class));
   }
 
   private static class TestAuthenticator implements Authenticator<BasicCredentials, PrincipalImpl> {

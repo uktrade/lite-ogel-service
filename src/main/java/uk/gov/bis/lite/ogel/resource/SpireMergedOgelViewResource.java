@@ -100,7 +100,7 @@ public class SpireMergedOgelViewResource {
     try {
       LocalOgel localOgel = objectMapper.readValue(message, LocalOgel.class);
       List<SpireOgel> ogelList = ogelService.getAllOgels();
-      ogelService.findSpireOgelById(ogelList, localOgel.getId());
+      ogelService.findSpireOgelById(ogelList, ogelId);
 
       localOgelService.insertOrUpdateOgel(localOgel);
       return Response.status(Response.Status.CREATED).type(MediaType.APPLICATION_JSON).build();
