@@ -66,7 +66,8 @@ public class SpireMergedOgelViewResource {
   public Response updateOgelCondition(
       @Auth PrincipalImpl user,
       @NotNull @PathParam("id") String ogelId,
-      @NotNull @PathParam("conditionFieldName") String conditionFieldName, String message) throws
+      @NotNull @PathParam("conditionFieldName") String conditionFieldName,
+      String message) throws
       IOException {
     ObjectMapper mapper = new ObjectMapper();
     List<String> updateConditionDataList = new ArrayList<>();

@@ -57,9 +57,8 @@ public class Main extends Application<MainApplicationConfiguration> {
     environment.jersey().register(new AuthDynamicFeature(
         new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
             .setAuthenticator(new SimpleAuthenticator(configuration.getLogin(), configuration.getPassword()))
-            .setRealm("Basic Dropwizard Http Authentication")
+            .setRealm("OGEL Service Admin Authentication")
             .buildAuthFilter()));
-    //If you want to use @Auth to inject a custom Principal type into your resource
     environment.jersey().register(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class));
 
     Cache customCache = cacheManager.getCache(CACHE_NAME);
