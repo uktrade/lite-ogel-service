@@ -35,6 +35,14 @@ public class MainApplicationConfiguration extends Configuration {
   @JsonProperty
   private String cacheTimeout;
 
+  @NotEmpty
+  @JsonProperty
+  private String login;
+
+  @NotEmpty
+  @JsonProperty
+  private String password;
+
 
   public String getSoapUrl() {
     return soapUrl;
@@ -50,5 +58,13 @@ public class MainApplicationConfiguration extends Configuration {
 
   public String getCacheTimeout() {
     return cacheTimeout;
+  }
+
+  public String getLogin() {
+    return login;
+  }
+
+  public String getPassword() {
+    return password;
   }
 }

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
+import io.dropwizard.auth.Auth;
+import io.dropwizard.auth.PrincipalImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
@@ -60,8 +62,11 @@ public class SpireMergedOgelViewResource {
   @PUT
   @Path("{id}/summary-data/{conditionFieldName}")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response updateOgelCondition(@NotNull @PathParam("id") String ogelId,
-                                      @NotNull @PathParam("conditionFieldName") String conditionFieldName, String message) throws
+  public Response updateOgelCondition(
+      @Auth PrincipalImpl user,
+      @NotNull @PathParam("id") String ogelId,
+      @NotNull @PathParam("conditionFieldName") String conditionFieldName,
+      String message) throws
       IOException {
     ObjectMapper mapper = new ObjectMapper();
     List<String> updateConditionDataList = new ArrayList<>();
