@@ -19,6 +19,7 @@ import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.auth.basic.BasicCredentials;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -48,6 +49,7 @@ public class SpireMergedOgelViewResourceTest {
   private static final LocalOgelService ogelLocalService = Mockito.mock(LocalOgelService.class);
   private LocalOgel localOgel = new LocalOgel();
   private SpireOgel spireOgel = new SpireOgel();
+  HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("username", "password");
 
   @ClassRule
   public static final ResourceTestRule resources = ResourceTestRule.builder()
@@ -62,8 +64,13 @@ public class SpireMergedOgelViewResourceTest {
       .addResource(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class))
       .build();
 
+  @After
+  public void tearDown() {
+    resources.client().close();
+  }
+
   @Before
-  public void setUp(){
+  public void setUp() {
     localOgel.setId("OGL1");
     OgelConditionSummary summary = new OgelConditionSummary();
     summary.setCanList(Arrays.asList("cando1", "cando2", "cando3"));
@@ -79,7 +86,7 @@ public class SpireMergedOgelViewResourceTest {
   @Test
   public void getsExpectedSpireOgel() throws SOAPException, XPathExpressionException, IOException {
     when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
-    when(ogelSpireService.findSpireOgelById(anyString())).thenCallRealMethod();
+    when(ogelSpireService.findSpireOgelById(anyString())).thenReturn(spireOgel);
     when(ogelLocalService.findLocalOgelById(anyString())).thenReturn(localOgel);
     final Response response = resources.client().target("/ogel/OGL1").request().get();
     ObjectMapper objectMapper = new ObjectMapper();
@@ -94,6 +101,7 @@ public class SpireMergedOgelViewResourceTest {
 
   @Test
   public void OgelNotFoundExceptionIsHandled() {
+    when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
     when(ogelSpireService.findSpireOgelById(anyString())).thenCallRealMethod();
     final Response response = resources.client().target("/ogel/invalid").request().get();
     assertEquals(404, response.getStatus());
@@ -117,17 +125,15 @@ public class SpireMergedOgelViewResourceTest {
     when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
     when(ogelSpireService.findSpireOgelById(anyString())).thenCallRealMethod();
     when(ogelLocalService.insertOrUpdateOgel(any(LocalOgel.class))).thenReturn(localOgel);
-    HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("username", "password");
     Response response = resources.client().register(feature)
         .target("/ogel/OGL1").request(MediaType.APPLICATION_JSON).put(Entity.entity(localOgel, MediaType.APPLICATION_JSON));
     assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
   }
 
   @Test
-  public void insertOrUpdateMissingSpireOgel(){
+  public void insertOrUpdateMissingSpireOgel() {
     when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
     when(ogelSpireService.findSpireOgelById(anyString())).thenCallRealMethod();
-    HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("username", "password");
     Response response = resources.client().register(feature)
         .target("/ogel/OGL2").request(MediaType.APPLICATION_JSON).put(Entity.entity(localOgel, MediaType.APPLICATION_JSON));
     assertNotNull(response);

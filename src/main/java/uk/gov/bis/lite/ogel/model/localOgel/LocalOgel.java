@@ -3,7 +3,6 @@ package uk.gov.bis.lite.ogel.model.localOgel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-//@JsonDeserialize(using = LocalOgelLookUpDeserializer.class)
 public class LocalOgel {
 
   private String id;

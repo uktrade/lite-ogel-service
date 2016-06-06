@@ -3,7 +3,9 @@ package uk.gov.bis.lite.ogel.resource;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -113,5 +115,24 @@ public class SpireMergedOgelViewResource {
       LOGGER.error("An unexpected error occurred processing handling the insert new or update ogel request with ID {}", ogelId, e);
       throw new RuntimeException("Request Unsuccessful " + e);
     }
+  }
+
+  @PUT
+  @Path("bulk")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response insertOgelArray(@Auth PrincipalImpl user, String message) {
+    ObjectMapper jsonMapper = new ObjectMapper();
+    try {
+      final List<LocalOgel> ogelList = jsonMapper.readValue(message,
+          jsonMapper.getTypeFactory().constructCollectionType(List.class, LocalOgel.class));
+      ogelList.stream().forEach(localOgelService::insertOrUpdateOgel);
+    } catch (JsonParseException e) {
+      LOGGER.error("An error occurred parsing the json request body", e);
+    } catch (JsonMappingException e) {
+      LOGGER.error("An error occurred deserializing the json", e);
+    } catch (IOException e) {
+      LOGGER.error("Unexpected error occurred parsing the json", e);
+    }
+    return Response.status(Response.Status.CREATED).type(MediaType.APPLICATION_JSON).build();
   }
 }
