@@ -4,21 +4,17 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
-import org.skife.jdbi.v2.sqlobject.Transaction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import uk.gov.bis.lite.ogel.Main;
 import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   private final DBI jdbi;
-  private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
   @Inject
   public SqliteLocalOgelDAOImpl(@Named("jdbi") DBI jdbi) {
@@ -61,7 +57,6 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   }
 
   @Override
-  @Transaction
   public LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) throws Exception {
     try (final Handle handle = jdbi.open()) {
       handle.execute("DELETE FROM CONDITION_LIST WHERE OGELID = ? AND TYPE = ?", ogelID, fieldName);
@@ -71,37 +66,30 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   }
 
   @Override
-  @Transaction
   public LocalOgel insertLocalOgel(LocalOgel localOgel) {
     try (final Handle handle = jdbi.open()) {
-      handle.execute("INSERT INTO LOCAL_OGEL(ID, NAME) VALUES (?, ?)", localOgel.getId(), localOgel.getName());
-      localOgel.getSummary().getCanList().stream().forEach(condition -> {
-        insertConditionListForOgel(handle, localOgel.getId(), "canList", condition);
-      });
-      localOgel.getSummary().getCantList().stream().forEach(condition -> {
-        insertConditionListForOgel(handle, localOgel.getId(), "cantList", condition);
-      });
-      localOgel.getSummary().getMustList().stream().forEach(condition -> {
-        insertConditionListForOgel(handle, localOgel.getId(), "mustList", condition);
-      });
-      localOgel.getSummary().getHowToUseList().stream().forEach(condition -> {
-        insertConditionListForOgel(handle, localOgel.getId(), "howToUseList", condition);
-      });
+      transactionalInsertOgel(handle, localOgel);
     }
     return localOgel;
   }
 
+  private LocalOgel transactionalInsertOgel(Handle handle, LocalOgel localOgel) {
+    handle.execute("INSERT INTO LOCAL_OGEL(ID, NAME) VALUES (?, ?)", localOgel.getId(), localOgel.getName());
+    localOgel.getSummary().getCanList().stream().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "canList", condition));
+    localOgel.getSummary().getCantList().stream().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "cantList", condition));
+    localOgel.getSummary().getMustList().stream().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "mustList", condition));
+    localOgel.getSummary().getHowToUseList().stream().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "howToUseList", condition));
+    return localOgel;
+  }
+
   @Override
-  @Transaction
   public void deleteOgel(String ogelID) {
     try (final Handle handle = jdbi.open()) {
-      handle.execute("DELETE FROM LOCAL_OGEL WHERE ID = ?", ogelID);
-      handle.execute("DELETE FROM CONDITION_LIST WHERE OGELID = ? ", ogelID);
+      transactionalDeleteLocalOgel(handle, ogelID);
     }
   }
 
   @Override
-  @Transaction
   public LocalOgel insertOrUpdate(LocalOgel newOgel) {
     try {
       getOgelById(newOgel.getId());
@@ -110,6 +98,23 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
     }
     deleteOgel(newOgel.getId());
     return insertLocalOgel(newOgel);
+  }
+
+  @Override
+  public void insertLocalOgels(List<LocalOgel> ogelList) throws SQLException {
+    try (final Handle handle = jdbi.open()) {
+      handle.getConnection().setAutoCommit(false);
+      handle.begin();
+      ogelList.stream().forEach(o -> transactionalDeleteLocalOgel(handle, o.getId()));
+      ogelList.stream().forEach(o -> transactionalInsertOgel(handle, o));
+      handle.commit();
+      handle.close();
+    }
+  }
+
+  private void transactionalDeleteLocalOgel(Handle handle, String ogelID) {
+    handle.execute("DELETE FROM LOCAL_OGEL WHERE ID = ?", ogelID);
+    handle.execute("DELETE FROM CONDITION_LIST WHERE OGELID = ? ", ogelID);
   }
 
   private void insertConditionListForOgel(Handle handle, String id, String type, String condition) {

@@ -23,6 +23,7 @@ import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -125,7 +126,7 @@ public class OgelResource {
     try {
       final List<LocalOgel> ogelList = jsonMapper.readValue(message,
           jsonMapper.getTypeFactory().constructCollectionType(List.class, LocalOgel.class));
-      ogelList.stream().forEach(localOgelService::insertOrUpdateOgel);
+      localOgelService.insertOgelList(ogelList);
     } catch (JsonParseException e) {
       LOGGER.error("An error occurred parsing the json request body", e);
       return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
@@ -135,6 +136,9 @@ public class OgelResource {
     } catch (IOException e) {
       LOGGER.error("Unexpected error occurred parsing the json", e);
       throw new RuntimeException("An error occurred reading/parsing the message body json.", e);
+    } catch (SQLException e) {
+      LOGGER.error("An error occurred persisting new local ogels data into database", e);
+      throw new RuntimeException("Database error", e);
     }
     return Response.status(Response.Status.CREATED).type(MediaType.APPLICATION_JSON).build();
   }

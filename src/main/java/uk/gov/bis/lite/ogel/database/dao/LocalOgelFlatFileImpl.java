@@ -8,6 +8,7 @@ import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgelLookUp;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 @Singleton
@@ -18,7 +19,7 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
 
   private static List<LocalOgel> localOgels;
 
-  public List <LocalOgel> getAllLocalOgels() {
+  public List<LocalOgel> getAllLocalOgels() {
     if (localOgels == null) {
       try {
         LOGGER.info("Storing the values retrieved from {}", LOCAL_OGEL_CONDITION_DATA_FILE);
@@ -43,7 +44,7 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   }
 
   @Override
-  public LocalOgel getOgelById(String ogelID){
+  public LocalOgel getOgelById(String ogelID) {
     if (localOgels == null) {
       getAllLocalOgels();
     }
@@ -85,5 +86,9 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   @Override
   public LocalOgel insertLocalOgel(LocalOgel localOgel) {
     return localOgel;
+  }
+
+  @Override
+  public void insertLocalOgels(List<LocalOgel> ogelList) throws SQLException {
   }
 }
