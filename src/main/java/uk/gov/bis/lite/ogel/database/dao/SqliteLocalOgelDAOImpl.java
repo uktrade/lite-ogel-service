@@ -9,11 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.Main;
 import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
-import uk.gov.bis.lite.ogel.database.utility.LocalOgelDBUtil;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,13 +23,6 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   @Inject
   public SqliteLocalOgelDAOImpl(@Named("jdbi") DBI jdbi) {
     this.jdbi = jdbi;
-    try {
-      final List<LocalOgel> localOgels = LocalOgelDBUtil.retrieveAllOgelsFromJSON();
-      localOgels.stream().forEach(o -> insertLocalOgel(o));
-    } catch (IOException e) {
-      e.printStackTrace();
-      LOGGER.warn("An error occurred while populating the database ", e);
-    }
   }
 
   @Override
