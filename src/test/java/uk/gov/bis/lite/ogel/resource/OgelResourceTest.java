@@ -43,7 +43,7 @@ import javax.ws.rs.core.Response;
 import javax.xml.soap.SOAPException;
 import javax.xml.xpath.XPathExpressionException;
 
-public class SpireMergedOgelViewResourceTest {
+public class OgelResourceTest {
 
   private static final SpireOgelService ogelSpireService = Mockito.mock(SpireOgelService.class);
   private static final LocalOgelService ogelLocalService = Mockito.mock(LocalOgelService.class);
@@ -53,7 +53,7 @@ public class SpireMergedOgelViewResourceTest {
 
   @ClassRule
   public static final ResourceTestRule resources = ResourceTestRule.builder()
-      .addResource(new SpireMergedOgelViewResource(ogelSpireService, ogelLocalService))
+      .addResource(new OgelResource(ogelSpireService, ogelLocalService))
       .addResource(new OgelNotFoundException.OgelNotFoundExceptionHandler())
       .addResource(new LocalOgelNotFoundException.LocalOgelNotFoundExceptionHandler())
       .addResource(new AuthDynamicFeature(

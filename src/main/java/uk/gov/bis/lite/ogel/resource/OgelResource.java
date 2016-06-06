@@ -37,16 +37,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/ogel")
+@Path("/ogels")
 @Produces(MediaType.APPLICATION_JSON)
-public class SpireMergedOgelViewResource {
-  private static final Logger LOGGER = LoggerFactory.getLogger(SpireMergedOgelViewResource.class);
+public class OgelResource {
+  private static final Logger LOGGER = LoggerFactory.getLogger(OgelResource.class);
 
   private final SpireOgelService ogelService;
   private final LocalOgelService localOgelService;
 
   @Inject
-  public SpireMergedOgelViewResource(SpireOgelService ogelService, LocalOgelService localOgelService) {
+  public OgelResource(SpireOgelService ogelService, LocalOgelService localOgelService) {
     this.ogelService = ogelService;
     this.localOgelService = localOgelService;
   }
@@ -118,7 +118,7 @@ public class SpireMergedOgelViewResource {
   }
 
   @PUT
-  @Path("bulk")
+  @Path("/")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response insertOgelArray(@Auth PrincipalImpl user, String message) {
     ObjectMapper jsonMapper = new ObjectMapper();
@@ -128,10 +128,13 @@ public class SpireMergedOgelViewResource {
       ogelList.stream().forEach(localOgelService::insertOrUpdateOgel);
     } catch (JsonParseException e) {
       LOGGER.error("An error occurred parsing the json request body", e);
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
     } catch (JsonMappingException e) {
       LOGGER.error("An error occurred deserializing the json", e);
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
     } catch (IOException e) {
       LOGGER.error("Unexpected error occurred parsing the json", e);
+      throw new RuntimeException("An error occurred reading/parsing the message body json.", e);
     }
     return Response.status(Response.Status.CREATED).type(MediaType.APPLICATION_JSON).build();
   }

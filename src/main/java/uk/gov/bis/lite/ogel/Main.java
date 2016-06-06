@@ -26,7 +26,7 @@ import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
 import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
 import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.database.exception.SOAPParseExceptionHandler;
-import uk.gov.bis.lite.ogel.resource.SpireMergedOgelViewResource;
+import uk.gov.bis.lite.ogel.resource.OgelResource;
 import uk.gov.bis.lite.ogel.resource.SpireOgelResource;
 import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
@@ -49,7 +49,7 @@ public class Main extends Application<MainApplicationConfiguration> {
     final SpireOgelService ogelService = injector.getInstance(SpireOgelService.class);
 
     environment.jersey().register(SpireOgelResource.class);
-    environment.jersey().register(SpireMergedOgelViewResource.class);
+    environment.jersey().register(OgelResource.class);
     environment.jersey().register(OgelNotFoundException.OgelNotFoundExceptionHandler.class);
     environment.jersey().register(LocalOgelNotFoundException.LocalOgelNotFoundExceptionHandler.class);
     environment.jersey().register(SOAPParseExceptionHandler.class);
