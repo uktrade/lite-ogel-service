@@ -1,8 +1,11 @@
 package uk.gov.bis.lite.ogel.resource;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -20,6 +23,7 @@ import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,16 +38,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/ogel")
+@Path("/ogels")
 @Produces(MediaType.APPLICATION_JSON)
-public class SpireMergedOgelViewResource {
-  private static final Logger LOGGER = LoggerFactory.getLogger(SpireMergedOgelViewResource.class);
+public class OgelResource {
+  private static final Logger LOGGER = LoggerFactory.getLogger(OgelResource.class);
 
   private final SpireOgelService ogelService;
   private final LocalOgelService localOgelService;
 
   @Inject
-  public SpireMergedOgelViewResource(SpireOgelService ogelService, LocalOgelService localOgelService) {
+  public OgelResource(SpireOgelService ogelService, LocalOgelService localOgelService) {
     this.ogelService = ogelService;
     this.localOgelService = localOgelService;
   }
@@ -53,8 +57,7 @@ public class SpireMergedOgelViewResource {
   @Produces(MediaType.APPLICATION_JSON)
   public OgelFullView getOgelByOgelID(@NotNull @PathParam("id") String ogelId)
       throws OgelNotFoundException, LocalOgelNotFoundException, SOAPParseException {
-    List<SpireOgel> ogelList = ogelService.getAllOgels();
-    final SpireOgel foundSpireOgel = ogelService.findSpireOgelById(ogelList, ogelId);
+    final SpireOgel foundSpireOgel = ogelService.findSpireOgelById(ogelId);
     LocalOgel localOgelFound = localOgelService.findLocalOgelById(ogelId);
     return new OgelFullView(foundSpireOgel, localOgelFound);
   }
@@ -85,8 +88,58 @@ public class SpireMergedOgelViewResource {
     try {
       return Response.accepted(localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName)).build();
     } catch (Exception e) {
-      LOGGER.error("An error occurred processing the PUT request for ogel with ID {}", ogelId, e);
+      LOGGER.error("An unexpected error occurred processing updating the ogel with ID {}", ogelId, e);
       throw new RuntimeException("Update Request Unsuccessful " + e);
     }
+  }
+
+  @PUT
+  @Path("/{id}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response insertOrUpdateOgel(@Auth PrincipalImpl user,
+                                     @NotNull @PathParam("id") String ogelId,
+                                     String message) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    try {
+      LocalOgel localOgel = objectMapper.readValue(message, LocalOgel.class);
+      ogelService.findSpireOgelById(ogelId);
+
+      localOgelService.insertOrUpdateOgel(localOgel);
+      return Response.status(Response.Status.CREATED).type(MediaType.APPLICATION_JSON).build();
+    } catch (OgelNotFoundException e) {
+      LOGGER.error("There is no ogel found with ID {}", ogelId);
+      return Response.status(NOT_FOUND.getStatusCode()).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+    } catch (IOException e) {
+      LOGGER.error("An error occurred converting request body json to an object", e);
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
+    } catch (Exception e) {
+      LOGGER.error("An unexpected error occurred processing handling the insert new or update ogel request with ID {}", ogelId, e);
+      throw new RuntimeException("Request Unsuccessful " + e);
+    }
+  }
+
+  @PUT
+  @Path("/")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response insertOgelArray(@Auth PrincipalImpl user, String message) {
+    ObjectMapper jsonMapper = new ObjectMapper();
+    try {
+      final List<LocalOgel> ogelList = jsonMapper.readValue(message,
+          jsonMapper.getTypeFactory().constructCollectionType(List.class, LocalOgel.class));
+      localOgelService.insertOgelList(ogelList);
+    } catch (JsonParseException e) {
+      LOGGER.error("An error occurred parsing the json request body", e);
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
+    } catch (JsonMappingException e) {
+      LOGGER.error("An error occurred deserializing the json", e);
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
+    } catch (IOException e) {
+      LOGGER.error("Unexpected error occurred parsing the json", e);
+      throw new RuntimeException("An error occurred reading/parsing the message body json.", e);
+    } catch (SQLException e) {
+      LOGGER.error("An error occurred persisting new local ogels data into database", e);
+      throw new RuntimeException("Database error", e);
+    }
+    return Response.status(Response.Status.CREATED).type(MediaType.APPLICATION_JSON).build();
   }
 }

@@ -4,11 +4,11 @@ import com.google.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.database.ListJsonMapper;
-import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgelLookUp;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 @Singleton
@@ -19,7 +19,7 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
 
   private static List<LocalOgel> localOgels;
 
-  public List <LocalOgel> getAllLocalOgels() {
+  public List<LocalOgel> getAllLocalOgels() {
     if (localOgels == null) {
       try {
         LOGGER.info("Storing the values retrieved from {}", LOCAL_OGEL_CONDITION_DATA_FILE);
@@ -44,7 +44,7 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   }
 
   @Override
-  public LocalOgel getOgelById(String ogelID){
+  public LocalOgel getOgelById(String ogelID) {
     if (localOgels == null) {
       getAllLocalOgels();
     }
@@ -75,6 +75,20 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   }
 
   @Override
-  public void insertLocalOgel(LocalOgel localOgel) {
+  public void deleteOgel(String id) {
+  }
+
+  @Override
+  public LocalOgel insertOrUpdate(LocalOgel ogel) {
+    return null;
+  }
+
+  @Override
+  public LocalOgel insertLocalOgel(LocalOgel localOgel) {
+    return localOgel;
+  }
+
+  @Override
+  public void insertLocalOgels(List<LocalOgel> ogelList) throws SQLException {
   }
 }
