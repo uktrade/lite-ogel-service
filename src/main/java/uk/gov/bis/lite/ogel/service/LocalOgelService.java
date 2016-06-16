@@ -15,7 +15,7 @@ public class LocalOgelService {
   @Inject
   private LocalOgelDAO localOgelDAO;
 
-  public LocalOgel updateSpireOgelCondition(String ogelID, List<String> newConditionList, String conditionField) throws Exception {
+  public LocalOgel updateSpireOgelCondition(String ogelID, List<String> newConditionList, String conditionField) {
     return localOgelDAO.updateOgelConditionList(ogelID, newConditionList, conditionField);
   }
 
@@ -29,5 +29,9 @@ public class LocalOgelService {
 
   public void insertOgelList(List<LocalOgel> ogelList) throws SQLException {
     localOgelDAO.insertLocalOgels(ogelList);
+  }
+
+  public List<LocalOgel> getAllLocalOgels() {
+    return localOgelDAO.getAllOgels();
   }
 }

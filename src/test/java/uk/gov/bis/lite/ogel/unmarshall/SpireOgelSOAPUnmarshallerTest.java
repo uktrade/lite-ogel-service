@@ -3,12 +3,12 @@ package uk.gov.bis.lite.ogel.unmarshall;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import uk.gov.bis.lite.ogel.client.unmarshall.SpireOgelSOAPUnmarshaller;
-import uk.gov.bis.lite.ogel.model.SpireOgel;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import uk.gov.bis.lite.ogel.client.unmarshall.SpireOgelSOAPUnmarshaller;
+import uk.gov.bis.lite.ogel.model.SpireOgel;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,7 +16,6 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.SOAPException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -25,7 +24,7 @@ import javax.xml.xpath.XPathFactory;
 public class SpireOgelSOAPUnmarshallerTest {
 
   @Test
-  public void testExecute() throws SOAPException, IOException, SAXException, ParserConfigurationException, XPathExpressionException {
+  public void testExecute() throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document document = builder.parse(ClassLoader.getSystemResourceAsStream("sample_ogel.xml"));

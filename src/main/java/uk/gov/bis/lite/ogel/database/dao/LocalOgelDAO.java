@@ -10,7 +10,7 @@ public interface LocalOgelDAO {
 
   LocalOgel getOgelById(String ogelID) throws LocalOgelNotFoundException;
 
-  LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) throws Exception;
+  LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName);
 
   LocalOgel insertLocalOgel(LocalOgel localOgel);
 
@@ -19,4 +19,6 @@ public interface LocalOgelDAO {
   LocalOgel insertOrUpdate(LocalOgel ogel);
 
   void insertLocalOgels(List<LocalOgel> ogelList) throws SQLException;
+
+  List<LocalOgel> getAllOgels();
 }

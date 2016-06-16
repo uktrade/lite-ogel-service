@@ -8,7 +8,6 @@ import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgelLookUp;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 @Singleton
@@ -19,7 +18,8 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
 
   private static List<LocalOgel> localOgels;
 
-  public List<LocalOgel> getAllLocalOgels() {
+  @Override
+  public List<LocalOgel> getAllOgels() {
     if (localOgels == null) {
       try {
         LOGGER.info("Storing the values retrieved from {}", LOCAL_OGEL_CONDITION_DATA_FILE);
@@ -46,13 +46,13 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   @Override
   public LocalOgel getOgelById(String ogelID) {
     if (localOgels == null) {
-      getAllLocalOgels();
+      getAllOgels();
     }
     return localOgels.stream().filter(o -> o.getId().equalsIgnoreCase(ogelID)).findFirst().orElse(null);
   }
 
   @Override
-  public LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) throws Exception {
+  public LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) {
     final LocalOgel foundOgelCondition = getOgelById(ogelID);
     switch (fieldName) {
       case "canList":
@@ -69,7 +69,6 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
         break;
       default:
         LOGGER.error("Update operation unsuccessful. Invalid condition field name " + fieldName);
-        throw new RuntimeException("Invalid local ogel condition parameter " + fieldName);
     }
     return foundOgelCondition;
   }
@@ -89,6 +88,6 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   }
 
   @Override
-  public void insertLocalOgels(List<LocalOgel> ogelList) throws SQLException {
+  public void insertLocalOgels(List<LocalOgel> ogelList) {
   }
 }

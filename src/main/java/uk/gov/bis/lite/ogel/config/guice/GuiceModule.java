@@ -44,7 +44,6 @@ public class GuiceModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    System.out.println("Inside Guice Module Config");
     bind(SchedulerConfiguration.class).toInstance(new SchedulerConfiguration("uk.gov.bis.lite.ogel"));
     bind(CacheManager.class).toInstance(CacheManager.create());
     bind(LocalOgelDAO.class).to(SqliteLocalOgelDAOImpl.class);

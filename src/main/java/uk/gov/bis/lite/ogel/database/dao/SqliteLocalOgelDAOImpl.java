@@ -22,17 +22,27 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   }
 
   @Override
+  public List<LocalOgel> getAllOgels() {
+    try (final Handle handle = jdbi.open()) {
+      List<LocalOgel> list = handle.createQuery("SELECT ID, NAME FROM LOCAL_OGEL ORDER BY ROWID")
+          .map(LocalOgel.class).list();
+      list.stream().forEach(lo -> lo.setSummary(getConditionList(handle, lo.getId())));
+      return list;
+    }
+  }
+
+  @Override
   public LocalOgel getOgelById(String ogelID) throws LocalOgelNotFoundException {
     LocalOgel ogel = new LocalOgel();
     try (final Handle handle = jdbi.open()) {
-      final Map<String, Object> objectMap = handle.createQuery("SELECT ID, NAME FROM LOCAL_OGEL WHERE ID=:id").bind("id", ogelID).first();
-      if (objectMap == null) {
+      final Map<String, Object> selectQuery = handle.createQuery("SELECT ID, NAME FROM LOCAL_OGEL WHERE ID=:id").bind("id", ogelID).first();
+      if (selectQuery == null) {
         throw new LocalOgelNotFoundException(ogelID);
       }
-      ogel.setId(objectMap.get("id").toString());
+      ogel.setId(selectQuery.get("id").toString());
       //null check for when checking if localOgel exists with just ID
-      if (objectMap.get("name") != null) {
-        ogel.setName(objectMap.get("name").toString());
+      if (selectQuery.get("name") != null) {
+        ogel.setName(selectQuery.get("name").toString());
       }
       OgelConditionSummary summary = getConditionList(handle, ogelID);
       ogel.setSummary(summary);
@@ -57,7 +67,7 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   }
 
   @Override
-  public LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) throws Exception {
+  public LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) {
     try (final Handle handle = jdbi.open()) {
       handle.execute("DELETE FROM CONDITION_LIST WHERE OGELID = ? AND TYPE = ?", ogelID, fieldName);
       updateData.stream().forEach(u -> insertConditionListForOgel(handle, ogelID, fieldName, u));

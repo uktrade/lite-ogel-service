@@ -5,7 +5,6 @@ import com.fiestacabin.dropwizard.quartz.ManagedScheduler;
 import com.fiestacabin.dropwizard.quartz.SchedulerConfiguration;
 import com.google.inject.Injector;
 import com.google.inject.Stage;
-import com.hubspot.dropwizard.guice.GuiceBundle;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
@@ -20,6 +19,8 @@ import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.vyarus.dropwizard.guice.GuiceBundle;
+import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.config.cache.CacheConfig;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
@@ -48,8 +49,6 @@ public class Main extends Application<MainApplicationConfiguration> {
     final CacheManager cacheManager = CacheManager.getInstance();
     final SpireOgelService ogelService = injector.getInstance(SpireOgelService.class);
 
-    environment.jersey().register(SpireOgelResource.class);
-    environment.jersey().register(OgelResource.class);
     environment.jersey().register(OgelNotFoundException.OgelNotFoundExceptionHandler.class);
     environment.jersey().register(LocalOgelNotFoundException.LocalOgelNotFoundExceptionHandler.class);
     environment.jersey().register(SOAPParseExceptionHandler.class);
@@ -78,9 +77,10 @@ public class Main extends Application<MainApplicationConfiguration> {
 
   @Override
   public void initialize(Bootstrap<MainApplicationConfiguration> bootstrap) {
-    guiceBundle = GuiceBundle.<MainApplicationConfiguration>newBuilder()
-        .addModule(new GuiceModule())
-        .setConfigClass(MainApplicationConfiguration.class)
+    guiceBundle = GuiceBundle.<MainApplicationConfiguration>builder()
+        .modules(new GuiceModule())
+        .installers(ResourceInstaller.class)
+        .extensions(OgelResource.class, SpireOgelResource.class)
         .build(Stage.PRODUCTION);
 
     bootstrap.addBundle(guiceBundle);

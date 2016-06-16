@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
@@ -50,6 +51,15 @@ public class OgelResource {
   public OgelResource(SpireOgelService ogelService, LocalOgelService localOgelService) {
     this.ogelService = ogelService;
     this.localOgelService = localOgelService;
+  }
+
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public List<OgelFullView> getAllOgels()
+      throws OgelNotFoundException, LocalOgelNotFoundException, SOAPParseException {
+    List<LocalOgel> allLocalOgels = localOgelService.getAllLocalOgels();
+    return allLocalOgels.stream()
+        .map(lo -> new OgelFullView(ogelService.findSpireOgelByIdOrReturnNull(lo.getId()), lo)).collect(Collectors.toList());
   }
 
   @GET
@@ -78,15 +88,13 @@ public class OgelResource {
       while (jsonConditionArrayIterator.hasNext()) {
         updateConditionDataList.add(jsonConditionArrayIterator.next().asText());
       }
+      return Response.accepted(localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName)).build();
     } catch (JsonProcessingException e) {
       LOGGER.error("Badly formed Json request body {}", message, e);
       return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
     } catch (IOException e) {
       LOGGER.error("An error occurred processing the PUT request for ogel with ID {}", ogelId, e);
       throw new RuntimeException("An error occurred updating the Ogel.", e);
-    }
-    try {
-      return Response.accepted(localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName)).build();
     } catch (Exception e) {
       LOGGER.error("An unexpected error occurred processing updating the ogel with ID {}", ogelId, e);
       throw new RuntimeException("Update Request Unsuccessful " + e);
@@ -119,7 +127,6 @@ public class OgelResource {
   }
 
   @PUT
-  @Path("/")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response insertOgelArray(@Auth PrincipalImpl user, String message) {
     ObjectMapper jsonMapper = new ObjectMapper();

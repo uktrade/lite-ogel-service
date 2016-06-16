@@ -60,4 +60,9 @@ public class SpireOgelService {
     return ogelList.stream().filter(ogel -> ogel.getId().equalsIgnoreCase(id)).findFirst()
         .orElseThrow(() -> new OgelNotFoundException(id));
   }
+
+  public SpireOgel findSpireOgelByIdOrReturnNull(String id){
+    final List<SpireOgel> ogelList = getAllOgels();
+    return ogelList.stream().filter(ogel -> ogel.getId().equalsIgnoreCase(id)).findFirst().orElse(null);
+  }
 }
