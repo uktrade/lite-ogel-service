@@ -1,6 +1,7 @@
 package uk.gov.bis.lite.ogel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
@@ -8,7 +9,8 @@ import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
 
 import java.io.Serializable;
 
-@JsonPropertyOrder({"id", "description", "link", "summary"})
+@JsonPropertyOrder({"id", "name", "description", "link", "summary"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OgelFullView implements Serializable {
 
   private SpireOgel spireOgel;
@@ -27,6 +29,11 @@ public class OgelFullView implements Serializable {
   @JsonIgnore
   public LocalOgel getLocalOgel() {
     return localOgel;
+  }
+
+  @JsonProperty("name")
+  public String getOgelName() {
+    return localOgel.getName();
   }
 
   @JsonProperty("id")

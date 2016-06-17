@@ -3,7 +3,6 @@ package uk.gov.bis.lite.ogel.service;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import uk.gov.bis.lite.ogel.database.dao.LocalOgelDAO;
-import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 
 import java.sql.SQLException;
@@ -16,10 +15,10 @@ public class LocalOgelService {
   private LocalOgelDAO localOgelDAO;
 
   public LocalOgel updateSpireOgelCondition(String ogelID, List<String> newConditionList, String conditionField) {
-    return localOgelDAO.updateOgelConditionList(ogelID, newConditionList, conditionField);
+    return localOgelDAO.updateSingleOgelConditionList(ogelID, newConditionList, conditionField);
   }
 
-  public LocalOgel findLocalOgelById(String id) throws LocalOgelNotFoundException {
+  public LocalOgel findLocalOgelById(String id) {
     return localOgelDAO.getOgelById(id);
   }
 

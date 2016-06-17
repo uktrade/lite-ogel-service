@@ -1,7 +1,7 @@
 package uk.gov.bis.lite.ogel.resource;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,7 +13,6 @@ import io.dropwizard.auth.Auth;
 import io.dropwizard.auth.PrincipalImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
 import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.database.exception.SOAPParseException;
 import uk.gov.bis.lite.ogel.model.OgelFullView;
@@ -56,7 +55,7 @@ public class OgelResource {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<OgelFullView> getAllOgels()
-      throws OgelNotFoundException, LocalOgelNotFoundException, SOAPParseException {
+      throws OgelNotFoundException, SOAPParseException {
     List<LocalOgel> allLocalOgels = localOgelService.getAllLocalOgels();
     return allLocalOgels.stream()
         .map(lo -> new OgelFullView(ogelService.findSpireOgelByIdOrReturnNull(lo.getId()), lo)).collect(Collectors.toList());
@@ -66,14 +65,17 @@ public class OgelResource {
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public OgelFullView getOgelByOgelID(@NotNull @PathParam("id") String ogelId)
-      throws OgelNotFoundException, LocalOgelNotFoundException, SOAPParseException {
-    final SpireOgel foundSpireOgel = ogelService.findSpireOgelById(ogelId);
+      throws OgelNotFoundException, SOAPParseException {
+    SpireOgel foundSpireOgel = ogelService.findSpireOgelById(ogelId);
     LocalOgel localOgelFound = localOgelService.findLocalOgelById(ogelId);
+    if(localOgelFound == null){
+      LOGGER.warn("Local Ogel Not Found for ogel ID: {}", ogelId);
+    }
     return new OgelFullView(foundSpireOgel, localOgelFound);
   }
 
   @PUT
-  @Path("{id}/summary-data/{conditionFieldName}")
+  @Path("{id}/summary/{conditionFieldName}")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response updateOgelCondition(
       @Auth PrincipalImpl user,
@@ -84,7 +86,7 @@ public class OgelResource {
     ObjectMapper mapper = new ObjectMapper();
     List<String> updateConditionDataList = new ArrayList<>();
     try {
-      final Iterator<JsonNode> jsonConditionArrayIterator = mapper.readTree(message).iterator();
+      Iterator<JsonNode> jsonConditionArrayIterator = mapper.readTree(message).iterator();
       while (jsonConditionArrayIterator.hasNext()) {
         updateConditionDataList.add(jsonConditionArrayIterator.next().asText());
       }
@@ -112,11 +114,12 @@ public class OgelResource {
       LocalOgel localOgel = objectMapper.readValue(message, LocalOgel.class);
       ogelService.findSpireOgelById(ogelId);
 
+      localOgel.setId(ogelId);
       localOgelService.insertOrUpdateOgel(localOgel);
-      return Response.status(Response.Status.CREATED).type(MediaType.APPLICATION_JSON).build();
+      return Response.status(Response.Status.CREATED).entity(localOgel).type(MediaType.APPLICATION_JSON).build();
     } catch (OgelNotFoundException e) {
       LOGGER.error("There is no ogel found with ID {}", ogelId);
-      return Response.status(NOT_FOUND.getStatusCode()).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+      return Response.status(INTERNAL_SERVER_ERROR.getStatusCode()).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
     } catch (IOException e) {
       LOGGER.error("An error occurred converting request body json to an object", e);
       return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
@@ -136,7 +139,7 @@ public class OgelResource {
       localOgelService.insertOgelList(ogelList);
     } catch (JsonParseException e) {
       LOGGER.error("An error occurred parsing the json request body", e);
-      return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
     } catch (JsonMappingException e) {
       LOGGER.error("An error occurred deserializing the json", e);
       return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();

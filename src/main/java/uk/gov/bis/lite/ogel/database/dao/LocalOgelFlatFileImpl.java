@@ -52,7 +52,7 @@ public class LocalOgelFlatFileImpl implements LocalOgelDAO {
   }
 
   @Override
-  public LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) {
+  public LocalOgel updateSingleOgelConditionList(String ogelID, List<String> updateData, String fieldName) {
     final LocalOgel foundOgelCondition = getOgelById(ogelID);
     switch (fieldName) {
       case "canList":

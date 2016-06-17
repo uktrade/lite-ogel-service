@@ -24,7 +24,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
-import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
 import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
@@ -55,7 +54,6 @@ public class OgelResourceTest {
   public static final ResourceTestRule resources = ResourceTestRule.builder()
       .addResource(new OgelResource(ogelSpireService, ogelLocalService))
       .addResource(new OgelNotFoundException.OgelNotFoundExceptionHandler())
-      .addResource(new LocalOgelNotFoundException.LocalOgelNotFoundExceptionHandler())
       .addResource(new AuthDynamicFeature(
           new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
               .setAuthenticator(new TestAuthenticator())
@@ -109,15 +107,14 @@ public class OgelResourceTest {
   }
 
   @Test
-  public void LocalOgelNotFoundExceptionIsHandled() throws LocalOgelNotFoundException {
+  public void LocalOgelNotFoundCaseIsHandled() {
     SpireOgel spireOgel = new SpireOgel();
     spireOgel.setId("OGL1");
     spireOgel.setCategory(CategoryType.REPAIR);
     when(ogelSpireService.findSpireOgelById(anyString())).thenReturn(spireOgel);
-    when(ogelLocalService.findLocalOgelById((anyString()))).thenThrow(new LocalOgelNotFoundException("unknown"));
+    when(ogelLocalService.findLocalOgelById((anyString()))).thenReturn(null);
     Response response = resources.client().target("/ogel/unknown").request().get();
-    assertEquals(500, response.getStatus());
-    assertEquals("An unexpected error occurred. Failed to find local OGEL entry with ID: unknown", response.readEntity(String.class));
+    assertEquals(404, response.getStatus());
   }
 
   @Test

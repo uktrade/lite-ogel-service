@@ -24,7 +24,6 @@ import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstal
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.config.cache.CacheConfig;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
-import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
 import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.database.exception.SOAPParseExceptionHandler;
 import uk.gov.bis.lite.ogel.resource.OgelResource;
@@ -50,7 +49,6 @@ public class Main extends Application<MainApplicationConfiguration> {
     final SpireOgelService ogelService = injector.getInstance(SpireOgelService.class);
 
     environment.jersey().register(OgelNotFoundException.OgelNotFoundExceptionHandler.class);
-    environment.jersey().register(LocalOgelNotFoundException.LocalOgelNotFoundExceptionHandler.class);
     environment.jersey().register(SOAPParseExceptionHandler.class);
     //Authorization and authentication handlers
     environment.jersey().register(new AuthDynamicFeature(
