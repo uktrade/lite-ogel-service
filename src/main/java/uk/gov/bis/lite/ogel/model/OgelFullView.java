@@ -33,6 +33,9 @@ public class OgelFullView implements Serializable {
 
   @JsonProperty("name")
   public String getOgelName() {
+    if(localOgel == null){
+      return "";
+    }
     return localOgel.getName();
   }
 
@@ -43,6 +46,9 @@ public class OgelFullView implements Serializable {
 
   @JsonProperty("summary")
   public OgelConditionSummary getSummary() {
+    if(localOgel == null){
+      return new OgelConditionSummary();
+    }
     return localOgel.getSummary();
   }
 

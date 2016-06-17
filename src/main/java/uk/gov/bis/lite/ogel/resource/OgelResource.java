@@ -24,7 +24,6 @@ import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,9 +85,8 @@ public class OgelResource {
     ObjectMapper mapper = new ObjectMapper();
     List<String> updateConditionDataList = new ArrayList<>();
     try {
-      Iterator<JsonNode> jsonConditionArrayIterator = mapper.readTree(message).iterator();
-      while (jsonConditionArrayIterator.hasNext()) {
-        updateConditionDataList.add(jsonConditionArrayIterator.next().asText());
+      for (JsonNode jsonNode : mapper.readTree(message)) {
+        updateConditionDataList.add(jsonNode.asText());
       }
       return Response.accepted(localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName)).build();
     } catch (JsonProcessingException e) {
@@ -112,6 +110,9 @@ public class OgelResource {
     ObjectMapper objectMapper = new ObjectMapper();
     try {
       LocalOgel localOgel = objectMapper.readValue(message, LocalOgel.class);
+      if(localOgel.getName() == null && localOgel.getSummary() == null){
+        return Response.status(BAD_REQUEST.getStatusCode()).entity("Invalid or empty property name found in the request json").build();
+      }
       ogelService.findSpireOgelById(ogelId);
 
       localOgel.setId(ogelId);
