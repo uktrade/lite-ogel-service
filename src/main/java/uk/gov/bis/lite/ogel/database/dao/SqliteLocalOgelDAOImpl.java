@@ -25,7 +25,7 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
     try (final Handle handle = jdbi.open()) {
       List<LocalOgel> list = handle.createQuery("SELECT ID, NAME FROM LOCAL_OGEL ORDER BY ROWID")
           .map(LocalOgel.class).list();
-      list.stream().forEach(lo -> lo.setSummary(getConditionList(handle, lo.getId())));
+      list.forEach(lo -> lo.setSummary(getConditionList(handle, lo.getId())));
       return list;
     }
   }
@@ -54,7 +54,7 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   public LocalOgel updateSingleOgelConditionList(String ogelID, List<String> updateData, String fieldName) {
     try (final Handle handle = jdbi.open()) {
       handle.execute("DELETE FROM CONDITION_LIST WHERE OGELID = ? AND TYPE = ?", ogelID, fieldName);
-      updateData.stream().forEach(u -> insertConditionListForOgel(handle, ogelID, fieldName, u));
+      updateData.forEach(u -> insertConditionListForOgel(handle, ogelID, fieldName, u));
     }
     return getOgelById(ogelID);
   }
@@ -69,10 +69,10 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
 
   private LocalOgel transactionalInsertOgel(Handle handle, LocalOgel localOgel) {
     handle.execute("INSERT INTO LOCAL_OGEL(ID, NAME) VALUES (?, ?)", localOgel.getId(), localOgel.getName());
-    localOgel.getSummary().getCanList().stream().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "canList", condition));
-    localOgel.getSummary().getCantList().stream().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "cantList", condition));
-    localOgel.getSummary().getMustList().stream().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "mustList", condition));
-    localOgel.getSummary().getHowToUseList().stream().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "howToUseList", condition));
+    localOgel.getSummary().getCanList().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "canList", condition));
+    localOgel.getSummary().getCantList().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "cantList", condition));
+    localOgel.getSummary().getMustList().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "mustList", condition));
+    localOgel.getSummary().getHowToUseList().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "howToUseList", condition));
     return localOgel;
   }
 
@@ -106,8 +106,8 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
     try (final Handle handle = jdbi.open()) {
       handle.getConnection().setAutoCommit(false);
       handle.begin();
-      ogelList.stream().forEach(o -> transactionalDeleteLocalOgel(handle, o.getId()));
-      ogelList.stream().forEach(o -> transactionalInsertOgel(handle, o));
+      ogelList.forEach(o -> transactionalDeleteLocalOgel(handle, o.getId()));
+      ogelList.forEach(o -> transactionalInsertOgel(handle, o));
       handle.commit();
       handle.close();
     }
