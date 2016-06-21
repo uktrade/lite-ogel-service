@@ -7,7 +7,6 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
-import net.sf.ehcache.CacheManager;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
@@ -45,7 +44,6 @@ public class GuiceModule extends AbstractModule {
   @Override
   protected void configure() {
     bind(SchedulerConfiguration.class).toInstance(new SchedulerConfiguration("uk.gov.bis.lite.ogel"));
-    bind(CacheManager.class).toInstance(CacheManager.create());
     bind(LocalOgelDAO.class).to(SqliteLocalOgelDAOImpl.class);
   }
 

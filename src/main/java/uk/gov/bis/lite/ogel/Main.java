@@ -12,9 +12,6 @@ import io.dropwizard.auth.PrincipalImpl;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.constructs.blocking.SelfPopulatingCache;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
@@ -22,21 +19,22 @@ import org.slf4j.LoggerFactory;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
-import uk.gov.bis.lite.ogel.config.cache.CacheConfig;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
 import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.database.exception.SOAPParseExceptionHandler;
+import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.resource.OgelResource;
 import uk.gov.bis.lite.ogel.resource.SpireOgelResource;
 import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
-import uk.gov.bis.lite.ogel.service.SpireOgelService;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main extends Application<MainApplicationConfiguration> {
   private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-  public static final String CACHE_NAME = "ogelCache";
-  public static final String CACHE_KEY = "ogelList";
   private GuiceBundle<MainApplicationConfiguration> guiceBundle;
   private SchedulerFactory sf = new StdSchedulerFactory();
+  public static Map<String, SpireOgel> cache = new HashMap<>();
 
   public static void main(String[] args) throws Exception {
     new Main().run(args);
@@ -45,23 +43,15 @@ public class Main extends Application<MainApplicationConfiguration> {
   @Override
   public void run(MainApplicationConfiguration configuration, Environment environment) {
     final Injector injector = guiceBundle.getInjector();
-    final CacheManager cacheManager = CacheManager.getInstance();
-    final SpireOgelService ogelService = injector.getInstance(SpireOgelService.class);
 
     environment.jersey().register(OgelNotFoundException.OgelNotFoundExceptionHandler.class);
     environment.jersey().register(SOAPParseExceptionHandler.class);
     //Authorization and authentication handlers
-    environment.jersey().register(new AuthDynamicFeature(
-        new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
+    environment.jersey().register(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
             .setAuthenticator(new SimpleAuthenticator(configuration.getLogin(), configuration.getPassword()))
             .setRealm("OGEL Service Admin Authentication")
             .buildAuthFilter()));
     environment.jersey().register(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class));
-
-    Cache customCache = cacheManager.getCache(CACHE_NAME);
-    SelfPopulatingCache selfPopulatingCache = new CacheConfig().createSelfPopulatingCacheFromEhCache(customCache, ogelService);
-
-    cacheManager.replaceCacheWithDecoratedCache(customCache, selfPopulatingCache);
 
     final GuiceJobFactory guiceJobFactory = injector.getInstance(GuiceJobFactory.class);
     final SchedulerConfiguration schedulerConfiguration = injector.getInstance(SchedulerConfiguration.class);

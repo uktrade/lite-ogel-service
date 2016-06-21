@@ -43,8 +43,8 @@ public class SpireOgelConditionUnmarshaller implements SpireOgelUnmarshaller {
             ogelCondition.setIncludedCountries(includedCountriesList);
             ogelCondition.setId(Integer.parseInt(((Node) xpath.evaluate(CONDITION_NO_EXPRESSION,
                 singleConditionNode, XPathConstants.NODE)).getTextContent()));
+            ogelConditions.add(ogelCondition);
           }
-          ogelConditions.add(ogelCondition);
         }
       }
       return ogelConditions;

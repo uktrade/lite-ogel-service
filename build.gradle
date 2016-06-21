@@ -18,7 +18,6 @@ dependencies {
       'io.dropwizard:dropwizard-jdbi:0.9.2',
       'io.dropwizard:dropwizard-auth:0.9.2',
       'ru.vyarus:dropwizard-guicey:3.2.0',
-      'net.sf.ehcache:ehcache:2.10.1',
       'com.fiestacabin.dropwizard.quartz:dropwizard-quartz:0.7.2',
       'org.xerial:sqlite-jdbc:3.8.11.2'
 

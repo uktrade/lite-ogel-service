@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.auth.PrincipalImpl;
+import io.dropwizard.jersey.errors.ErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
@@ -91,7 +92,7 @@ public class OgelResource {
       return Response.accepted(localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName)).build();
     } catch (JsonProcessingException e) {
       LOGGER.error("Badly formed Json request body {}", message, e);
-      return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
     } catch (IOException e) {
       LOGGER.error("An error occurred processing the PUT request for ogel with ID {}", ogelId, e);
       throw new RuntimeException("An error occurred updating the Ogel.", e);
@@ -120,10 +121,10 @@ public class OgelResource {
       return Response.status(Response.Status.CREATED).entity(localOgel).type(MediaType.APPLICATION_JSON).build();
     } catch (OgelNotFoundException e) {
       LOGGER.error("There is no ogel found with ID {}", ogelId);
-      return Response.status(INTERNAL_SERVER_ERROR.getStatusCode()).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+      return Response.status(INTERNAL_SERVER_ERROR.getStatusCode()).entity(new ErrorMessage(e.getMessage())).build();
     } catch (IOException e) {
       LOGGER.error("An error occurred converting request body json to an object", e);
-      return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
     } catch (Exception e) {
       LOGGER.error("An unexpected error occurred processing handling the insert new or update ogel request with ID {}", ogelId, e);
       throw new RuntimeException("Request Unsuccessful " + e);
@@ -140,10 +141,10 @@ public class OgelResource {
       localOgelService.insertOgelList(ogelList);
     } catch (JsonParseException e) {
       LOGGER.error("An error occurred parsing the json request body", e);
-      return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build();
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
     } catch (JsonMappingException e) {
       LOGGER.error("An error occurred deserializing the json", e);
-      return Response.status(BAD_REQUEST.getStatusCode()).entity(e.getMessage()).build();
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
     } catch (IOException e) {
       LOGGER.error("Unexpected error occurred parsing the json", e);
       throw new RuntimeException("An error occurred reading/parsing the message body json.", e);

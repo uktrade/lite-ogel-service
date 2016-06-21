@@ -68,11 +68,17 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   }
 
   private LocalOgel transactionalInsertOgel(Handle handle, LocalOgel localOgel) {
-    handle.execute("INSERT INTO LOCAL_OGEL(ID, NAME) VALUES (?, ?)", localOgel.getId(), localOgel.getName());
-    localOgel.getSummary().getCanList().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "canList", condition));
-    localOgel.getSummary().getCantList().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "cantList", condition));
-    localOgel.getSummary().getMustList().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "mustList", condition));
-    localOgel.getSummary().getHowToUseList().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "howToUseList", condition));
+    if (localOgel.getName() != null) {
+      handle.execute("INSERT INTO LOCAL_OGEL(ID, NAME) VALUES (?, ?)", localOgel.getId(), localOgel.getName());
+    } else { //insert only id no name
+      handle.execute("INSERT INTO LOCAL_OGEL(ID) VALUES (?)", localOgel.getId());
+    }
+    if (localOgel.getSummary() != null) {
+      localOgel.getSummary().getCanList().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "canList", condition));
+      localOgel.getSummary().getCantList().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "cantList", condition));
+      localOgel.getSummary().getMustList().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "mustList", condition));
+      localOgel.getSummary().getHowToUseList().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "howToUseList", condition));
+    }
     return localOgel;
   }
 
