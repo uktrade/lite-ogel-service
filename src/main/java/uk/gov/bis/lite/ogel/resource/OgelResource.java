@@ -64,11 +64,10 @@ public class OgelResource {
   @GET
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public OgelFullView getOgelByOgelID(@NotNull @PathParam("id") String ogelId)
-      throws OgelNotFoundException, SOAPParseException {
+  public OgelFullView getOgelByOgelID(@NotNull @PathParam("id") String ogelId) {
     SpireOgel foundSpireOgel = ogelService.findSpireOgelById(ogelId);
     LocalOgel localOgelFound = localOgelService.findLocalOgelById(ogelId);
-    if(localOgelFound == null){
+    if (localOgelFound == null) {
       LOGGER.warn("Local Ogel Not Found for ogel ID: {}", ogelId);
     }
     return new OgelFullView(foundSpireOgel, localOgelFound);
@@ -89,7 +88,8 @@ public class OgelResource {
       for (JsonNode jsonNode : mapper.readTree(message)) {
         updateConditionDataList.add(jsonNode.asText());
       }
-      return Response.accepted(localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName)).build();
+      localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName);
+      return Response.accepted(getOgelByOgelID(ogelId)).build();
     } catch (JsonProcessingException e) {
       LOGGER.error("Badly formed Json request body {}", message, e);
       return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
@@ -111,14 +111,14 @@ public class OgelResource {
     ObjectMapper objectMapper = new ObjectMapper();
     try {
       LocalOgel localOgel = objectMapper.readValue(message, LocalOgel.class);
-      if(localOgel.getName() == null && localOgel.getSummary() == null){
+      if (localOgel.getName() == null && localOgel.getSummary() == null) {
         return Response.status(BAD_REQUEST.getStatusCode()).entity("Invalid or empty property name found in the request json").build();
       }
       ogelService.findSpireOgelById(ogelId);
 
       localOgel.setId(ogelId);
       localOgelService.insertOrUpdateOgel(localOgel);
-      return Response.status(Response.Status.CREATED).entity(localOgel).type(MediaType.APPLICATION_JSON).build();
+      return Response.status(Response.Status.CREATED).entity(getOgelByOgelID(ogelId)).type(MediaType.APPLICATION_JSON).build();
     } catch (OgelNotFoundException e) {
       LOGGER.error("There is no ogel found with ID {}", ogelId);
       return Response.status(INTERNAL_SERVER_ERROR.getStatusCode()).entity(new ErrorMessage(e.getMessage())).build();
@@ -152,6 +152,6 @@ public class OgelResource {
       LOGGER.error("An error occurred persisting new local ogels data into database", e);
       throw new RuntimeException("Database error", e);
     }
-    return Response.status(Response.Status.CREATED).type(MediaType.APPLICATION_JSON).build();
+    return Response.status(Response.Status.CREATED).entity(getAllOgels()).type(MediaType.APPLICATION_JSON).build();
   }
 }

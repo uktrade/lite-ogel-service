@@ -57,6 +57,7 @@ public class GuiceModule extends AbstractModule {
   @Provides
   @Singleton
   Scheduler provideScheduler() throws SchedulerException {
-    return StdSchedulerFactory.getDefaultScheduler();
+    Scheduler defaultScheduler = StdSchedulerFactory.getDefaultScheduler();
+    return defaultScheduler;
   }
 }
