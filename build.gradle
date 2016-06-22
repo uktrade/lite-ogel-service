@@ -30,5 +30,9 @@ flyway {
   url = 'jdbc:sqlite:localOgel.db'
 }
 
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.0'
+}
+
 mainClassName = "uk.gov.bis.lite.ogel.OgelApplication"
 run { args 'server', 'example.yml' }
