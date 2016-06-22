@@ -30,5 +30,5 @@ flyway {
   url = 'jdbc:sqlite:localOgel.db'
 }
 
-mainClassName = "uk.gov.bis.lite.ogel.Main"
+mainClassName = "uk.gov.bis.lite.ogel.OgelApplication"
 run { args 'server', 'example.yml' }

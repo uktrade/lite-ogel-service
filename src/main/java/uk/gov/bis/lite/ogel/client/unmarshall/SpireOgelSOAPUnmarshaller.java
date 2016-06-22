@@ -3,7 +3,7 @@ package uk.gov.bis.lite.ogel.client.unmarshall;
 import com.google.common.base.Stopwatch;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.gov.bis.lite.ogel.database.exception.SOAPParseException;
+import uk.gov.bis.lite.ogel.exception.SOAPParseException;
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.OgelCondition;
 import uk.gov.bis.lite.ogel.model.SpireOgel;

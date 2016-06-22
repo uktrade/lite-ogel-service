@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
-import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
+import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;

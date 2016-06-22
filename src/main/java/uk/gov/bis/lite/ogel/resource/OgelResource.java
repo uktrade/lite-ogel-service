@@ -14,8 +14,8 @@ import io.dropwizard.auth.PrincipalImpl;
 import io.dropwizard.jersey.errors.ErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.bis.lite.ogel.database.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.database.exception.SOAPParseException;
+import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
+import uk.gov.bis.lite.ogel.exception.SOAPParseException;
 import uk.gov.bis.lite.ogel.model.OgelFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
@@ -127,7 +127,7 @@ public class OgelResource {
       return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
     } catch (Exception e) {
       LOGGER.error("An unexpected error occurred processing handling the insert new or update ogel request with ID {}", ogelId, e);
-      throw new RuntimeException("Request Unsuccessful " + e);
+      throw new RuntimeException("Request Unsuccessful ", e);
     }
   }
 

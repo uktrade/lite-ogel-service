@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.ogel.database.exception;
+package uk.gov.bis.lite.ogel.exception;
 
 public class SOAPParseException extends RuntimeException {
 

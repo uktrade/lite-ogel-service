@@ -49,7 +49,6 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
     }
   }
 
-
   @Override
   public LocalOgel updateSingleOgelConditionList(String ogelID, List<String> updateData, String fieldName) {
     try (final Handle handle = jdbi.open()) {

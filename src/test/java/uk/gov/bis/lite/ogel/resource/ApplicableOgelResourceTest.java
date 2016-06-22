@@ -6,13 +6,7 @@ import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-import uk.gov.bis.lite.ogel.model.CategoryType;
-import uk.gov.bis.lite.ogel.model.Country;
-import uk.gov.bis.lite.ogel.model.OgelCondition;
-import uk.gov.bis.lite.ogel.model.Rating;
-import uk.gov.bis.lite.ogel.model.SpireOgel;
-import uk.gov.bis.lite.ogel.service.SpireOgelService;
-import uk.gov.bis.lite.ogel.util.SpireOgelTestUtility;
+import io.dropwizard.jersey.errors.ErrorMessage;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -21,6 +15,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import uk.gov.bis.lite.ogel.model.CategoryType;
+import uk.gov.bis.lite.ogel.model.Country;
+import uk.gov.bis.lite.ogel.model.OgelCondition;
+import uk.gov.bis.lite.ogel.model.Rating;
+import uk.gov.bis.lite.ogel.model.SpireOgel;
+import uk.gov.bis.lite.ogel.service.SpireOgelService;
+import uk.gov.bis.lite.ogel.util.SpireOgelTestUtility;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import java.util.Map;
 import javax.ws.rs.core.Response;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SpireOgelResourceTest {
+public class ApplicableOgelResourceTest {
 
   private static final SpireOgelService service = Mockito.mock(SpireOgelService.class);
   List<SpireOgel> spireOgels;
@@ -60,7 +61,7 @@ public class SpireOgelResourceTest {
 
   @ClassRule
   public static final ResourceTestRule resources = ResourceTestRule.builder()
-      .addResource(new SpireOgelResource(service))
+      .addResource(new ApplicableOgelResource(service))
       .build();
 
   @Test
@@ -77,6 +78,18 @@ public class SpireOgelResourceTest {
 
   }
 
+  @Test
+  public void returnsInternalServerErrorWhenListEmpty() {
+    String errorMessage = "Spire Ogel List Empty";
+    when(service.findOgel(anyString(), anyString(), anyListOf(CategoryType.class)))
+        .thenThrow(new RuntimeException(errorMessage));
+    final Response response = resources.client().target("/applicable-ogels").queryParam("controlCode", "ML1a")
+        .queryParam("sourceCountry", "41").queryParam("destinationCountry", "1")
+        .queryParam("activityType", "TECH").request().get();
+    assertEquals(500, response.getStatus());
+    assertEquals(errorMessage, response.readEntity(ErrorMessage.class).getMessage());
+  }
+
   @Ignore
   @Test
   public void throwsWebApplicationExceptionForInvalidCategory() throws IOException {
@@ -87,4 +100,5 @@ public class SpireOgelResourceTest {
     assertNotNull(response);
     assertEquals(response.getStatus(), 400); //Bad Request
   }
+
 }

@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.bis.lite.ogel.database.exception.SOAPParseException;
+import uk.gov.bis.lite.ogel.exception.SOAPParseException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
