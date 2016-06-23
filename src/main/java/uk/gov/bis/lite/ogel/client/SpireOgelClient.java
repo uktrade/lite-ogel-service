@@ -50,7 +50,7 @@ public class SpireOgelClient {
       final Stopwatch stopwatch = Stopwatch.createStarted();
       SOAPMessage response = soapConnection.call(request, soapUrl);
       stopwatch.stop();
-      System.out.println("New Ogel list has been retrieved from Spire in " + stopwatch.elapsed(TimeUnit.SECONDS) + " seconds ");
+      LOGGER.info("New Ogel list has been retrieved from Spire in " + stopwatch.elapsed(TimeUnit.SECONDS) + " seconds ");
       LOGGER.debug(messageAsString(response));
       return response;
     } catch (SOAPException e) {

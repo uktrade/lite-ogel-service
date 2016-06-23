@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
+import uk.gov.bis.lite.ogel.exception.OgelIDNotFoundException;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
 
@@ -57,6 +58,7 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
     }
     return getOgelById(ogelID);
   }
+  //handle.createQuery("SELECT * FROM CONDITION_LIST WHERE OGELID=:id AND TYPE=:type").bind("id", "OGL9").bind("type", "canList").list()
 
   @Override
   public LocalOgel insertLocalOgel(LocalOgel localOgel) {
@@ -67,6 +69,9 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   }
 
   private LocalOgel transactionalInsertOgel(Handle handle, LocalOgel localOgel) {
+    if(localOgel.getId() == null){
+      throw new OgelIDNotFoundException();
+    }
     if (localOgel.getName() != null) {
       handle.execute("INSERT INTO LOCAL_OGEL(ID, NAME) VALUES (?, ?)", localOgel.getId(), localOgel.getName());
     } else { //insert only id no name

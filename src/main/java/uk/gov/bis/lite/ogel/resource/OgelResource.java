@@ -6,7 +6,6 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import io.dropwizard.auth.Auth;
@@ -18,13 +17,13 @@ import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.exception.SOAPParseException;
 import uk.gov.bis.lite.ogel.model.OgelFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
+import uk.gov.bis.lite.ogel.model.localOgel.ConditionType;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,12 +81,15 @@ public class OgelResource {
       @NotNull @PathParam("conditionFieldName") String conditionFieldName,
       String message) throws
       IOException {
-    ObjectMapper mapper = new ObjectMapper();
-    List<String> updateConditionDataList = new ArrayList<>();
     try {
-      for (JsonNode jsonNode : mapper.readTree(message)) {
-        updateConditionDataList.add(jsonNode.asText());
-      }
+      ConditionType.fromString(conditionFieldName);
+    } catch (IllegalArgumentException e) {
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
+    }
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      List<String> updateConditionDataList = mapper.readValue(message,
+          mapper.getTypeFactory().constructCollectionType(List.class, String.class));
       localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName);
       return Response.accepted(getOgelByOgelID(ogelId)).build();
     } catch (JsonProcessingException e) {

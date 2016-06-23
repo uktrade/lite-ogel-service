@@ -16,12 +16,12 @@ import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.xml.soap.SOAPMessage;
 
@@ -42,7 +42,7 @@ public class SpireOgelService {
   }
 
   public List<SpireOgel> getAllOgels() {
-    final List<SpireOgel> cacheSpireOgelList = cache.values().stream().collect(Collectors.toList());
+    final List<SpireOgel> cacheSpireOgelList = new ArrayList<>(cache.values());
     if (!cacheSpireOgelList.isEmpty()) {
       return cacheSpireOgelList;
     } else {
