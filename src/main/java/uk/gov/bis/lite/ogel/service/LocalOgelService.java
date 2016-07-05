@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import uk.gov.bis.lite.ogel.database.dao.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
+import uk.gov.bis.lite.ogel.validator.CheckLocalOgel;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -22,7 +23,7 @@ public class LocalOgelService {
     return localOgelDAO.getOgelById(id);
   }
 
-  public LocalOgel insertOrUpdateOgel(LocalOgel ogel) {
+  public LocalOgel insertOrUpdateOgel(@CheckLocalOgel LocalOgel ogel) throws SQLException {
     return localOgelDAO.insertOrUpdate(ogel);
   }
 

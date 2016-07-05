@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
+import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import uk.gov.bis.lite.ogel.exception.OgelIDNotFoundException;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
@@ -58,20 +59,16 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
     }
     return getOgelById(ogelID);
   }
-  //handle.createQuery("SELECT * FROM CONDITION_LIST WHERE OGELID=:id AND TYPE=:type").bind("id", "OGL9").bind("type", "canList").list()
 
   @Override
-  public LocalOgel insertLocalOgel(LocalOgel localOgel) {
+  public LocalOgel insertLocalOgel(LocalOgel localOgel) throws SQLException {
     try (final Handle handle = jdbi.open()) {
       transactionalInsertOgel(handle, localOgel);
     }
     return localOgel;
   }
 
-  private LocalOgel transactionalInsertOgel(Handle handle, LocalOgel localOgel) {
-    if(localOgel.getId() == null){
-      throw new OgelIDNotFoundException();
-    }
+  private LocalOgel transactionalInsertOgel(Handle handle, LocalOgel localOgel) throws OgelIDNotFoundException {
     if (localOgel.getName() != null) {
       handle.execute("INSERT INTO LOCAL_OGEL(ID, NAME) VALUES (?, ?)", localOgel.getId(), localOgel.getName());
     } else { //insert only id no name
@@ -94,7 +91,7 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   }
 
   @Override
-  public LocalOgel insertOrUpdate(LocalOgel newOgel) {
+  public LocalOgel insertOrUpdate(LocalOgel newOgel) throws SQLException {
     LocalOgel ogelFoundById = getOgelById(newOgel.getId());
     if (ogelFoundById == null) {
       return insertLocalOgel(newOgel);
@@ -117,9 +114,13 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
       handle.getConnection().setAutoCommit(false);
       handle.begin();
       ogelList.forEach(o -> transactionalDeleteLocalOgel(handle, o.getId()));
-      ogelList.forEach(o -> transactionalInsertOgel(handle, o));
+      for (LocalOgel lo : ogelList) {
+        transactionalInsertOgel(handle, lo);
+      }
       handle.commit();
       handle.close();
+    } catch (UnableToExecuteStatementException e) {
+      throw new SQLException(e.getCause());
     }
   }
 

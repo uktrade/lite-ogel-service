@@ -3,9 +3,7 @@ package uk.gov.bis.lite.ogel.resource;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import io.dropwizard.auth.Auth;
@@ -21,6 +19,8 @@ import uk.gov.bis.lite.ogel.model.localOgel.ConditionType;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
+import uk.gov.bis.lite.ogel.validator.CheckLocalOgel;
+import uk.gov.bis.lite.ogel.validator.CheckLocalOgelList;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -109,10 +109,8 @@ public class OgelResource {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response insertOrUpdateOgel(@Auth PrincipalImpl user,
                                      @NotNull @PathParam("id") String ogelId,
-                                     String message) {
-    ObjectMapper objectMapper = new ObjectMapper();
+                                     @CheckLocalOgel LocalOgel localOgel) {
     try {
-      LocalOgel localOgel = objectMapper.readValue(message, LocalOgel.class);
       if (localOgel.getName() == null && localOgel.getSummary() == null) {
         return Response.status(BAD_REQUEST.getStatusCode()).entity("Invalid or empty property name found in the request json").build();
       }
@@ -124,8 +122,8 @@ public class OgelResource {
     } catch (OgelNotFoundException e) {
       LOGGER.error("There is no ogel found with ID {}", ogelId);
       return Response.status(INTERNAL_SERVER_ERROR.getStatusCode()).entity(new ErrorMessage(e.getMessage())).build();
-    } catch (IOException e) {
-      LOGGER.error("An error occurred converting request body json to an object", e);
+    } catch (SQLException e) {
+      LOGGER.error("A database error occurred persisting new local ogel data into database", e);
       return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
     } catch (Exception e) {
       LOGGER.error("An unexpected error occurred processing handling the insert new or update ogel request with ID {}", ogelId, e);
@@ -135,24 +133,15 @@ public class OgelResource {
 
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response insertOgelArray(@Auth PrincipalImpl user, String message) {
-    ObjectMapper jsonMapper = new ObjectMapper();
+  public Response insertOgelArray(@Auth PrincipalImpl user, @CheckLocalOgelList List<LocalOgel> ogelList) {
     try {
-      final List<LocalOgel> ogelList = jsonMapper.readValue(message,
-          jsonMapper.getTypeFactory().constructCollectionType(List.class, LocalOgel.class));
       localOgelService.insertOgelList(ogelList);
-    } catch (JsonParseException e) {
-      LOGGER.error("An error occurred parsing the json request body", e);
-      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
-    } catch (JsonMappingException e) {
-      LOGGER.error("An error occurred deserializing the json", e);
-      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
-    } catch (IOException e) {
-      LOGGER.error("Unexpected error occurred parsing the json", e);
-      throw new RuntimeException("An error occurred reading/parsing the message body json.", e);
     } catch (SQLException e) {
-      LOGGER.error("An error occurred persisting new local ogels data into database", e);
-      throw new RuntimeException("Database error", e);
+      LOGGER.error("A database error occurred persisting new local ogel list data into database", e);
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
+    } catch (Exception e) {
+      LOGGER.error("An unexpected error occurred ", e);
+      return Response.status(INTERNAL_SERVER_ERROR.getStatusCode()).entity(new ErrorMessage(500, e.getMessage())).build();
     }
     return Response.status(Response.Status.CREATED).entity(getAllOgels()).type(MediaType.APPLICATION_JSON).build();
   }
