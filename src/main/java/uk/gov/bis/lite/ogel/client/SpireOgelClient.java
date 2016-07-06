@@ -47,6 +47,7 @@ public class SpireOgelClient {
       SOAPMessage request = createRequest();
       LOGGER.debug(messageAsString(request));
 
+      LOGGER.info("Retrieving new Ogel List from Spire");
       final Stopwatch stopwatch = Stopwatch.createStarted();
       SOAPMessage response = soapConnection.call(request, soapUrl);
       stopwatch.stop();

@@ -55,9 +55,9 @@ public class OgelResource {
   @Produces(MediaType.APPLICATION_JSON)
   public List<OgelFullView> getAllOgels()
       throws OgelNotFoundException, SOAPParseException {
-    List<LocalOgel> allLocalOgels = localOgelService.getAllLocalOgels();
-    return allLocalOgels.stream()
-        .map(lo -> new OgelFullView(ogelService.findSpireOgelByIdOrReturnNull(lo.getId()), lo)).collect(Collectors.toList());
+    List<SpireOgel> allSpireOgels = ogelService.getAllOgels();
+    return allSpireOgels.stream().map(so -> new OgelFullView(so, localOgelService.findLocalOgelById(so.getId())))
+        .collect(Collectors.toList());
   }
 
   @GET
