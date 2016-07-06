@@ -61,7 +61,7 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   }
 
   @Override
-  public LocalOgel insertLocalOgel(LocalOgel localOgel) throws SQLException {
+  public LocalOgel insertLocalOgel(LocalOgel localOgel) {
     try (final Handle handle = jdbi.open()) {
       transactionalInsertOgel(handle, localOgel);
     }
@@ -91,7 +91,7 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   }
 
   @Override
-  public LocalOgel insertOrUpdate(LocalOgel newOgel) throws SQLException {
+  public LocalOgel insertOrUpdate(LocalOgel newOgel) {
     LocalOgel ogelFoundById = getOgelById(newOgel.getId());
     if (ogelFoundById == null) {
       return insertLocalOgel(newOgel);

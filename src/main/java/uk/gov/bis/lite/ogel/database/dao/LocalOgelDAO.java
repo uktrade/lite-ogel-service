@@ -11,11 +11,11 @@ public interface LocalOgelDAO {
 
   LocalOgel updateSingleOgelConditionList(String ogelID, List<String> updateData, String fieldName);
 
-  LocalOgel insertLocalOgel(LocalOgel localOgel) throws SQLException;
+  LocalOgel insertLocalOgel(LocalOgel localOgel);
 
   void deleteOgel(String ogelID);
 
-  LocalOgel insertOrUpdate(LocalOgel ogel) throws SQLException;
+  LocalOgel insertOrUpdate(LocalOgel ogel);
 
   void insertLocalOgels(List<LocalOgel> ogelList) throws SQLException;
 

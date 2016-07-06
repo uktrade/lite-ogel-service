@@ -12,14 +12,23 @@ public class LocalOgelValidator implements ConstraintValidator<CheckLocalOgel, L
 
   @Override
   public boolean isValid(LocalOgel value, ConstraintValidatorContext context) {
-    if(value == null){
+    if (value == null) {
       return false;
     }
     if (value.getName() == null && value.getSummary() == null) {
+      context.disableDefaultConstraintViolation();
+      context.buildConstraintViolationWithTemplate("Invalid Local Ogel! Both Name and Summary fields are empty. " + value.getId())
+          .addConstraintViolation();
       return false;
     }
-    return !(value.getSummary() != null &&
+    if (value.getSummary() != null &&
         (value.getSummary().getMustList() == null || value.getSummary().getCantList() == null
-            || value.getSummary().getCanList() == null || value.getSummary().getHowToUseList() == null));
+            || value.getSummary().getCanList() == null || value.getSummary().getHowToUseList() == null)) {
+      context.disableDefaultConstraintViolation();
+      context.buildConstraintViolationWithTemplate("Invalid Local Ogel! Missing a summary field " + value.getId())
+          .addConstraintViolation();
+      return false;
+    }
+    return true;
   }
 }
