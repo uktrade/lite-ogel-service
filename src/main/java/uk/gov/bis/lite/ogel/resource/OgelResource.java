@@ -100,7 +100,7 @@ public class OgelResource {
       throw new RuntimeException("An error occurred updating the Ogel.", e);
     } catch (Exception e) {
       LOGGER.error("An unexpected error occurred processing updating the ogel with ID {}", ogelId, e);
-      throw new RuntimeException("Update Request Unsuccessful " + e);
+      throw new RuntimeException("Update Request Unsuccessful ", e);
     }
   }
 
