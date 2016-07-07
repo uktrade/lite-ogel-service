@@ -126,6 +126,7 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   }
 
   private void updateOgelCondition(Handle handle, String id, String type, String condition) {
-    handle.execute("UPDATE LOCAL_OGEL SET " + type + " = " + condition + " WHERE ID=" + id);
+    handle.createStatement("UPDATE LOCAL_OGEL SET " + type + " = :condition " + " WHERE ID = :id")
+        .bind("condition", condition).bind("id", id).execute();
   }
 }
