@@ -23,7 +23,6 @@ import uk.gov.bis.lite.ogel.validator.CheckLocalOgel;
 import uk.gov.bis.lite.ogel.validator.CheckLocalOgelList;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -133,8 +132,8 @@ public class OgelResource {
   public Response insertOgelArray(@Auth PrincipalImpl user, @CheckLocalOgelList List<LocalOgel> ogelList) {
     try {
       localOgelService.insertOgelList(ogelList);
-    } catch (SQLException e) {
-      LOGGER.error("A database error occurred persisting new local ogel list data into database", e);
+    } catch (JsonProcessingException e) {
+      LOGGER.error("Invalid Json Data ", e);
       return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
     } catch (Exception e) {
       LOGGER.error("An unexpected error occurred ", e);

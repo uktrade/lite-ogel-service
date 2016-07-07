@@ -7,7 +7,6 @@ import uk.gov.bis.lite.ogel.database.dao.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.validator.CheckLocalOgel;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @Singleton
@@ -29,8 +28,10 @@ public class LocalOgelService {
     return localOgelDAO.insertOrUpdate(ogel);
   }
 
-  public void insertOgelList(List<LocalOgel> ogelList) throws SQLException {
-    localOgelDAO.insertLocalOgels(ogelList);
+  public void insertOgelList(List<LocalOgel> ogelList) throws JsonProcessingException {
+    for(LocalOgel lo : ogelList){
+      localOgelDAO.insertOrUpdate(lo);
+    }
   }
 
   public List<LocalOgel> getAllLocalOgels() {
