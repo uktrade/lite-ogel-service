@@ -1,5 +1,6 @@
 package uk.gov.bis.lite.ogel.database.dao;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 
 import java.sql.SQLException;
@@ -9,13 +10,11 @@ public interface LocalOgelDAO {
 
   LocalOgel getOgelById(String ogelID);
 
-  LocalOgel updateSingleOgelConditionList(String ogelID, List<String> updateData, String fieldName);
+  LocalOgel updateSingleOgelConditionList(String ogelID, List<String> updateData, String fieldName) throws JsonProcessingException;
 
-  LocalOgel insertLocalOgel(LocalOgel localOgel);
+  LocalOgel insertLocalOgel(LocalOgel localOgel) throws JsonProcessingException;
 
-  void deleteOgel(String ogelID);
-
-  LocalOgel insertOrUpdate(LocalOgel ogel);
+  LocalOgel insertOrUpdate(LocalOgel ogel) throws JsonProcessingException;
 
   void insertLocalOgels(List<LocalOgel> ogelList) throws SQLException;
 

@@ -32,6 +32,7 @@ import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -126,7 +127,7 @@ public class OgelResourceTest {
   }
 
   @Test
-  public void insertOrUpdateRequestIsHandledCorrectly() throws JsonProcessingException {
+  public void insertOrUpdateRequestIsHandledCorrectly() throws JsonProcessingException, SQLException {
     when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
     when(ogelSpireService.findSpireOgelById(anyString())).thenCallRealMethod();
     when(ogelLocalService.insertOrUpdateOgel(any(LocalOgel.class))).thenReturn(localOgel);

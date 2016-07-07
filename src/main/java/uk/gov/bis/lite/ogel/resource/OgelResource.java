@@ -122,11 +122,8 @@ public class OgelResource {
     } catch (OgelNotFoundException e) {
       LOGGER.error("There is no ogel found with ID {}", ogelId);
       return Response.status(INTERNAL_SERVER_ERROR.getStatusCode()).entity(new ErrorMessage(e.getMessage())).build();
-    } catch (SQLException e) {
-      LOGGER.error("A database error occurred persisting new local ogel data into database", e);
-      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
     } catch (Exception e) {
-      LOGGER.error("An unexpected error occurred processing handling the insert new or update ogel request with ID {}", ogelId, e);
+      LOGGER.error("An unexpected error occurred processing handling the insertNewLocalOgel new or update ogel request with ID {}", ogelId, e);
       throw new RuntimeException("Request Unsuccessful ", e);
     }
   }

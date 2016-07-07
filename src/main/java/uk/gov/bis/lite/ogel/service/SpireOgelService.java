@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.client.SpireOgelClient;
 import uk.gov.bis.lite.ogel.client.unmarshall.SpireOgelSOAPUnmarshaller;
+import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
@@ -46,7 +47,7 @@ public class SpireOgelService {
     if (!cacheSpireOgelList.isEmpty()) {
       return cacheSpireOgelList;
     } else {
-      throw new RuntimeException("Communication with Spire failed. Spire Ogel list is not populated");
+      throw new CacheNotPopulatedException("Communication with Spire failed. Spire Ogel list is not populated");
     }
   }
 

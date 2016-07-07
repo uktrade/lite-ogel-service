@@ -1,5 +1,6 @@
 package uk.gov.bis.lite.ogel.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import uk.gov.bis.lite.ogel.database.dao.LocalOgelDAO;
@@ -15,7 +16,8 @@ public class LocalOgelService {
   @Inject
   private LocalOgelDAO localOgelDAO;
 
-  public LocalOgel updateSpireOgelCondition(String ogelID, List<String> newConditionList, String conditionField) {
+  public LocalOgel updateSpireOgelCondition(String ogelID, List<String> newConditionList, String conditionField)
+      throws JsonProcessingException {
     return localOgelDAO.updateSingleOgelConditionList(ogelID, newConditionList, conditionField);
   }
 
@@ -23,7 +25,7 @@ public class LocalOgelService {
     return localOgelDAO.getOgelById(id);
   }
 
-  public LocalOgel insertOrUpdateOgel(@CheckLocalOgel LocalOgel ogel) throws SQLException {
+  public LocalOgel insertOrUpdateOgel(@CheckLocalOgel LocalOgel ogel) throws JsonProcessingException {
     return localOgelDAO.insertOrUpdate(ogel);
   }
 

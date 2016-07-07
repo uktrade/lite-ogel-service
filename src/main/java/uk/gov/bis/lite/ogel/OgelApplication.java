@@ -18,6 +18,7 @@ import ru.vyarus.dropwizard.guice.GuiceBundle;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
+import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.exception.OgelIDNotFoundException;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.exception.SOAPParseExceptionHandler;
@@ -46,6 +47,7 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
         .setRealm("OGEL Service Admin Authentication")
         .buildAuthFilter()));
     environment.jersey().register(OgelIDNotFoundException.OgelIDNotFoundExceptionHandler.class);
+    environment.jersey().register(CacheNotPopulatedException.CacheNotPopulatedExceptionHandler.class);
     environment.jersey().register(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class));
 
     try {
