@@ -19,12 +19,14 @@ public class LocalOgelListValidator implements ConstraintValidator<CheckLocalOge
     if (value == null) {
       return false;
     }
+    if (value.stream().filter(lo -> lo.getId() == null).findAny().isPresent()) {
+      getCustomizedErrorMessage(context, "Local Ogel Without ID is not allowed!");
+      return false;
+    }
     LocalOgelValidator localOgelValidator = new LocalOgelValidator();
     List<LocalOgel> faultyLocalOgels = value.stream().filter(o -> !localOgelValidator.isValid(o, context)).collect(Collectors.toList());
     if (!faultyLocalOgels.isEmpty()) {
-      context.disableDefaultConstraintViolation();
-      context.buildConstraintViolationWithTemplate("A faulty local ogel data found : " + faultyLocalOgels.get(0).getId())
-          .addConstraintViolation();
+      getCustomizedErrorMessage(context, "A faulty local ogel data found : " + faultyLocalOgels.get(0).getId());
       return false;
     }
     List<LocalOgel> duplicateIdOgels = value.stream().filter(lo ->
@@ -32,10 +34,15 @@ public class LocalOgelListValidator implements ConstraintValidator<CheckLocalOge
     ).collect(Collectors.toList());
     if (!duplicateIdOgels.isEmpty()) {
       context.disableDefaultConstraintViolation();
-      context.buildConstraintViolationWithTemplate("A duplicate ID found in bulk update data: " + duplicateIdOgels.get(0).getId())
-          .addConstraintViolation();
+      getCustomizedErrorMessage(context, "A duplicate ID found in bulk update data: " + duplicateIdOgels.get(0).getId());
       return false;
     }
     return true;
+  }
+
+  private void getCustomizedErrorMessage(ConstraintValidatorContext context, String message) {
+    context.disableDefaultConstraintViolation();
+    context.buildConstraintViolationWithTemplate(message)
+        .addConstraintViolation();
   }
 }
