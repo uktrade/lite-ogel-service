@@ -6,7 +6,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
@@ -78,7 +77,7 @@ public class OgelResourceTest {
   }
 
   @Test
-  public void getAllOgels(){
+  public void getAllOgels() {
     when(ogelLocalService.getAllLocalOgels()).thenReturn(Collections.singletonList(localOgel));
     when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
     when(ogelSpireService.findSpireOgelByIdOrReturnNull("OGL1")).thenCallRealMethod();
@@ -87,7 +86,7 @@ public class OgelResourceTest {
     List allOgels = response.readEntity(List.class);
     Map returnedHashMap = (Map) allOgels.get(0);
     assertEquals(spireOgel.getId(), returnedHashMap.get("id"));
-    assertEquals(4, ((Map)returnedHashMap.get("summary")).size());
+    assertEquals(4, ((Map) returnedHashMap.get("summary")).size());
   }
 
   @Test
@@ -127,7 +126,7 @@ public class OgelResourceTest {
   }
 
   @Test
-  public void insertOrUpdateRequestIsHandledCorrectly() throws JsonProcessingException, SQLException {
+  public void insertOrUpdateRequestIsHandledCorrectly() throws SQLException {
     when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
     when(ogelSpireService.findSpireOgelById(anyString())).thenCallRealMethod();
     when(ogelLocalService.insertOrUpdateOgel(any(LocalOgel.class))).thenReturn(localOgel);

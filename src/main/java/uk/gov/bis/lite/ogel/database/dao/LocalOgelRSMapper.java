@@ -3,6 +3,8 @@ package uk.gov.bis.lite.ogel.database.dao;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
 
@@ -12,6 +14,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class LocalOgelRSMapper implements ResultSetMapper<LocalOgel> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(LocalOgelRSMapper.class);
+
   @Override
   public LocalOgel map(int index, ResultSet r, StatementContext ctx) throws SQLException {
 
@@ -25,7 +29,7 @@ public class LocalOgelRSMapper implements ResultSetMapper<LocalOgel> {
       summary.setMustList(getConditionList("mustList", r));
       summary.setHowToUseList(getConditionList("howToUseList", r));
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.error("An error occurred parsing the Local Ogel Json", e);
     }
     localOgel.setSummary(summary);
     return localOgel;
@@ -33,7 +37,10 @@ public class LocalOgelRSMapper implements ResultSetMapper<LocalOgel> {
 
   private List<String> getConditionList(String conditionType, ResultSet r) throws SQLException, IOException {
     ObjectMapper mapper = new ObjectMapper();
-    return mapper.readValue(r.getString(conditionType),
-        mapper.getTypeFactory().constructCollectionType(List.class, String.class));
+    if (r.getString(conditionType) != null) {
+      return mapper.readValue(r.getString(conditionType),
+          mapper.getTypeFactory().constructCollectionType(List.class, String.class));
+    }
+    return null;
   }
 }

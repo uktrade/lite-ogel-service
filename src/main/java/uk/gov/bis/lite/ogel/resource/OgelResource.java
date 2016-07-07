@@ -132,9 +132,6 @@ public class OgelResource {
   public Response insertOgelArray(@Auth PrincipalImpl user, @CheckLocalOgelList List<LocalOgel> ogelList) {
     try {
       localOgelService.insertOgelList(ogelList);
-    } catch (JsonProcessingException e) {
-      LOGGER.error("Invalid Json Data ", e);
-      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
     } catch (Exception e) {
       LOGGER.error("An unexpected error occurred ", e);
       return Response.status(INTERNAL_SERVER_ERROR.getStatusCode()).entity(new ErrorMessage(500, e.getMessage())).build();

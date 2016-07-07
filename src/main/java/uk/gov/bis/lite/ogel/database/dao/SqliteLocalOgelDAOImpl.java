@@ -7,10 +7,8 @@ import com.google.inject.name.Named;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
 import org.skife.jdbi.v2.Update;
-import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,36 +39,45 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   }
 
   @Override
-  public LocalOgel updateSingleOgelConditionList(String ogelID, List<String> updateData, String fieldName)
-      throws JsonProcessingException {
+  public LocalOgel updateSingleOgelConditionList(String ogelID, List<String> updateData, String fieldName) {
     try (final Handle handle = jdbi.open()) {
+      if (getOgelById(ogelID) == null) {
+        LocalOgel newOgel = new LocalOgel();
+        newOgel.setId(ogelID);
+        LocalOgelJDBIDao jdbiDao = handle.attach(LocalOgelJDBIDao.class);
+        jdbiDao.insertNewLocalOgel(newOgel.getId(), null, null, null, null, null);
+      }
       updateOgelCondition(handle, ogelID, fieldName, parseListToJson(updateData));
     }
     return getOgelById(ogelID);
   }
 
   @Override
-  public LocalOgel insertLocalOgel(LocalOgel localOgel) throws JsonProcessingException {
+  public LocalOgel insertLocalOgel(LocalOgel localOgel) {
     try (final Handle handle = jdbi.open()) {
       insertLocalOgel(localOgel, handle);
       return getOgelById(localOgel.getId());
     }
   }
 
-  private void insertLocalOgel(LocalOgel localOgel, Handle handle) throws JsonProcessingException {
+  private void insertLocalOgel(LocalOgel localOgel, Handle handle) {
     LocalOgelJDBIDao jdbiDao = handle.attach(LocalOgelJDBIDao.class);
     jdbiDao.insertNewLocalOgel(localOgel.getId(), localOgel.getName(), parseListToJson(localOgel.getSummary().getCanList()),
         parseListToJson(localOgel.getSummary().getCantList()), parseListToJson(localOgel.getSummary().getMustList()),
         parseListToJson(localOgel.getSummary().getHowToUseList()));
   }
 
-  private String parseListToJson(List<String> conditionList) throws JsonProcessingException {
+  private String parseListToJson(List<String> conditionList) {
     ObjectMapper mapper = new ObjectMapper();
-    return mapper.writeValueAsString(conditionList);
+    try {
+      return mapper.writeValueAsString(conditionList);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
-  public LocalOgel insertOrUpdate(LocalOgel newOgel) throws JsonProcessingException {
+  public LocalOgel insertOrUpdate(LocalOgel newOgel) {
     LocalOgel ogelFoundById = getOgelById(newOgel.getId());
     if (ogelFoundById == null) {
       return insertLocalOgel(newOgel);
@@ -78,24 +85,7 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
     return updateLocalOgel(newOgel);
   }
 
-  @Override
-  public void insertLocalOgels(List<LocalOgel> ogelList) throws SQLException {
-    try (final Handle handle = jdbi.open()) {
-      handle.getConnection().setAutoCommit(false);
-      handle.begin();
-      for (LocalOgel lo : ogelList) {
-        insertLocalOgel(lo, handle);
-      }
-      handle.commit();
-      handle.close();
-    } catch (UnableToExecuteStatementException e) {
-      throw new SQLException(e.getCause());
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private LocalOgel updateLocalOgel(LocalOgel ogel) throws JsonProcessingException {
+  private LocalOgel updateLocalOgel(LocalOgel ogel) {
     StringJoiner sj = new StringJoiner(" ,");
     Map<String, Object> bindMappings = new HashMap<>();
     bindMappings.put("id", ogel.getId());
