@@ -1,9 +1,14 @@
 package uk.gov.bis.lite.ogel.validator;
 
+import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
+import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintViolationCreationContext;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -19,14 +24,20 @@ public class LocalOgelListValidator implements ConstraintValidator<CheckLocalOge
     if (value == null) {
       return false;
     }
-    if (value.stream().filter(lo -> lo.getId() == null).findAny().isPresent()) {
-      getCustomizedErrorMessage(context, "Local Ogel Without ID is not allowed!");
+    OptionalInt ogelWithoutIdIndex = IntStream.range(0, value.size())
+        .filter(i -> value.get(i).getId() == null).findAny();
+    if (ogelWithoutIdIndex.isPresent()) {
+      getCustomizedErrorMessage(context, "Local Ogel Without ID is not allowed! Index: " + ogelWithoutIdIndex.getAsInt());
       return false;
     }
     LocalOgelValidator localOgelValidator = new LocalOgelValidator();
-    List<LocalOgel> faultyLocalOgels = value.stream().filter(o -> !localOgelValidator.isValid(o, context)).collect(Collectors.toList());
-    if (!faultyLocalOgels.isEmpty()) {
-      getCustomizedErrorMessage(context, "A faulty local ogel data found : " + faultyLocalOgels.get(0).getId());
+    Optional<LocalOgel> invalidLocalOgelExists = value.stream().filter(o -> !localOgelValidator.isValid(o, context)).findAny();
+    List<ConstraintViolationCreationContext> violationCreationContextList =
+        ((ConstraintValidatorContextImpl) context).getConstraintViolationCreationContexts();
+    if (invalidLocalOgelExists.isPresent()) {
+      StringBuilder errorSB = new StringBuilder("A faulty local ogel data found : ");
+      violationCreationContextList.forEach(err -> errorSB.append(err.getMessage() + "\n"));
+      getCustomizedErrorMessage(context, errorSB.toString());
       return false;
     }
     List<LocalOgel> duplicateIdOgels = value.stream().filter(lo ->

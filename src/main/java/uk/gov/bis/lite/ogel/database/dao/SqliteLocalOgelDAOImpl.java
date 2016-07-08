@@ -62,9 +62,17 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
 
   private void insertLocalOgel(LocalOgel localOgel, Handle handle) {
     LocalOgelJDBIDao jdbiDao = handle.attach(LocalOgelJDBIDao.class);
-    jdbiDao.insertNewLocalOgel(localOgel.getId(), localOgel.getName(), parseListToJson(localOgel.getSummary().getCanList()),
-        parseListToJson(localOgel.getSummary().getCantList()), parseListToJson(localOgel.getSummary().getMustList()),
-        parseListToJson(localOgel.getSummary().getHowToUseList()));
+    if (localOgel.getName() == null) {
+      jdbiDao.insertNewLocalOgel(localOgel.getId(), null, parseListToJson(localOgel.getSummary().getCanList()),
+          parseListToJson(localOgel.getSummary().getCantList()), parseListToJson(localOgel.getSummary().getMustList()),
+          parseListToJson(localOgel.getSummary().getHowToUseList()));
+    } else if (localOgel.getSummary() == null) {
+      jdbiDao.insertNewLocalOgel(localOgel.getId(), localOgel.getName(), null, null, null, null);
+    } else {
+      jdbiDao.insertNewLocalOgel(localOgel.getId(), localOgel.getName(), parseListToJson(localOgel.getSummary().getCanList()),
+          parseListToJson(localOgel.getSummary().getCantList()), parseListToJson(localOgel.getSummary().getMustList()),
+          parseListToJson(localOgel.getSummary().getHowToUseList()));
+    }
   }
 
   private String parseListToJson(List<String> conditionList) {

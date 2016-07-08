@@ -19,7 +19,7 @@ import javax.validation.Payload;
 @Documented
 public @interface CheckLocalOgel {
 
-  String message() default "Invalid Local Ogel Json Provided";
+  String message() default "";
 
   Class<?>[] groups() default {};
 

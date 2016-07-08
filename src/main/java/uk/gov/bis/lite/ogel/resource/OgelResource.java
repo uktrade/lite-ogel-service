@@ -1,7 +1,6 @@
 package uk.gov.bis.lite.ogel.resource;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,6 +84,7 @@ public class OgelResource {
     } catch (IllegalArgumentException e) {
       return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
     }
+    ogelService.findSpireOgelById(ogelId);
     ObjectMapper mapper = new ObjectMapper();
     try {
       List<String> updateConditionDataList = mapper.readValue(message,
@@ -97,9 +97,6 @@ public class OgelResource {
     } catch (IOException e) {
       LOGGER.error("An error occurred processing the PUT request for ogel with ID {}", ogelId, e);
       throw new RuntimeException("An error occurred updating the Ogel.", e);
-    } catch (Exception e) {
-      LOGGER.error("An unexpected error occurred processing updating the ogel with ID {}", ogelId, e);
-      throw new RuntimeException("Update Request Unsuccessful ", e);
     }
   }
 
@@ -109,33 +106,23 @@ public class OgelResource {
   public Response insertOrUpdateOgel(@Auth PrincipalImpl user,
                                      @NotNull @PathParam("id") String ogelId,
                                      @CheckLocalOgel LocalOgel localOgel) {
-    try {
-      if (localOgel.getName() == null && localOgel.getSummary() == null) {
-        return Response.status(BAD_REQUEST.getStatusCode()).entity("Invalid or empty property name found in the request json").build();
-      }
-      ogelService.findSpireOgelById(ogelId);
-
-      localOgel.setId(ogelId);
-      localOgelService.insertOrUpdateOgel(localOgel);
-      return Response.status(Response.Status.CREATED).entity(getOgelByOgelID(ogelId)).type(MediaType.APPLICATION_JSON).build();
-    } catch (OgelNotFoundException e) {
-      LOGGER.error("There is no ogel found with ID {}", ogelId);
-      return Response.status(INTERNAL_SERVER_ERROR.getStatusCode()).entity(new ErrorMessage(e.getMessage())).build();
-    } catch (Exception e) {
-      LOGGER.error("An unexpected error occurred processing handling the insertNewLocalOgel new or update ogel request with ID {}", ogelId, e);
-      throw new RuntimeException("Request Unsuccessful ", e);
+    if (localOgel.getName() == null && localOgel.getSummary() == null) {
+      return Response.status(BAD_REQUEST.getStatusCode()).entity("Invalid or empty property name found in the request json").build();
     }
+    ogelService.findSpireOgelById(ogelId);
+
+    localOgel.setId(ogelId);
+    localOgelService.insertOrUpdateOgel(localOgel);
+    return Response.status(Response.Status.CREATED).entity(getOgelByOgelID(ogelId)).type(MediaType.APPLICATION_JSON).build();
   }
 
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   public Response insertOgelArray(@Auth PrincipalImpl user, @CheckLocalOgelList List<LocalOgel> ogelList) {
-    try {
-      localOgelService.insertOgelList(ogelList);
-    } catch (Exception e) {
-      LOGGER.error("An unexpected error occurred ", e);
-      return Response.status(INTERNAL_SERVER_ERROR.getStatusCode()).entity(new ErrorMessage(500, e.getMessage())).build();
-    }
-    return Response.status(Response.Status.CREATED).entity(getAllOgels()).type(MediaType.APPLICATION_JSON).build();
+    localOgelService.insertOgelList(ogelList);
+    List<String> updatedOgelIds = ogelList.stream().map(lo -> lo.getId()).collect(Collectors.toList());
+    return Response.status(Response.Status.CREATED).entity(
+        getAllOgels().stream().filter(o -> updatedOgelIds.contains(o.getOgelId())).collect(Collectors.toList()))
+        .type(MediaType.APPLICATION_JSON).build();
   }
 }
