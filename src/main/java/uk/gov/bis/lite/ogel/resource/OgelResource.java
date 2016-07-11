@@ -106,9 +106,6 @@ public class OgelResource {
   public Response insertOrUpdateOgel(@Auth PrincipalImpl user,
                                      @NotNull @PathParam("id") String ogelId,
                                      @CheckLocalOgel LocalOgel localOgel) {
-    if (localOgel.getName() == null && localOgel.getSummary() == null) {
-      return Response.status(BAD_REQUEST.getStatusCode()).entity("Invalid or empty property name found in the request json").build();
-    }
     ogelService.findSpireOgelById(ogelId);
 
     localOgel.setId(ogelId);
@@ -119,6 +116,9 @@ public class OgelResource {
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   public Response insertOgelArray(@Auth PrincipalImpl user, @CheckLocalOgelList List<LocalOgel> ogelList) {
+    if (ogelList.isEmpty()) {
+      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, "Empty Ogel List")).build();
+    }
     ogelList.forEach(o -> ogelService.findSpireOgelById(o.getId()));
     localOgelService.insertOgelList(ogelList);
     List<String> updatedOgelIds = ogelList.stream().map(LocalOgel::getId).collect(Collectors.toList());

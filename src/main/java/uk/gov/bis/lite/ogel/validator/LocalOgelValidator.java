@@ -20,7 +20,7 @@ class LocalOgelValidator implements ConstraintValidator<CheckLocalOgel, LocalOge
       context.disableDefaultConstraintViolation();
       errorMessage.append("Both Name and Summary fields are empty. ");
       if (value.getId() != null) {
-        errorMessage.append("Ogel ID" + value.getId());
+        errorMessage.append("Ogel ID " + value.getId());
       }
       context.buildConstraintViolationWithTemplate(errorMessage.toString())
           .addConstraintViolation();
