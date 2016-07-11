@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class LocalOgelListValidator implements ConstraintValidator<CheckLocalOgelList, List<LocalOgel>> {
+class LocalOgelListValidator implements ConstraintValidator<CheckLocalOgelList, List<LocalOgel>> {
 
   @Override
   public void initialize(CheckLocalOgelList constraintAnnotation) {
@@ -36,7 +36,7 @@ public class LocalOgelListValidator implements ConstraintValidator<CheckLocalOge
         ((ConstraintValidatorContextImpl) context).getConstraintViolationCreationContexts();
     if (invalidLocalOgelExists.isPresent()) {
       StringBuilder errorSB = new StringBuilder("A faulty local ogel data found : ");
-      violationCreationContextList.forEach(err -> errorSB.append(err.getMessage() + "\n"));
+      violationCreationContextList.forEach(err -> errorSB.append(err.getMessage()).append("\n"));
       getCustomizedErrorMessage(context, errorSB.toString());
       return false;
     }
@@ -44,7 +44,6 @@ public class LocalOgelListValidator implements ConstraintValidator<CheckLocalOge
         value.stream().anyMatch(lo2 -> lo.getId().equalsIgnoreCase(lo2.getId()) && !lo.equals(lo2))
     ).collect(Collectors.toList());
     if (!duplicateIdOgels.isEmpty()) {
-      context.disableDefaultConstraintViolation();
       getCustomizedErrorMessage(context, "A duplicate ID found in bulk update data: " + duplicateIdOgels.get(0).getId());
       return false;
     }

@@ -19,6 +19,7 @@ import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstal
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
+import uk.gov.bis.lite.ogel.exception.CheckLocalOgelExceptionMapper;
 import uk.gov.bis.lite.ogel.exception.CustomJsonProcessingExceptionMapper;
 import uk.gov.bis.lite.ogel.exception.OgelIDNotFoundException;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
@@ -50,6 +51,7 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     environment.jersey().register(OgelIDNotFoundException.OgelIDNotFoundExceptionHandler.class);
     environment.jersey().register(CacheNotPopulatedException.CacheNotPopulatedExceptionHandler.class);
     environment.jersey().register(CustomJsonProcessingExceptionMapper.class);
+    environment.jersey().register(CheckLocalOgelExceptionMapper.class);
     environment.jersey().register(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class));
 
     try {

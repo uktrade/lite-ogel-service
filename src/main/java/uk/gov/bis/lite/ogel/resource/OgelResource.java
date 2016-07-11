@@ -119,8 +119,9 @@ public class OgelResource {
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   public Response insertOgelArray(@Auth PrincipalImpl user, @CheckLocalOgelList List<LocalOgel> ogelList) {
+    ogelList.forEach(o -> ogelService.findSpireOgelById(o.getId()));
     localOgelService.insertOgelList(ogelList);
-    List<String> updatedOgelIds = ogelList.stream().map(lo -> lo.getId()).collect(Collectors.toList());
+    List<String> updatedOgelIds = ogelList.stream().map(LocalOgel::getId).collect(Collectors.toList());
     return Response.status(Response.Status.CREATED).entity(
         getAllOgels().stream().filter(o -> updatedOgelIds.contains(o.getOgelId())).collect(Collectors.toList()))
         .type(MediaType.APPLICATION_JSON).build();
