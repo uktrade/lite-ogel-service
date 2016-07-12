@@ -11,6 +11,7 @@ import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 public class LocalOgelRSMapper implements ResultSetMapper<LocalOgel> {
@@ -30,6 +31,7 @@ public class LocalOgelRSMapper implements ResultSetMapper<LocalOgel> {
       summary.setHowToUseList(getConditionList("howToUseList", r));
     } catch (IOException e) {
       LOGGER.error("An error occurred parsing the Local Ogel Json", e);
+      throw new RuntimeException(e.getCause());
     }
     localOgel.setSummary(summary);
     return localOgel;
@@ -41,6 +43,6 @@ public class LocalOgelRSMapper implements ResultSetMapper<LocalOgel> {
       return mapper.readValue(r.getString(conditionType),
           mapper.getTypeFactory().constructCollectionType(List.class, String.class));
     }
-    return null;
+    return Collections.emptyList();
   }
 }

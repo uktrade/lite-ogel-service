@@ -51,7 +51,7 @@ public class SpireOgelService {
     }
   }
 
-  private List<SpireOgel> getAllOgelsFromSpire() {
+  public List<SpireOgel> getAllOgelsFromSpire() {
     final SOAPMessage soapMessage = client.executeRequest();
     return unmarshaller.execute(soapMessage);
   }

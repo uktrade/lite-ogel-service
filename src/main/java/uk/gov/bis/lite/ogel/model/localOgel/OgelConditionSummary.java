@@ -3,6 +3,7 @@ package uk.gov.bis.lite.ogel.model.localOgel;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Collections;
 import java.util.List;
 
 public class OgelConditionSummary {
@@ -23,7 +24,10 @@ public class OgelConditionSummary {
   }
 
   public OgelConditionSummary() {
-
+    this.canList = Collections.emptyList();
+    this.cantList = Collections.emptyList();
+    this.mustList = Collections.emptyList();
+    this.howToUseList = Collections.emptyList();
   }
 
   public List<String> getCanList() {

@@ -10,11 +10,10 @@ import io.dropwizard.auth.PrincipalImpl;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.quartz.SchedulerFactory;
-import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
+import ru.vyarus.dropwizard.guice.module.installer.feature.health.HealthCheckInstaller;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
@@ -23,7 +22,8 @@ import uk.gov.bis.lite.ogel.exception.CheckLocalOgelExceptionMapper;
 import uk.gov.bis.lite.ogel.exception.CustomJsonProcessingExceptionMapper;
 import uk.gov.bis.lite.ogel.exception.OgelIDNotFoundException;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.exception.SOAPParseExceptionHandler;
+import uk.gov.bis.lite.ogel.exception.SOAPParseException;
+import uk.gov.bis.lite.ogel.healthcheck.SpireHealthCheck;
 import uk.gov.bis.lite.ogel.resource.ApplicableOgelResource;
 import uk.gov.bis.lite.ogel.resource.OgelResource;
 import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
@@ -31,7 +31,6 @@ import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
 public class OgelApplication extends Application<MainApplicationConfiguration> {
   private static final Logger LOGGER = LoggerFactory.getLogger(OgelApplication.class);
   private GuiceBundle<MainApplicationConfiguration> guiceBundle;
-  private SchedulerFactory sf = new StdSchedulerFactory();
 
   public static void main(String[] args) throws Exception {
     new OgelApplication().run(args);
@@ -42,7 +41,7 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     final Injector injector = guiceBundle.getInjector();
 
     environment.jersey().register(OgelNotFoundException.OgelNotFoundExceptionHandler.class);
-    environment.jersey().register(SOAPParseExceptionHandler.class);
+    environment.jersey().register(SOAPParseException.SOAPParseExceptionHandler.class);
     //Authorization and authentication handlers
     environment.jersey().register(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
         .setAuthenticator(new SimpleAuthenticator(configuration.getLogin(), configuration.getPassword()))
@@ -66,8 +65,8 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
   public void initialize(Bootstrap<MainApplicationConfiguration> bootstrap) {
     guiceBundle = GuiceBundle.<MainApplicationConfiguration>builder()
         .modules(new GuiceModule())
-        .installers(ResourceInstaller.class)
-        .extensions(OgelResource.class, ApplicableOgelResource.class)
+        .installers(ResourceInstaller.class, HealthCheckInstaller.class)
+        .extensions(OgelResource.class, ApplicableOgelResource.class, SpireHealthCheck.class)
         .build(Stage.PRODUCTION);
 
     bootstrap.addBundle(guiceBundle);
