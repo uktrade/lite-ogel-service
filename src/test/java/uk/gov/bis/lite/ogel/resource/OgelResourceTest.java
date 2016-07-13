@@ -80,7 +80,6 @@ public class OgelResourceTest {
   public void getAllOgels() {
     when(ogelLocalService.getAllLocalOgels()).thenReturn(Collections.singletonList(localOgel));
     when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
-    when(ogelSpireService.findSpireOgelByIdOrReturnNull("OGL1")).thenCallRealMethod();
     Response response = resources.client().target("/ogels").request().get();
     assertEquals(200, response.getStatus());
     List allOgels = response.readEntity(List.class);

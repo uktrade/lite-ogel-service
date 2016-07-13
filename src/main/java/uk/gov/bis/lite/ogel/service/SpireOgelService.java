@@ -16,7 +16,9 @@ import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
+import uk.gov.bis.lite.ogel.model.job.SpireHealthStatus;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,6 +33,7 @@ public class SpireOgelService {
   private static Map<String, SpireOgel> cache = new HashMap<>();
   private SpireOgelClient client;
   private SpireOgelSOAPUnmarshaller unmarshaller;
+  private static SpireHealthStatus healthStatus = new SpireHealthStatus();
 
   @Inject
   public SpireOgelService(SpireOgelClient client, SpireOgelSOAPUnmarshaller unmarshaller) {
@@ -39,32 +42,36 @@ public class SpireOgelService {
   }
 
   public List<SpireOgel> findOgel(String controlCode, String destinationCountryId, List<CategoryType> activityTypes) {
+    if (cache.isEmpty()) {
+      throw new CacheNotPopulatedException("Communication with Spire failed. Spire Ogel list is not populated");
+    }
     return SpireOgelFilter.filterSpireOgels(getAllOgels(), controlCode, destinationCountryId, activityTypes);
   }
 
   public List<SpireOgel> getAllOgels() {
-    final List<SpireOgel> cacheSpireOgelList = new ArrayList<>(cache.values());
-    if (!cacheSpireOgelList.isEmpty()) {
-      return cacheSpireOgelList;
-    } else {
+    if (cache.isEmpty()) {
       throw new CacheNotPopulatedException("Communication with Spire failed. Spire Ogel list is not populated");
     }
+    return new ArrayList<>(cache.values());
   }
 
-  public List<SpireOgel> getAllOgelsFromSpire() {
+  private List<SpireOgel> getAllOgelsFromSpire() {
     final SOAPMessage soapMessage = client.executeRequest();
     return unmarshaller.execute(soapMessage);
   }
 
   public SpireOgel findSpireOgelById(String id) throws OgelNotFoundException {
+    if (cache.isEmpty()) {
+      throw new CacheNotPopulatedException("Communication with Spire failed. Spire Ogel list is not populated");
+    }
     if (cache.containsKey(id)) {
       return cache.get(id);
     }
     throw new OgelNotFoundException(id);
   }
 
-  public SpireOgel findSpireOgelByIdOrReturnNull(String id) {
-    return cache.get(id);
+  public static SpireHealthStatus getHealthStatus() {
+    return healthStatus;
   }
 
   @DisallowConcurrentExecution
@@ -79,13 +86,23 @@ public class SpireOgelService {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
       HashMap<String, SpireOgel> spireOgelCacheMap = new HashMap<>();
-      List<SpireOgel> ogelList = spireOgelService.getAllOgelsFromSpire();
-      ogelList.forEach(o -> spireOgelCacheMap.put(o.getId(), o));
-      if (spireOgelCacheMap.size() > 0) {
-        cache = Collections.unmodifiableMap(spireOgelCacheMap);
-        LOGGER.info("Cache has been successfully updated");
-      } else {
-        LOGGER.warn("Cache refresh job could not retrieve new data from Spire.");
+      try {
+        List<SpireOgel> ogelList = spireOgelService.getAllOgelsFromSpire();
+        ogelList.forEach(o -> spireOgelCacheMap.put(o.getId(), o));
+        if (spireOgelCacheMap.size() > 0) {
+          cache = Collections.unmodifiableMap(spireOgelCacheMap);
+          healthStatus.setHealthy(true);
+          healthStatus.setLastUpdated(LocalDateTime.now());
+          LOGGER.info("Cache has been successfully updated at {}", healthStatus.getLastUpdated());
+        } else {
+          healthStatus.setHealthy(false);
+          healthStatus.setErrorMessage("Cache size is 0");
+          LOGGER.warn("Cache refresh job failed to retrieve new data from Spire.");
+        }
+      } catch (Exception e) {
+        LOGGER.warn("An unexpected error occurred getting the Ogel Data from Spire", e);
+        healthStatus.setHealthy(false);
+        healthStatus.setErrorMessage(e.getMessage());
       }
     }
   }
