@@ -1,9 +1,11 @@
 package uk.gov.bis.lite.ogel.client.unmarshall;
 
 import com.google.common.base.Stopwatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.gov.bis.lite.ogel.database.exception.SOAPParseException;
+import uk.gov.bis.lite.ogel.exception.SOAPParseException;
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.OgelCondition;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
@@ -21,7 +23,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 public class SpireOgelSOAPUnmarshaller {
-
+  private static final Logger LOGGER = LoggerFactory.getLogger(SpireOgelSOAPUnmarshaller.class);
   private static final String codeExpression = "OGEL_TYPE_REF";
   private static final String nameExpression = "NAME";
   private static final String linkToOgelExpression = "LINK_TO_OGL";
@@ -78,7 +80,7 @@ public class SpireOgelSOAPUnmarshaller {
       }
     }
     stopwatch.stop();
-    System.out.println("The unmarshalling of the Spire Response took " + stopwatch.elapsed(TimeUnit.SECONDS) + " seconds ");
+    LOGGER.info("The unmarshalling of the Spire Response took " + stopwatch.elapsed(TimeUnit.SECONDS) + " seconds ");
     return spireOgelList;
   }
 }

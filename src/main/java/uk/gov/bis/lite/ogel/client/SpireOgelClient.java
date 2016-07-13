@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.bis.lite.ogel.database.exception.SOAPParseException;
+import uk.gov.bis.lite.ogel.exception.SOAPParseException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -47,10 +47,11 @@ public class SpireOgelClient {
       SOAPMessage request = createRequest();
       LOGGER.debug(messageAsString(request));
 
+      LOGGER.info("Retrieving new Ogel List from Spire");
       final Stopwatch stopwatch = Stopwatch.createStarted();
       SOAPMessage response = soapConnection.call(request, soapUrl);
       stopwatch.stop();
-      System.out.println("New Ogel list has been retrieved from Spire in " + stopwatch.elapsed(TimeUnit.SECONDS) + " seconds ");
+      LOGGER.info("New Ogel list has been retrieved from Spire in " + stopwatch.elapsed(TimeUnit.SECONDS) + " seconds ");
       LOGGER.debug(messageAsString(response));
       return response;
     } catch (SOAPException e) {

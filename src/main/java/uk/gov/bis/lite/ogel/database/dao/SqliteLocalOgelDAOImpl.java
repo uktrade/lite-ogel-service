@@ -1,17 +1,18 @@
 package uk.gov.bis.lite.ogel.database.dao;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
-import uk.gov.bis.lite.ogel.database.exception.LocalOgelNotFoundException;
+import org.skife.jdbi.v2.Update;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
 
-import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.StringJoiner;
 
 public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   private final DBI jdbi;
@@ -22,45 +23,31 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   }
 
   @Override
-  public LocalOgel getOgelById(String ogelID) throws LocalOgelNotFoundException {
-    LocalOgel ogel = new LocalOgel();
+  public List<LocalOgel> getAllOgels() {
     try (final Handle handle = jdbi.open()) {
-      final Map<String, Object> objectMap = handle.createQuery("SELECT ID, NAME FROM LOCAL_OGEL WHERE ID=:id").bind("id", ogelID).first();
-      if (objectMap == null) {
-        throw new LocalOgelNotFoundException(ogelID);
-      }
-      ogel.setId(objectMap.get("id").toString());
-      //null check for when checking if localOgel exists with just ID
-      if (objectMap.get("name") != null) {
-        ogel.setName(objectMap.get("name").toString());
-      }
-      OgelConditionSummary summary = getConditionList(handle, ogelID);
-      ogel.setSummary(summary);
-      return ogel;
+      LocalOgelJDBIDao jdbiDao = handle.attach(LocalOgelJDBIDao.class);
+      return jdbiDao.getAllLocalOgels();
     }
   }
 
-  private OgelConditionSummary getConditionList(Handle handler, String ogelID) {
-    final List<Map<String, Object>> list = handler.createQuery("SELECT * FROM CONDITION_LIST WHERE OGELID=:id ORDER BY ROWID")
-        .bind("id", ogelID).list();
-    OgelConditionSummary summary = new OgelConditionSummary();
-    summary.setCanList(getSpecificConditionList("canList", list));
-    summary.setCantList(getSpecificConditionList("cantList", list));
-    summary.setMustList(getSpecificConditionList("mustList", list));
-    summary.setHowToUseList(getSpecificConditionList("howToUseList", list));
-    return summary;
-  }
-
-  private List<String> getSpecificConditionList(String conditionType, List<Map<String, Object>> list) {
-    return list.stream().filter(c -> c.get("type").toString().equalsIgnoreCase(conditionType))
-        .map(cond -> cond.get("condition").toString()).collect(Collectors.toList());
+  @Override
+  public LocalOgel getOgelById(String ogelID) {
+    try (final Handle handle = jdbi.open()) {
+      LocalOgelJDBIDao jdbiDao = handle.attach(LocalOgelJDBIDao.class);
+      return jdbiDao.getLocalOgelById(ogelID);
+    }
   }
 
   @Override
-  public LocalOgel updateOgelConditionList(String ogelID, List<String> updateData, String fieldName) throws Exception {
+  public LocalOgel updateSingleOgelConditionList(String ogelID, List<String> updateData, String fieldName) {
     try (final Handle handle = jdbi.open()) {
-      handle.execute("DELETE FROM CONDITION_LIST WHERE OGELID = ? AND TYPE = ?", ogelID, fieldName);
-      updateData.stream().forEach(u -> insertConditionListForOgel(handle, ogelID, fieldName, u));
+      if (getOgelById(ogelID) == null) {
+        LocalOgel newOgel = new LocalOgel();
+        newOgel.setId(ogelID);
+        LocalOgelJDBIDao jdbiDao = handle.attach(LocalOgelJDBIDao.class);
+        jdbiDao.insertNewLocalOgel(newOgel.getId(), null, null, null, null, null);
+      }
+      updateOgelCondition(handle, ogelID, fieldName, parseListToJson(updateData));
     }
     return getOgelById(ogelID);
   }
@@ -68,56 +55,76 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
   @Override
   public LocalOgel insertLocalOgel(LocalOgel localOgel) {
     try (final Handle handle = jdbi.open()) {
-      transactionalInsertOgel(handle, localOgel);
+      insertLocalOgel(localOgel, handle);
+      return getOgelById(localOgel.getId());
     }
-    return localOgel;
   }
 
-  private LocalOgel transactionalInsertOgel(Handle handle, LocalOgel localOgel) {
-    handle.execute("INSERT INTO LOCAL_OGEL(ID, NAME) VALUES (?, ?)", localOgel.getId(), localOgel.getName());
-    localOgel.getSummary().getCanList().stream().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "canList", condition));
-    localOgel.getSummary().getCantList().stream().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "cantList", condition));
-    localOgel.getSummary().getMustList().stream().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "mustList", condition));
-    localOgel.getSummary().getHowToUseList().stream().forEach(condition -> insertConditionListForOgel(handle, localOgel.getId(), "howToUseList", condition));
-    return localOgel;
+  private void insertLocalOgel(LocalOgel localOgel, Handle handle) {
+    LocalOgelJDBIDao jdbiDao = handle.attach(LocalOgelJDBIDao.class);
+    if (localOgel.getName() == null) {
+      jdbiDao.insertNewLocalOgel(localOgel.getId(), null, parseListToJson(localOgel.getSummary().getCanList()),
+          parseListToJson(localOgel.getSummary().getCantList()), parseListToJson(localOgel.getSummary().getMustList()),
+          parseListToJson(localOgel.getSummary().getHowToUseList()));
+    } else if (localOgel.getSummary() == null) {
+      jdbiDao.insertNewLocalOgel(localOgel.getId(), localOgel.getName(), null, null, null, null);
+    } else {
+      jdbiDao.insertNewLocalOgel(localOgel.getId(), localOgel.getName(), parseListToJson(localOgel.getSummary().getCanList()),
+          parseListToJson(localOgel.getSummary().getCantList()), parseListToJson(localOgel.getSummary().getMustList()),
+          parseListToJson(localOgel.getSummary().getHowToUseList()));
+    }
   }
 
-  @Override
-  public void deleteOgel(String ogelID) {
-    try (final Handle handle = jdbi.open()) {
-      transactionalDeleteLocalOgel(handle, ogelID);
+  private String parseListToJson(List<String> conditionList) {
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      return mapper.writeValueAsString(conditionList);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
     }
   }
 
   @Override
   public LocalOgel insertOrUpdate(LocalOgel newOgel) {
-    try {
-      getOgelById(newOgel.getId());
-    } catch (LocalOgelNotFoundException e) {
+    LocalOgel ogelFoundById = getOgelById(newOgel.getId());
+    if (ogelFoundById == null) {
       return insertLocalOgel(newOgel);
     }
-    deleteOgel(newOgel.getId());
-    return insertLocalOgel(newOgel);
+    return updateLocalOgel(newOgel);
   }
 
-  @Override
-  public void insertLocalOgels(List<LocalOgel> ogelList) throws SQLException {
+  private LocalOgel updateLocalOgel(LocalOgel ogel) {
+    StringJoiner sj = new StringJoiner(" ,");
+    Map<String, Object> bindMappings = new HashMap<>();
+    bindMappings.put("id", ogel.getId());
+
+    if (ogel.getName() != null) {
+      sj.add("NAME = :name");
+      bindMappings.put("name", ogel.getName());
+    }
+    if (ogel.getSummary() != null) {
+      sj.add("CANLIST = :canList");
+      bindMappings.put("canList", parseListToJson(ogel.getSummary().getCanList()));
+      sj.add("CANTLIST = :cantList");
+      bindMappings.put("cantList", parseListToJson(ogel.getSummary().getCantList()));
+      sj.add("MUSTLIST = :mustList");
+      bindMappings.put("mustList", parseListToJson(ogel.getSummary().getMustList()));
+      sj.add("HOWTOUSELIST = :howToUseList");
+      bindMappings.put("howToUseList", parseListToJson(ogel.getSummary().getHowToUseList()));
+    }
+    StringBuilder updateQuery = new StringBuilder();
+    updateQuery.append("UPDATE LOCAL_OGEL SET ");
+    updateQuery.append(sj.toString());
+    updateQuery.append(" WHERE ID = :id");
     try (final Handle handle = jdbi.open()) {
-      handle.getConnection().setAutoCommit(false);
-      handle.begin();
-      ogelList.stream().forEach(o -> transactionalDeleteLocalOgel(handle, o.getId()));
-      ogelList.stream().forEach(o -> transactionalInsertOgel(handle, o));
-      handle.commit();
-      handle.close();
+      Update update = handle.createStatement(updateQuery.toString());
+      update.bindFromMap(bindMappings).execute();
+      return getOgelById(ogel.getId());
     }
   }
 
-  private void transactionalDeleteLocalOgel(Handle handle, String ogelID) {
-    handle.execute("DELETE FROM LOCAL_OGEL WHERE ID = ?", ogelID);
-    handle.execute("DELETE FROM CONDITION_LIST WHERE OGELID = ? ", ogelID);
-  }
-
-  private void insertConditionListForOgel(Handle handle, String id, String type, String condition) {
-    handle.execute("INSERT INTO CONDITION_LIST(OGELID, TYPE, CONDITION) VALUES (?, ?, ?)", id, type, condition);
+  private void updateOgelCondition(Handle handle, String id, String type, String condition) {
+    handle.createStatement("UPDATE LOCAL_OGEL SET " + type + " = :condition " + " WHERE ID = :id")
+        .bind("condition", condition).bind("id", id).execute();
   }
 }

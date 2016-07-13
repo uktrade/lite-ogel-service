@@ -1,5 +1,9 @@
 package uk.gov.bis.lite.ogel.model.localOgel;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.Collections;
 import java.util.List;
 
 public class OgelConditionSummary {
@@ -7,6 +11,24 @@ public class OgelConditionSummary {
   private List<String> cantList;
   private List<String> mustList;
   private List<String> howToUseList;
+
+  @JsonCreator
+  public OgelConditionSummary(@JsonProperty("canList") List<String> canList,
+                              @JsonProperty("cantList") List<String> cantList,
+                              @JsonProperty("mustList") List<String> mustList,
+                              @JsonProperty("howToUseList") List<String> howToUseList) {
+    this.canList = canList;
+    this.cantList = cantList;
+    this.mustList = mustList;
+    this.howToUseList = howToUseList;
+  }
+
+  public OgelConditionSummary() {
+    this.canList = Collections.emptyList();
+    this.cantList = Collections.emptyList();
+    this.mustList = Collections.emptyList();
+    this.howToUseList = Collections.emptyList();
+  }
 
   public List<String> getCanList() {
     return canList;

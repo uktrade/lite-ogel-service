@@ -1,13 +1,14 @@
 package uk.gov.bis.lite.ogel.resource;
 
-import uk.gov.bis.lite.ogel.model.CategoryType;
-import uk.gov.bis.lite.ogel.model.SpireOgel;
-import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import io.dropwizard.jersey.caching.CacheControl;
+import io.dropwizard.jersey.errors.ErrorMessage;
 import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
 import org.glassfish.jersey.message.internal.OutboundMessageContext;
+import uk.gov.bis.lite.ogel.model.CategoryType;
+import uk.gov.bis.lite.ogel.model.SpireOgel;
+import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -24,12 +25,12 @@ import javax.ws.rs.core.Response;
 
 @Path("/applicable-ogels")
 @Produces(MediaType.APPLICATION_JSON)
-public class SpireOgelResource {
+public class ApplicableOgelResource {
 
   private final SpireOgelService ogelService;
 
   @Inject
-  public SpireOgelResource(SpireOgelService ogelService) {
+  public ApplicableOgelResource(SpireOgelService ogelService) {
     this.ogelService = ogelService;
   }
 
@@ -45,18 +46,22 @@ public class SpireOgelResource {
         throw new WebApplicationException("Invalid Activity Type for category: " + category, 400);
       }
     }
-    final List<CategoryType> categoryTypes = activityTypes.stream().map(a -> CategoryType.valueOf(a)).collect(Collectors.toList());
-    final List<SpireOgel> matchedSpireOgels = ogelService.findOgel(controlCode, destinationCountry, categoryTypes);
-    if (matchedSpireOgels != null) {
-      if (matchedSpireOgels.isEmpty()) {
-        return OutboundJaxrsResponse.noContent().build();
+    final List<CategoryType> categoryTypes = activityTypes.stream().map(CategoryType::valueOf).collect(Collectors.toList());
+    try {
+      final List<SpireOgel> matchedSpireOgels = ogelService.findOgel(controlCode, destinationCountry, categoryTypes);
+      if (matchedSpireOgels != null) {
+        if (matchedSpireOgels.isEmpty()) {
+          return OutboundJaxrsResponse.noContent().build();
+        }
+        OutboundMessageContext messageContext = new OutboundMessageContext();
+        messageContext.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+        messageContext.setEntity(matchedSpireOgels);
+        return new OutboundJaxrsResponse(Response.Status.OK, messageContext);
       }
-      OutboundMessageContext messageContext = new OutboundMessageContext();
-      messageContext.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-      messageContext.setEntity(matchedSpireOgels);
-      return new OutboundJaxrsResponse(Response.Status.OK, messageContext);
+      return OutboundJaxrsResponse.serverError().build();
+    } catch (RuntimeException e) {
+      return Response.status(500).entity(new ErrorMessage(e.getMessage())).build();
     }
-    return OutboundJaxrsResponse.serverError().build();
   }
 
   private Boolean categoryTypeExists(String activityType) {
