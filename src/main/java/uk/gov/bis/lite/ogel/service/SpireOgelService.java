@@ -18,7 +18,6 @@ import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.job.SpireHealthStatus;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,7 +32,7 @@ public class SpireOgelService {
   private static Map<String, SpireOgel> cache = new HashMap<>();
   private SpireOgelClient client;
   private SpireOgelSOAPUnmarshaller unmarshaller;
-  private static SpireHealthStatus healthStatus = new SpireHealthStatus();
+  private static SpireHealthStatus healthStatus = SpireHealthStatus.unhealthy("Service not initialised");
 
   @Inject
   public SpireOgelService(SpireOgelClient client, SpireOgelSOAPUnmarshaller unmarshaller) {
@@ -91,18 +90,15 @@ public class SpireOgelService {
         ogelList.forEach(o -> spireOgelCacheMap.put(o.getId(), o));
         if (spireOgelCacheMap.size() > 0) {
           cache = Collections.unmodifiableMap(spireOgelCacheMap);
-          healthStatus.setHealthy(true);
-          healthStatus.setLastUpdated(LocalDateTime.now());
+          healthStatus = SpireHealthStatus.healthy();
           LOGGER.info("Cache has been successfully updated at {}", healthStatus.getLastUpdated());
         } else {
-          healthStatus.setHealthy(false);
-          healthStatus.setErrorMessage("Cache size is 0");
+          healthStatus = SpireHealthStatus.unhealthy("Cache size is 0");
           LOGGER.warn("Cache refresh job failed to retrieve new data from Spire.");
         }
       } catch (Exception e) {
         LOGGER.warn("An unexpected error occurred getting the Ogel Data from Spire", e);
-        healthStatus.setHealthy(false);
-        healthStatus.setErrorMessage(e.getMessage());
+        healthStatus = SpireHealthStatus.unhealthy(e.getMessage());
       }
     }
   }
