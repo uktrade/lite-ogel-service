@@ -43,7 +43,6 @@ public class MainApplicationConfiguration extends Configuration {
   @JsonProperty
   private String password;
 
-
   public String getSoapUrl() {
     return soapUrl;
   }

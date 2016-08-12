@@ -40,9 +40,10 @@ public class SpireOgelClient {
   public SOAPMessage executeRequest() {
 
     SOAPConnectionFactory soapConnectionFactory;
+    SOAPConnection soapConnection = null;
     try {
       soapConnectionFactory = SOAPConnectionFactory.newInstance();
-      SOAPConnection soapConnection = soapConnectionFactory.createConnection();
+      soapConnection = soapConnectionFactory.createConnection();
 
       SOAPMessage request = createRequest();
       LOGGER.debug(messageAsString(request));
@@ -56,6 +57,15 @@ public class SpireOgelClient {
       return response;
     } catch (SOAPException e) {
       throw new SOAPParseException("An error occurred establishing the connection with SOAP client", e);
+    } finally {
+      if (soapConnection != null) {
+        try {
+          LOGGER.info("Closing the soap connection for Spire Ogel Client");
+          soapConnection.close();
+        } catch (SOAPException e) {
+          LOGGER.error("An error occurred closing the SOAP connection. ", e);
+        }
+      }
     }
   }
 

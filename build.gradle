@@ -31,7 +31,7 @@ flyway {
 }
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '2.0'
+  gradleVersion = '2.14'
 }
 
 mainClassName = "uk.gov.bis.lite.ogel.OgelApplication"
