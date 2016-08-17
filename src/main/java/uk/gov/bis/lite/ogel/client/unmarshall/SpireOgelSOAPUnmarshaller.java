@@ -60,7 +60,7 @@ public class SpireOgelSOAPUnmarshaller {
         try {
           currentOgel.setId(((Node) xpath.evaluate(codeExpression, currentOgelNode, XPathConstants.NODE)).getTextContent());
 
-          currentOgel.setDescription(((Node) xpath.evaluate(nameExpression, currentOgelNode, XPathConstants.NODE)).getTextContent());
+          currentOgel.setName(((Node) xpath.evaluate(nameExpression, currentOgelNode, XPathConstants.NODE)).getTextContent());
           final Node linkToOgelNode = (Node) xpath.evaluate(linkToOgelExpression, currentOgelNode, XPathConstants.NODE);
           if (linkToOgelNode != null) {
             currentOgel.setLink(linkToOgelNode.getTextContent());

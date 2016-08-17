@@ -73,7 +73,7 @@ public class ApplicableOgelResourceTest {
 
     final List<SpireOgel> spireOgelsResponse = (List<SpireOgel>) response.readEntity(List.class);
     assertEquals(this.spireOgels.size(), spireOgelsResponse.size());
-    assertEquals(this.spireOgels.get(0).getDescription(), ((Map) spireOgelsResponse.get(0)).get("description"));
+    assertEquals(this.spireOgels.get(0).getName(), ((Map) spireOgelsResponse.get(0)).get("name"));
     assertEquals(this.spireOgels.get(0).getId(), ((Map) spireOgelsResponse.get(0)).get("id"));
 
   }

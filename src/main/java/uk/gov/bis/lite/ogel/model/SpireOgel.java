@@ -4,16 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import java.io.Serializable;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SpireOgel implements Serializable {
+public class SpireOgel {
 
   @JsonIgnore
   private String id;
-  private String description;
+  private String name;
   private String link;
   private List<OgelCondition> ogelConditions;
   @JsonIgnore
@@ -28,12 +27,12 @@ public class SpireOgel implements Serializable {
     return this;
   }
 
-  public String getDescription() {
-    return description;
+  public String getName() {
+    return name;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String getLink() {
@@ -61,36 +60,4 @@ public class SpireOgel implements Serializable {
     this.ogelConditions = ogelConditions;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-
-    SpireOgel spireOgel = (SpireOgel) o;
-
-    return id.equals(spireOgel.id) && description.equals(spireOgel.description);
-
-  }
-
-  @Override
-  public int hashCode() {
-    int result = id.hashCode();
-    result = 31 * result + description.hashCode();
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    return "SpireOgel{" +
-        "id='" + id + '\'' +
-        ", description='" + description + '\'' +
-        ", link='" + link + '\'' +
-        ", ogelConditions=" + ogelConditions +
-        ", category='" + category + '\'' +
-        '}';
-  }
 }

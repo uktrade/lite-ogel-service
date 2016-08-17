@@ -93,7 +93,7 @@ public class SpireOgelFilterTest {
     filteredOgels = SpireOgelFilter.filterSpireOgels(ogelList, "ML4b1", "invalidId", Collections.singletonList(CategoryType.TECH));
     assertFalse(filteredOgels.isEmpty());
     assertEquals(filteredOgels.get(0).getId(), "OGL1");
-    assertEquals(filteredOgels.get(0).getDescription(), "Fire Arms");
+    assertEquals(filteredOgels.get(0).getName(), "Fire Arms");
   }
 
   @Test

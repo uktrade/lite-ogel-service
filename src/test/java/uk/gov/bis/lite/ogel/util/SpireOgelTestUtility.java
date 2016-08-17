@@ -10,11 +10,11 @@ import java.util.List;
 
 public class SpireOgelTestUtility {
 
-  public static SpireOgel createOgel(String code, String description, List<OgelCondition> ogelConditions, CategoryType category) {
+  public static SpireOgel createOgel(String code, String name, List<OgelCondition> ogelConditions, CategoryType category) {
     SpireOgel spireOgel = new SpireOgel();
     spireOgel.setOgelConditions(ogelConditions);
     spireOgel.setId(code);
-    spireOgel.setDescription(description);
+    spireOgel.setName(name);
     spireOgel.setCategory(category);
     return spireOgel;
   }

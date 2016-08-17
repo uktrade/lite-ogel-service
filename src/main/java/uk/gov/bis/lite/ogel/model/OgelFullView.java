@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
 
@@ -33,8 +34,8 @@ public class OgelFullView implements Serializable {
 
   @JsonProperty("name")
   public String getOgelName() {
-    if(localOgel == null){
-      return spireOgel.getDescription();
+    if(localOgel == null || StringUtils.isBlank(localOgel.getName())){
+      return spireOgel.getName();
     }
     return localOgel.getName();
   }
@@ -54,7 +55,7 @@ public class OgelFullView implements Serializable {
 
   @JsonProperty("description")
   public String getDescription() {
-    return spireOgel.getDescription();
+    return spireOgel.getName();
   }
 
   @JsonProperty("link")
