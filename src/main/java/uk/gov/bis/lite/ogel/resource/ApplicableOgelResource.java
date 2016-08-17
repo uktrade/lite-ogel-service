@@ -6,8 +6,10 @@ import io.dropwizard.jersey.caching.CacheControl;
 import io.dropwizard.jersey.errors.ErrorMessage;
 import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
 import org.glassfish.jersey.message.internal.OutboundMessageContext;
+import uk.gov.bis.lite.ogel.model.ApplicableOgelView;
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
+import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 import java.util.List;
@@ -27,11 +29,13 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 public class ApplicableOgelResource {
 
-  private final SpireOgelService ogelService;
+  private final SpireOgelService spireOgelService;
+  private final LocalOgelService localOgelService;
 
   @Inject
-  public ApplicableOgelResource(SpireOgelService ogelService) {
-    this.ogelService = ogelService;
+  public ApplicableOgelResource(SpireOgelService spireOgelService, LocalOgelService localOgelService) {
+    this.spireOgelService = spireOgelService;
+    this.localOgelService = localOgelService;
   }
 
   @GET
@@ -51,25 +55,33 @@ public class ApplicableOgelResource {
       throw new WebApplicationException("At least one activityType must be provided", 400);
     }
 
-    final List<CategoryType> categoryTypes = activityTypes.stream().map(CategoryType::valueOf).collect(Collectors.toList());
+    List<CategoryType> categoryTypes = activityTypes.stream().map(CategoryType::valueOf).collect(Collectors.toList());
+
     try {
-      final List<SpireOgel> matchedSpireOgels = ogelService.findOgel(controlCode, destinationCountry, categoryTypes);
-      if (matchedSpireOgels != null) {
-        if (matchedSpireOgels.isEmpty()) {
-          return OutboundJaxrsResponse.noContent().build();
-        }
+      List<SpireOgel> matchedSpireOgels = spireOgelService.findOgel(controlCode, destinationCountry, categoryTypes);
+
+      if (matchedSpireOgels.isEmpty()) {
+        return OutboundJaxrsResponse.noContent().build();
+      }
+      else {
+        List<ApplicableOgelView> applicableOgels = matchedSpireOgels
+            .stream()
+            .map(e -> ApplicableOgelView.create(e, localOgelService.findLocalOgelById(e.getId())))
+            .collect(Collectors.toList());
+
         OutboundMessageContext messageContext = new OutboundMessageContext();
         messageContext.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-        messageContext.setEntity(matchedSpireOgels);
+        messageContext.setEntity(applicableOgels);
+
         return new OutboundJaxrsResponse(Response.Status.OK, messageContext);
       }
-      return OutboundJaxrsResponse.serverError().build();
+
     } catch (RuntimeException e) {
       return Response.status(500).entity(new ErrorMessage(e.getMessage())).build();
     }
   }
 
-  private Boolean categoryTypeExists(String activityType) {
+  private boolean categoryTypeExists(String activityType) {
     for (CategoryType type : CategoryType.values()) {
       if (type.name().equals(activityType)) {
         return true;

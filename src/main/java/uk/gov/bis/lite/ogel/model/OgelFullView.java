@@ -8,11 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
 
-import java.io.Serializable;
-
 @JsonPropertyOrder({"id", "name", "description", "link", "summary"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class OgelFullView implements Serializable {
+public class OgelFullView {
 
   private SpireOgel spireOgel;
   private LocalOgel localOgel;
