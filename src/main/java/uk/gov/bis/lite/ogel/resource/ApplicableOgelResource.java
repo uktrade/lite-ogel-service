@@ -37,15 +37,20 @@ public class ApplicableOgelResource {
   @GET
   @Timed
   @CacheControl(maxAge = 1, maxAgeUnit = TimeUnit.DAYS)
-  public Response getOgelList(@NotNull @QueryParam("controlCode") String controlCode,
-                              @NotNull @QueryParam("sourceCountry") String sourceCountry,
-                              @NotNull @QueryParam("destinationCountry") String destinationCountry,
-                              @NotNull @QueryParam("activityType") List<String> activityTypes) {
+  public Response getOgelList(@NotNull(message = "controlCode required") @QueryParam("controlCode") String controlCode,
+                              @NotNull(message = "sourceCountry required") @QueryParam("sourceCountry") String sourceCountry,
+                              @NotNull(message = "destinationCountry required") @QueryParam("destinationCountry") String destinationCountry,
+                              @QueryParam("activityType") List<String> activityTypes) {
     for (String category : activityTypes) {
       if (!categoryTypeExists(category)) {
         throw new WebApplicationException("Invalid Activity Type for category: " + category, 400);
       }
     }
+
+    if (activityTypes.size() == 0) {
+      throw new WebApplicationException("At least one activityType must be provided", 400);
+    }
+
     final List<CategoryType> categoryTypes = activityTypes.stream().map(CategoryType::valueOf).collect(Collectors.toList());
     try {
       final List<SpireOgel> matchedSpireOgels = ogelService.findOgel(controlCode, destinationCountry, categoryTypes);
