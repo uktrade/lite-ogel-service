@@ -1,6 +1,6 @@
 package uk.gov.bis.lite.ogel.util;
 
-import uk.gov.bis.lite.ogel.model.CategoryType;
+import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.Country;
 import uk.gov.bis.lite.ogel.model.OgelCondition;
 import uk.gov.bis.lite.ogel.model.Rating;
@@ -10,12 +10,12 @@ import java.util.List;
 
 public class SpireOgelTestUtility {
 
-  public static SpireOgel createOgel(String code, String name, List<OgelCondition> ogelConditions, CategoryType category) {
+  public static SpireOgel createOgel(String code, String name, List<OgelCondition> ogelConditions, ActivityType activityType) {
     SpireOgel spireOgel = new SpireOgel();
     spireOgel.setOgelConditions(ogelConditions);
     spireOgel.setId(code);
     spireOgel.setName(name);
-    spireOgel.setCategory(category);
+    spireOgel.setActivityType(activityType);
     return spireOgel;
   }
 

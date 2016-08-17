@@ -14,7 +14,7 @@ import uk.gov.bis.lite.ogel.client.SpireOgelClient;
 import uk.gov.bis.lite.ogel.client.unmarshall.SpireOgelSOAPUnmarshaller;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.model.CategoryType;
+import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.job.SpireHealthStatus;
 
@@ -40,7 +40,7 @@ public class SpireOgelService {
     this.unmarshaller = unmarshaller;
   }
 
-  public List<SpireOgel> findOgel(String controlCode, String destinationCountryId, List<CategoryType> activityTypes) {
+  public List<SpireOgel> findOgel(String controlCode, String destinationCountryId, List<ActivityType> activityTypes) {
     if (cache.isEmpty()) {
       throw new CacheNotPopulatedException("Communication with Spire failed. Spire Ogel list is not populated");
     }

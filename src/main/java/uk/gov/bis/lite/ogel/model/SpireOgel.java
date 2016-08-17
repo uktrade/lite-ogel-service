@@ -16,7 +16,7 @@ public class SpireOgel {
   private String link;
   private List<OgelCondition> ogelConditions;
   @JsonIgnore
-  private CategoryType category;
+  private ActivityType activityType;
 
   public String getId() {
     return id;
@@ -43,12 +43,12 @@ public class SpireOgel {
     this.link = link;
   }
 
-  public CategoryType getCategory() {
-    return category;
+  public ActivityType getActivityType() {
+    return activityType;
   }
 
-  public void setCategory(CategoryType category) {
-    this.category = category;
+  public void setActivityType(ActivityType activityType) {
+    this.activityType = activityType;
   }
 
   @JsonIgnore

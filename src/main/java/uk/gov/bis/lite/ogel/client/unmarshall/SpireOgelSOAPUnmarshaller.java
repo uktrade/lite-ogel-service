@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import uk.gov.bis.lite.ogel.exception.SOAPParseException;
-import uk.gov.bis.lite.ogel.model.CategoryType;
+import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.OgelCondition;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 
@@ -27,7 +27,7 @@ public class SpireOgelSOAPUnmarshaller {
   private static final String codeExpression = "OGEL_TYPE_REF";
   private static final String nameExpression = "NAME";
   private static final String linkToOgelExpression = "LINK_TO_OGL";
-  private static final String CATEGORY_EXPRESSION = "OGL_ACTIVITY";
+  private static final String ACTIVITY_EXPRESSION = "OGL_ACTIVITY";
   private static final String CONDITIONS_LIST_EXPRESSION = "CONDITIONS_LIST";
 
   public List<SpireOgel> execute(SOAPMessage message) {
@@ -65,9 +65,9 @@ public class SpireOgelSOAPUnmarshaller {
           if (linkToOgelNode != null) {
             currentOgel.setLink(linkToOgelNode.getTextContent());
           }
-          final Node ogelCategoryNode = (Node) xpath.evaluate(CATEGORY_EXPRESSION, currentOgelNode, XPathConstants.NODE);
-          if (ogelCategoryNode != null) {
-            currentOgel.setCategory(CategoryType.valueOf(ogelCategoryNode.getTextContent()));
+          final Node ogelActivityNode = (Node) xpath.evaluate(ACTIVITY_EXPRESSION, currentOgelNode, XPathConstants.NODE);
+          if (ogelActivityNode != null) {
+            currentOgel.setActivityType(ActivityType.valueOf(ogelActivityNode.getTextContent()));
           }
           final SpireOgelConditionUnmarshaller conditionUnmarshaller = new SpireOgelConditionUnmarshaller();
           List<OgelCondition> ogelConditions = conditionUnmarshaller.unmarshall(xpath, currentOgelNode, CONDITIONS_LIST_EXPRESSION); //= new ArrayList<>();
