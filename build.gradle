@@ -19,7 +19,8 @@ dependencies {
       'io.dropwizard:dropwizard-auth:0.9.2',
       'ru.vyarus:dropwizard-guicey:3.2.0',
       'com.fiestacabin.dropwizard.quartz:dropwizard-quartz:0.7.2',
-      'org.xerial:sqlite-jdbc:3.8.11.2'
+      'org.xerial:sqlite-jdbc:3.8.11.2',
+      'org.flywaydb:flyway-core:4.0.1'
 
   testCompile 'junit:junit:4.12',
       'org.mockito:mockito-all:1.9.5',

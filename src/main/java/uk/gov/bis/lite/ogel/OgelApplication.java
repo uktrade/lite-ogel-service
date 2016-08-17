@@ -8,8 +8,10 @@ import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.PrincipalImpl;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
+import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
@@ -52,6 +54,12 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     environment.jersey().register(CustomJsonProcessingExceptionMapper.class);
     environment.jersey().register(CheckLocalOgelExceptionMapper.class);
     environment.jersey().register(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class));
+
+    //Perform/validate flyway migration on startup
+    DataSourceFactory dataSourceFactory = configuration.getDataSourceFactory();
+    Flyway flyway = new Flyway();
+    flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());
+    flyway.migrate();
 
     try {
       ManagedScheduler managedScheduler = injector.getInstance(ManagedScheduler.class);
