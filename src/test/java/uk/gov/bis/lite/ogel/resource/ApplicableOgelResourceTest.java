@@ -4,13 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 import io.dropwizard.jersey.errors.ErrorMessage;
 import io.dropwizard.testing.junit.ResourceTestRule;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -61,6 +62,12 @@ public class ApplicableOgelResourceTest {
 
   }
 
+  @After
+  public void tearDown(){
+    reset(spireOgelService);
+    reset(localOgelService);
+  }
+
   @ClassRule
   public static final ResourceTestRule resources = ResourceTestRule.builder()
       .addResource(new ApplicableOgelResource(spireOgelService, localOgelService))
@@ -92,7 +99,6 @@ public class ApplicableOgelResourceTest {
     assertEquals(errorMessage, response.readEntity(ErrorMessage.class).getMessage());
   }
 
-  @Ignore
   @Test
   public void throwsWebApplicationExceptionForInvalidCategory() throws IOException {
     when(spireOgelService.findOgel(anyString(), anyString(), anyListOf(ActivityType.class))).thenCallRealMethod();
@@ -101,6 +107,21 @@ public class ApplicableOgelResourceTest {
         .queryParam("activityType", "Invalid").request().get();
     assertNotNull(response);
     assertEquals(response.getStatus(), 400); //Bad Request
+  }
+
+  @Test
+  public void returnsEmptyListWhenNoOgelsMatched() {
+    when(spireOgelService.findOgel(anyString(), anyString(), anyListOf(ActivityType.class))).thenReturn(Collections.emptyList());
+    final Response response = resources.client()
+        .target("/applicable-ogels")
+        .queryParam("controlCode", "ML1a")
+        .queryParam("sourceCountry", "41")
+        .queryParam("destinationCountry", "1")
+        .queryParam("activityType", "TECH")
+        .request().get();
+    final List<SpireOgel> spireOgelsResponse = (List<SpireOgel>) response.readEntity(List.class);
+    assertEquals(200, response.getStatus());
+    assertEquals(0, spireOgelsResponse.size());
   }
 
 }
