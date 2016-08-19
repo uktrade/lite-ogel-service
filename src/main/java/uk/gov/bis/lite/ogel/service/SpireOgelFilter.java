@@ -2,7 +2,6 @@ package uk.gov.bis.lite.ogel.service;
 
 import uk.gov.bis.lite.ogel.model.CategoryType;
 import uk.gov.bis.lite.ogel.model.Country;
-import uk.gov.bis.lite.ogel.model.OgelCondition;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 
 import java.util.List;
@@ -13,10 +12,10 @@ public class SpireOgelFilter {
   public static List<SpireOgel> filterSpireOgels(List<SpireOgel> ogelsList, String rating,
                                                  String destinationCountryId, List<CategoryType> categorites) {
     return ogelsList.stream().filter(
-        ogel -> (applyRatingIsIncluded(ogel, rating)) &&
+        ogel -> applyRatingIsIncluded(ogel, rating) &&
             categorites.contains(ogel.getCategory()) &&
             (applyExcludedCountriesIfPresent(ogel, destinationCountryId)
-                || applyIncludedCountriesIfPresent(ogel, destinationCountryId)))
+                && applyIncludedCountriesIfPresent(ogel, destinationCountryId)))
         .collect(Collectors.toList());
   }
 
@@ -25,18 +24,20 @@ public class SpireOgelFilter {
   }
 
   private static boolean applyRatingIsIncluded(SpireOgel ogel, String rating) {
-    return ogel.getOgelConditions().stream().map(OgelCondition::getRatingList).flatMap(l -> l.stream())
-        .anyMatch(r -> r.getRatingCode().equalsIgnoreCase(rating));
+    return ogel.getOgelConditions().stream()
+        .flatMap(oc -> oc.getRatingList().stream()).anyMatch(r -> r.getRatingCode().equalsIgnoreCase(rating));
   }
 
   private static boolean applyExcludedCountriesIfPresent(SpireOgel ogel, String destinationCountry) {
-    return ogel.getOgelConditions().stream().map(OgelCondition::getExcludedCountries).count() > 0 &&
-        ogel.getOgelConditions().stream().map(OgelCondition::getExcludedCountries)
-            .flatMap(l -> l.stream()).noneMatch(c -> countryMatchesDestination(c, destinationCountry));
+    return ogel.getOgelConditions().stream().
+        flatMap(oc -> oc.getExcludedCountries().stream()).noneMatch(c -> countryMatchesDestination(c, destinationCountry));
   }
 
   private static boolean applyIncludedCountriesIfPresent(SpireOgel ogel, String destinationCountry) {
-    return (ogel.getOgelConditions().stream().map(OgelCondition::getIncludedCountries)
-        .flatMap(l -> l.stream()).anyMatch(c -> countryMatchesDestination(c, destinationCountry)));
+   if (ogel.getOgelConditions().stream().flatMap(oc -> oc.getIncludedCountries().stream()).count() == 0) {
+      return true;
+    }
+    return ogel.getOgelConditions().stream()
+        .flatMap(oc -> oc.getIncludedCountries().stream()).anyMatch(c -> countryMatchesDestination(c, destinationCountry));
   }
 }
