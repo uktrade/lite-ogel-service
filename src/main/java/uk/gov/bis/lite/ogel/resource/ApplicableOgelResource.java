@@ -6,9 +6,8 @@ import io.dropwizard.jersey.caching.CacheControl;
 import io.dropwizard.jersey.errors.ErrorMessage;
 import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
 import org.glassfish.jersey.message.internal.OutboundMessageContext;
-import uk.gov.bis.lite.ogel.model.ApplicableOgelView;
 import uk.gov.bis.lite.ogel.model.ActivityType;
-import uk.gov.bis.lite.ogel.model.SpireOgel;
+import uk.gov.bis.lite.ogel.model.ApplicableOgelView;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 

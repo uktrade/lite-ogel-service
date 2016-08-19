@@ -12,7 +12,7 @@ public class SpireOgelFilter {
   public static List<SpireOgel> filterSpireOgels(List<SpireOgel> ogelsList, String rating,
                                                  String destinationCountryId, List<ActivityType> categorites) {
     return ogelsList.stream().filter(
-        ogel -> (applyRatingIsIncluded(ogel, rating)) &&
+        ogel -> applyRatingIsIncluded(ogel, rating) &&
             categorites.contains(ogel.getActivityType()) &&
             (applyExcludedCountriesIfPresent(ogel, destinationCountryId)
                 && applyIncludedCountriesIfPresent(ogel, destinationCountryId)))
