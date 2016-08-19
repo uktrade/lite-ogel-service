@@ -35,7 +35,7 @@ public class SpireOgelSOAPUnmarshallerTest {
     assertTrue(!spireOgelList.isEmpty());
     assertEquals(55, spireOgelList.size());
     assertEquals("OGL0", spireOgelList.get(0).getId());
-    assertTrue(spireOgelList.get(0).getDescription().contains("Access Overseas to Software"));
+    assertTrue(spireOgelList.get(0).getName().contains("Access Overseas to Software"));
 
   }
 }

@@ -6,8 +6,10 @@ import io.dropwizard.jersey.caching.CacheControl;
 import io.dropwizard.jersey.errors.ErrorMessage;
 import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
 import org.glassfish.jersey.message.internal.OutboundMessageContext;
-import uk.gov.bis.lite.ogel.model.CategoryType;
+import uk.gov.bis.lite.ogel.model.ApplicableOgelView;
+import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
+import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 import java.util.List;
@@ -27,49 +29,50 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 public class ApplicableOgelResource {
 
-  private final SpireOgelService ogelService;
+  private final SpireOgelService spireOgelService;
+  private final LocalOgelService localOgelService;
 
   @Inject
-  public ApplicableOgelResource(SpireOgelService ogelService) {
-    this.ogelService = ogelService;
+  public ApplicableOgelResource(SpireOgelService spireOgelService, LocalOgelService localOgelService) {
+    this.spireOgelService = spireOgelService;
+    this.localOgelService = localOgelService;
   }
 
   @GET
   @Timed
   @CacheControl(maxAge = 1, maxAgeUnit = TimeUnit.DAYS)
-  public Response getOgelList(@NotNull @QueryParam("controlCode") String controlCode,
-                              @NotNull @QueryParam("sourceCountry") String sourceCountry,
-                              @NotNull @QueryParam("destinationCountry") String destinationCountry,
-                              @NotNull @QueryParam("activityType") List<String> activityTypes) {
-    for (String category : activityTypes) {
-      if (!categoryTypeExists(category)) {
-        throw new WebApplicationException("Invalid Activity Type for category: " + category, 400);
+  public Response getOgelList(@NotNull(message = "controlCode required") @QueryParam("controlCode") String controlCode,
+                              @NotNull(message = "sourceCountry required") @QueryParam("sourceCountry") String sourceCountry,
+                              @NotNull(message = "destinationCountry required") @QueryParam("destinationCountry") String destinationCountry,
+                              @QueryParam("activityType") List<String> activityTypesParam) {
+
+    for (String activityTypeParam : activityTypesParam) {
+      if (!ActivityType.typeExists(activityTypeParam)) {
+        throw new WebApplicationException("Invalid activityType: " + activityTypeParam, 400);
       }
     }
-    final List<CategoryType> categoryTypes = activityTypes.stream().map(CategoryType::valueOf).collect(Collectors.toList());
+
+    if (activityTypesParam.size() == 0) {
+      throw new WebApplicationException("At least one activityType must be provided", 400);
+    }
+
+    List<ActivityType> activityTypes = activityTypesParam.stream().map(ActivityType::valueOf).collect(Collectors.toList());
+
     try {
-      final List<SpireOgel> matchedSpireOgels = ogelService.findOgel(controlCode, destinationCountry, categoryTypes);
-      if (matchedSpireOgels != null) {
-        if (matchedSpireOgels.isEmpty()) {
-          return OutboundJaxrsResponse.noContent().build();
-        }
-        OutboundMessageContext messageContext = new OutboundMessageContext();
-        messageContext.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-        messageContext.setEntity(matchedSpireOgels);
-        return new OutboundJaxrsResponse(Response.Status.OK, messageContext);
-      }
-      return OutboundJaxrsResponse.serverError().build();
+      List<ApplicableOgelView> applicableOgels = spireOgelService
+          .findOgel(controlCode, destinationCountry, activityTypes)
+          .stream()
+          .map(e -> ApplicableOgelView.create(e, localOgelService.findLocalOgelById(e.getId())))
+          .collect(Collectors.toList());
+
+      OutboundMessageContext messageContext = new OutboundMessageContext();
+      messageContext.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+      messageContext.setEntity(applicableOgels);
+
+      return new OutboundJaxrsResponse(Response.Status.OK, messageContext);
+
     } catch (RuntimeException e) {
       return Response.status(500).entity(new ErrorMessage(e.getMessage())).build();
     }
-  }
-
-  private Boolean categoryTypeExists(String activityType) {
-    for (CategoryType type : CategoryType.values()) {
-      if (type.name().equals(activityType)) {
-        return true;
-      }
-    }
-    return false;
   }
 }

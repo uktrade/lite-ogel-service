@@ -23,7 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.model.CategoryType;
+import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
@@ -73,7 +73,7 @@ public class OgelResourceTest {
     localOgel.setSummary(summary);
 
     spireOgel.setId("OGL1");
-    spireOgel.setCategory(CategoryType.REPAIR);
+    spireOgel.setActivityType(ActivityType.REPAIR);
   }
 
   @Test
@@ -117,7 +117,7 @@ public class OgelResourceTest {
   public void LocalOgelNotFoundCaseIsHandled() {
     SpireOgel spireOgel = new SpireOgel();
     spireOgel.setId("OGL1");
-    spireOgel.setCategory(CategoryType.REPAIR);
+    spireOgel.setActivityType(ActivityType.REPAIR);
     when(ogelSpireService.findSpireOgelById(anyString())).thenReturn(spireOgel);
     when(ogelLocalService.findLocalOgelById((anyString()))).thenReturn(null);
     Response response = resources.client().target("/ogels/unknown").request().get();

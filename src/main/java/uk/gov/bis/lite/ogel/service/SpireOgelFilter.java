@@ -1,6 +1,6 @@
 package uk.gov.bis.lite.ogel.service;
 
-import uk.gov.bis.lite.ogel.model.CategoryType;
+import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.Country;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 
@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 public class SpireOgelFilter {
 
   public static List<SpireOgel> filterSpireOgels(List<SpireOgel> ogelsList, String rating,
-                                                 String destinationCountryId, List<CategoryType> categorites) {
+                                                 String destinationCountryId, List<ActivityType> categorites) {
     return ogelsList.stream().filter(
-        ogel -> applyRatingIsIncluded(ogel, rating) &&
-            categorites.contains(ogel.getCategory()) &&
+        ogel -> (applyRatingIsIncluded(ogel, rating)) &&
+            categorites.contains(ogel.getActivityType()) &&
             (applyExcludedCountriesIfPresent(ogel, destinationCountryId)
                 && applyIncludedCountriesIfPresent(ogel, destinationCountryId)))
         .collect(Collectors.toList());

@@ -14,7 +14,7 @@ import uk.gov.bis.lite.ogel.client.SpireOgelClient;
 import uk.gov.bis.lite.ogel.client.unmarshall.SpireOgelSOAPUnmarshaller;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.model.CategoryType;
+import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.job.SpireHealthStatus;
 
@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.xml.soap.SOAPMessage;
 
@@ -40,7 +39,7 @@ public class SpireOgelService {
     this.unmarshaller = unmarshaller;
   }
 
-  public List<SpireOgel> findOgel(String controlCode, String destinationCountryId, List<CategoryType> activityTypes) {
+  public List<SpireOgel> findOgel(String controlCode, String destinationCountryId, List<ActivityType> activityTypes) {
     if (cache.isEmpty()) {
       throw new CacheNotPopulatedException("Communication with Spire failed. Spire Ogel list is not populated");
     }
@@ -75,7 +74,7 @@ public class SpireOgelService {
 
   @DisallowConcurrentExecution
   @PersistJobDataAfterExecution
-  @Scheduled(interval = 1, unit = TimeUnit.HOURS)
+  @Scheduled(cron = "0 0 * * *") //Once a day at midnight
   private static class RefreshCacheJob implements Job {
     private final Logger LOGGER = LoggerFactory.getLogger(RefreshCacheJob.class);
 
