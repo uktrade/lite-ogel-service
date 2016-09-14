@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.soap.SOAPMessage;
 
@@ -74,7 +75,7 @@ public class SpireOgelService {
 
   @DisallowConcurrentExecution
   @PersistJobDataAfterExecution
-  @Scheduled(cron = "0 0 * * *") //Once a day at midnight
+  @Scheduled(interval = 1, unit = TimeUnit.DAYS)
   private static class RefreshCacheJob implements Job {
     private final Logger LOGGER = LoggerFactory.getLogger(RefreshCacheJob.class);
 
