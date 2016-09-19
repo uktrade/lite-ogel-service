@@ -1,3 +1,6 @@
 .idea/
-**.db
-classes/**
+.gradle/
+classes/
+build/
+
+*.db
