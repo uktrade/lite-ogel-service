@@ -8,9 +8,11 @@ import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.PrincipalImpl;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
+import io.dropwizard.client.HttpClientBuilder;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.apache.http.client.HttpClient;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.exception.SOAPParseException;
 import uk.gov.bis.lite.ogel.healthcheck.SpireHealthCheck;
 import uk.gov.bis.lite.ogel.resource.ApplicableOgelResource;
+import uk.gov.bis.lite.ogel.resource.ControlCodeConditionsResource;
 import uk.gov.bis.lite.ogel.resource.OgelResource;
 import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
 
@@ -74,7 +77,7 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     guiceBundle = GuiceBundle.<MainApplicationConfiguration>builder()
         .modules(new GuiceModule())
         .installers(ResourceInstaller.class, HealthCheckInstaller.class)
-        .extensions(OgelResource.class, ApplicableOgelResource.class, SpireHealthCheck.class)
+        .extensions(OgelResource.class, ApplicableOgelResource.class, ControlCodeConditionsResource.class, SpireHealthCheck.class)
         .build(Stage.PRODUCTION);
 
     bootstrap.addBundle(guiceBundle);
