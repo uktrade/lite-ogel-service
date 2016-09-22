@@ -40,6 +40,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -104,8 +105,7 @@ public class ControlCodeConditionsResource {
 
         return new ControlCodeConditionFullView(localControlCodeConditions, controlCodeCutDownList);
       } catch (IOException e) {
-        // TODO - How to handle errors here nicely?
-        throw new RuntimeException("Failed getting to the control code service", e);
+        throw new WebApplicationException("Unable to get control code details from the control code service", e, Response.Status.INTERNAL_SERVER_ERROR);
       }
     }
     else {
