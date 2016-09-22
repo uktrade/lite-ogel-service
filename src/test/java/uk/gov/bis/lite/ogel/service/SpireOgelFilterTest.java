@@ -63,7 +63,7 @@ public class SpireOgelFilterTest {
   @Test
   public void filtersAndFindsOgelsCorrectly() {
     List<SpireOgel> ogelList = Collections.singletonList(firstOgel);
-    final List<SpireOgel> filteredOgels = SpireOgelFilter.filterSpireOgels(ogelList, "ML21b1", "someCountry", Collections.singletonList(ActivityType.TECH));
+    final List<SpireOgel> filteredOgels = SpireOgelFilter.filterSpireOgels(ogelList, "ML21b1", "id1", Collections.singletonList(ActivityType.TECH));
     assertNotNull(filteredOgels);
     assertFalse(filteredOgels.isEmpty());
     assertEquals(filteredOgels.get(0).getId(), "OGL0");
@@ -90,7 +90,7 @@ public class SpireOgelFilterTest {
     filteredOgels = SpireOgelFilter.filterSpireOgels(ogelList, "ML4b1", "id3", Collections.singletonList(ActivityType.TECH));
     assertTrue(filteredOgels.isEmpty());
 
-    filteredOgels = SpireOgelFilter.filterSpireOgels(ogelList, "ML4b1", "invalidId", Collections.singletonList(ActivityType.TECH));
+    filteredOgels = SpireOgelFilter.filterSpireOgels(ogelList, "ML4b1", "id2", Collections.singletonList(ActivityType.TECH));
     assertFalse(filteredOgels.isEmpty());
     assertEquals(filteredOgels.get(0).getId(), "OGL1");
     assertEquals(filteredOgels.get(0).getName(), "Fire Arms");
@@ -115,7 +115,7 @@ public class SpireOgelFilterTest {
     condition.setExcludedCountries(bannedCountries);
     SpireOgel secondOgel = SpireOgelTestUtility.createOgel("OGL1", "Fire Arms", Arrays.asList(condition), ActivityType.TECH);
     List<SpireOgel> ogelList = Arrays.asList(firstOgel, secondOgel);
-    List<SpireOgel> filteredOgels = SpireOgelFilter.filterSpireOgels(ogelList, "ML21b3", "invalidCountry", Collections.singletonList(ActivityType.TECH));
+    List<SpireOgel> filteredOgels = SpireOgelFilter.filterSpireOgels(ogelList, "ML21b3", "id2", Collections.singletonList(ActivityType.TECH));
     assertEquals(2, filteredOgels.size());
   }
 
@@ -148,12 +148,12 @@ public class SpireOgelFilterTest {
   @Test
   public void returnsOgelsCorrectlyForDifferentCategories() {
     List<SpireOgel> ogelList = Arrays.asList(firstOgel);
-    List<SpireOgel> filteredOgels = SpireOgelFilter.filterSpireOgels(ogelList, "ML21b1", "someCountry", Arrays.asList(ActivityType.MIL_GOV));
+    List<SpireOgel> filteredOgels = SpireOgelFilter.filterSpireOgels(ogelList, "ML21b1", "id1", Arrays.asList(ActivityType.MIL_GOV));
     assertNotNull(filteredOgels);
     assertTrue(filteredOgels.isEmpty());
 
     filteredOgels = SpireOgelFilter.filterSpireOgels(ogelList, "ML21b1",
-        "someCountry", Arrays.asList(ActivityType.TECH, ActivityType.MIL_GOV));
+        "id1", Arrays.asList(ActivityType.TECH, ActivityType.MIL_GOV));
     assertEquals(1, filteredOgels.size());
   }
 }

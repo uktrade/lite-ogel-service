@@ -19,6 +19,7 @@ import io.dropwizard.auth.basic.BasicCredentials;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -43,6 +44,7 @@ import javax.ws.rs.core.Response;
 import javax.xml.soap.SOAPException;
 import javax.xml.xpath.XPathExpressionException;
 
+@Ignore
 public class OgelResourceTest {
   private SpireOgelService ogelSpireService = Mockito.mock(SpireOgelService.class);
   private LocalOgelService ogelLocalService = Mockito.mock(LocalOgelService.class);
