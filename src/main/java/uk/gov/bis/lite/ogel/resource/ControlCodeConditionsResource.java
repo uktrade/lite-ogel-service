@@ -78,7 +78,7 @@ public class ControlCodeConditionsResource {
   @GET
   @Path("{ogelID}/{controlCode}")
   @Produces(MediaType.APPLICATION_JSON)
-  public ControlCodeConditionFullView getOgelByOgelID(@NotNull @PathParam("ogelID") String ogelID,
+  public Response getOgelByOgelID(@NotNull @PathParam("ogelID") String ogelID,
                                                       @NotNull @PathParam("controlCode") String controlCode) {
     LocalOgel localOgelFound = localOgelService.findLocalOgelById(ogelID);
     if (localOgelFound == null) {
@@ -86,6 +86,13 @@ public class ControlCodeConditionsResource {
     }
 
     LocalControlCodeCondition localControlCodeConditions = localControlCodeConditionService.getLocalControlCodeConditionsByIdAndControlCode(ogelID, controlCode);
+
+    // When no control code condition found return a 204
+    if (localControlCodeConditions == null) {
+      return Response.status(Response.Status.NO_CONTENT)
+          .entity(new ErrorMessage("No control code conditions for given OGEL and Control Code"))
+          .build();
+    }
 
     List<ControlCodeCutDown> controlCodeCutDownList;
     if (localControlCodeConditions.getConditionDescriptionControlCodes().size() > 0) {
@@ -103,13 +110,13 @@ public class ControlCodeConditionsResource {
 
         controlCodeCutDownList = new ObjectMapper().readValue(response.getEntity().getContent(), new TypeReference<List<ControlCodeCutDown>>() {});
 
-        return new ControlCodeConditionFullView(localControlCodeConditions, controlCodeCutDownList);
+        return Response.ok(new ControlCodeConditionFullView(localControlCodeConditions, controlCodeCutDownList)).build();
       } catch (IOException e) {
         throw new WebApplicationException("Unable to get control code details from the control code service", e, Response.Status.INTERNAL_SERVER_ERROR);
       }
     }
     else {
-      return new ControlCodeConditionFullView(localControlCodeConditions, Collections.emptyList());
+      return Response.ok(new ControlCodeConditionFullView(localControlCodeConditions, Collections.emptyList())).build();
     }
   }
 
