@@ -10,10 +10,11 @@ import io.dropwizard.auth.Auth;
 import io.dropwizard.auth.PrincipalImpl;
 import io.dropwizard.jersey.errors.ErrorMessage;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
@@ -28,8 +29,8 @@ import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import uk.gov.bis.lite.ogel.validator.CheckLocalControlCodeConditionList;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -84,24 +85,23 @@ public class ControlCodeConditionsResource {
       LOGGER.warn("Local OGEL Not Found for OGEL ID: {}", ogelID);
     }
 
-    // TODO - Control code validation?
-
     LocalControlCodeCondition localControlCodeConditions = localControlCodeConditionService.getLocalControlCodeConditionsByIdAndControlCode(ogelID, controlCode);
 
     List<ControlCodeCutDown> controlCodeCutDownList;
     if (localControlCodeConditions.getConditionDescriptionControlCodes().size() > 0) {
-      HttpPost postRequest = new HttpPost(controlCodeServiceBulkGetUrl);
-      final StringWriter sw = new StringWriter();
-      final ObjectMapper mapper = new ObjectMapper();
+      // Add all condition description control codes to the URL as get parameters
+      StringBuilder requestUrl = new StringBuilder(controlCodeServiceBulkGetUrl);
+      List<NameValuePair> params = localControlCodeConditions.getConditionDescriptionControlCodes().stream()
+          .map(conditionControlCode -> new BasicNameValuePair("controlCode", conditionControlCode))
+          .collect(Collectors.toCollection(LinkedList::new));
+      requestUrl.append("?");
+      requestUrl.append(URLEncodedUtils.format(params, "utf-8"));
+
       try {
-        mapper.writeValue(sw, localControlCodeConditions.getConditionDescriptionControlCodes());
-        StringEntity input = new StringEntity(sw.toString(), ContentType.APPLICATION_JSON);
-        sw.close();
-        postRequest.setEntity(input);
+        HttpGet getRequest = new HttpGet(requestUrl.toString());
+        HttpResponse response = httpClient.execute(getRequest);
 
-        HttpResponse response = httpClient.execute(postRequest);
-
-        controlCodeCutDownList = mapper.readValue(response.getEntity().getContent(), new TypeReference<List<ControlCodeCutDown>>() {});
+        controlCodeCutDownList = new ObjectMapper().readValue(response.getEntity().getContent(), new TypeReference<List<ControlCodeCutDown>>() {});
 
         return new ControlCodeConditionFullView(localControlCodeConditions, controlCodeCutDownList);
       } catch (IOException e) {
