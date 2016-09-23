@@ -2,11 +2,14 @@ plugins {
   id "java"
   id "application"
   id "org.flywaydb.flyway" version "4.0.1"
+  id 'com.github.johnrengelman.shadow' version '1.2.3'
 }
 group 'lite-ogel-service'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
+
+mainClassName = "uk.gov.bis.lite.ogel.OgelApplication"
 
 repositories {
   mavenCentral()
@@ -31,9 +34,18 @@ flyway {
   url = 'jdbc:sqlite:localOgel.db'
 }
 
-task wrapper(type: Wrapper) {
-  gradleVersion = '2.14'
+shadowJar {
+  mergeServiceFiles()
 }
 
-mainClassName = "uk.gov.bis.lite.ogel.OgelApplication"
+jar {
+  manifest {
+    attributes 'Main-Class': mainClassName
+  }
+}
+
+build {
+  dependsOn shadowJar
+}
+
 run { args 'server', 'example.yml' }
