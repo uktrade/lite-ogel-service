@@ -90,7 +90,6 @@ public class ControlCodeConditionsResource {
     // When no control code condition found return a 204
     if (localControlCodeConditions == null) {
       return Response.status(Response.Status.NO_CONTENT)
-          .entity(new ErrorMessage("No control code conditions for given OGEL and Control Code"))
           .build();
     }
 
