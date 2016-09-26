@@ -2,25 +2,18 @@ package uk.gov.bis.lite.ogel.resource;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.auth.PrincipalImpl;
 import io.dropwizard.jersey.errors.ErrorMessage;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.exception.SOAPParseException;
+import uk.gov.bis.lite.ogel.model.BulkControlCodeCutDowns;
 import uk.gov.bis.lite.ogel.model.ControlCodeConditionFullView;
-import uk.gov.bis.lite.ogel.model.ControlCodeCutDown;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
@@ -29,8 +22,6 @@ import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import uk.gov.bis.lite.ogel.validator.CheckLocalControlCodeConditionList;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +33,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -53,18 +46,18 @@ public class ControlCodeConditionsResource {
   private final SpireOgelService ogelService;
   private final LocalOgelService localOgelService;
   private final LocalControlCodeConditionService localControlCodeConditionService;
-  private final String controlCodeServiceBulkGetUrl;
-  private final HttpClient httpClient;
+  private final String controlCodeServiceUrl;
+  private final Client httpClient;
 
   @Inject
   public ControlCodeConditionsResource(SpireOgelService ogelService, LocalOgelService localOgelService,
                                        LocalControlCodeConditionService localControlCodeConditionService,
-                                       HttpClient httpClient,
-                                       @Named("controlCodeServiceBulkGetUrl") String controlCodeServiceBulkGetUrl) {
+                                       Client httpClient,
+                                       @Named("controlCodeServiceUrl") String controlCodeServiceUrl) {
     this.ogelService = ogelService;
     this.localOgelService = localOgelService;
     this.localControlCodeConditionService = localControlCodeConditionService;
-    this.controlCodeServiceBulkGetUrl = controlCodeServiceBulkGetUrl;
+    this.controlCodeServiceUrl = controlCodeServiceUrl;
     this.httpClient = httpClient;
   }
 
@@ -93,29 +86,28 @@ public class ControlCodeConditionsResource {
           .build();
     }
 
-    List<ControlCodeCutDown> controlCodeCutDownList;
     if (localControlCodeConditions.getConditionDescriptionControlCodes().size() > 0) {
-      // Add all condition description control codes to the URL as get parameters
-      StringBuilder requestUrl = new StringBuilder(controlCodeServiceBulkGetUrl);
-      List<NameValuePair> params = localControlCodeConditions.getConditionDescriptionControlCodes().stream()
-          .map(conditionControlCode -> new BasicNameValuePair("controlCode", conditionControlCode))
-          .collect(Collectors.toCollection(LinkedList::new));
-      requestUrl.append("?");
-      requestUrl.append(URLEncodedUtils.format(params, "utf-8"));
+      WebTarget controlCodeServiceTarget = httpClient.target(controlCodeServiceUrl).path("/control-codes/bulk");
+      for (String cc : localControlCodeConditions.getConditionDescriptionControlCodes()) {
+        controlCodeServiceTarget = controlCodeServiceTarget.queryParam("controlCode", cc);
+      }
 
       try {
-        HttpGet getRequest = new HttpGet(requestUrl.toString());
-        HttpResponse response = httpClient.execute(getRequest);
-
-        controlCodeCutDownList = new ObjectMapper().readValue(response.getEntity().getContent(), new TypeReference<List<ControlCodeCutDown>>() {});
-
-        return Response.ok(new ControlCodeConditionFullView(localControlCodeConditions, controlCodeCutDownList)).build();
+        Response response = controlCodeServiceTarget.request().get();
+        String controlCodeServiceResponse = response.readEntity(String.class);
+        BulkControlCodeCutDowns bulkControlCodeCutDowns = new ObjectMapper().readValue(controlCodeServiceResponse, BulkControlCodeCutDowns.class);
+        // Valid responses should be OK or Partial Content when one or more of the control codes could not be found
+        if (response.getStatus() == Response.Status.OK.getStatusCode() || response.getStatus() == Response.Status.PARTIAL_CONTENT.getStatusCode()) {
+          return Response.status(response.getStatus()).entity(new ControlCodeConditionFullView(localControlCodeConditions, bulkControlCodeCutDowns)).build();
+        } else {
+          throw new WebApplicationException("Unable to get control code details from the control code service", Response.Status.INTERNAL_SERVER_ERROR);
+        }
       } catch (IOException e) {
         throw new WebApplicationException("Unable to get control code details from the control code service", e, Response.Status.INTERNAL_SERVER_ERROR);
       }
     }
     else {
-      return Response.ok(new ControlCodeConditionFullView(localControlCodeConditions, Collections.emptyList())).build();
+      return Response.ok(new ControlCodeConditionFullView(localControlCodeConditions, null)).build();
     }
   }
 

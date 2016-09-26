@@ -5,10 +5,9 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import io.dropwizard.client.HttpClientBuilder;
+import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
-import org.apache.http.client.HttpClient;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
@@ -18,6 +17,8 @@ import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.LocalControlCodeCo
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.SqliteLocalControlCodeConditionDAOImpl;
 import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.database.dao.ogel.SqliteLocalOgelDAOImpl;
+
+import javax.ws.rs.client.Client;
 
 public class GuiceModule extends AbstractModule {
 
@@ -46,9 +47,9 @@ public class GuiceModule extends AbstractModule {
   }
 
   @Provides
-  @Named("controlCodeServiceBulkGetUrl")
-  public String provideControlCodeServiceBulkGetUrl(MainApplicationConfiguration configuration) {
-    return configuration.getControlCodeServiceBulkGetUrl();
+  @Named("controlCodeServiceUrl")
+  public String provideControlCodeServiceUrl(MainApplicationConfiguration configuration) {
+    return configuration.getControlCodeServiceUrl();
   }
 
   @Override
@@ -75,9 +76,9 @@ public class GuiceModule extends AbstractModule {
 
   @Provides
   @Singleton
-  HttpClient provideHttpClient(Environment environment, MainApplicationConfiguration configuration) {
-    final HttpClient httpClient = new HttpClientBuilder(environment).using(configuration.getHttpClientConfiguration())
-        .build("httpClient");
-    return httpClient;
+  Client provideHttpClient(Environment environment, MainApplicationConfiguration configuration) {
+    final Client client = new JerseyClientBuilder(environment).using(configuration.getJerseyClientConfiguration())
+        .build("jerseyClient");
+    return client;
   }
 }

@@ -54,4 +54,4 @@ cacheTimeout: 1000
 login: user
 password: pass
 
-controlCodeServiceBulkGetUrl: http://localhost:8092/control-codes
+controlCodeServiceUrl: http://localhost:8092

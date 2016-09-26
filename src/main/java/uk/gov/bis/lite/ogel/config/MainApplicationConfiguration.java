@@ -2,7 +2,7 @@ package uk.gov.bis.lite.ogel.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
-import io.dropwizard.client.HttpClientConfiguration;
+import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.db.DataSourceFactory;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -70,23 +70,18 @@ public class MainApplicationConfiguration extends Configuration {
 
   @Valid
   @NotNull
-  private HttpClientConfiguration httpClient = new HttpClientConfiguration();
+  private JerseyClientConfiguration jerseyClient = new JerseyClientConfiguration();
 
-  @JsonProperty("httpClient")
-  public HttpClientConfiguration getHttpClientConfiguration() {
-    return httpClient;
-  }
-
-  @JsonProperty("httpClient")
-  public void setHttpClientConfiguration(HttpClientConfiguration httpClient) {
-    this.httpClient = httpClient;
+  @JsonProperty("jerseyClient")
+  public JerseyClientConfiguration getJerseyClientConfiguration() {
+    return jerseyClient;
   }
 
   @NotEmpty
   @JsonProperty
-  private String controlCodeServiceBulkGetUrl;
+  private String controlCodeServiceUrl;
 
-  public String getControlCodeServiceBulkGetUrl() {
-    return controlCodeServiceBulkGetUrl;
+  public String getControlCodeServiceUrl() {
+    return controlCodeServiceUrl;
   }
 }

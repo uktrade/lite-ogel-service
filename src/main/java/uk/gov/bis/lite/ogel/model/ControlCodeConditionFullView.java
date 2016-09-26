@@ -2,15 +2,13 @@ package uk.gov.bis.lite.ogel.model;
 
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 
-import java.util.List;
-
 public class ControlCodeConditionFullView {
   private LocalControlCodeCondition localControlCodeCondition;
-  private List<ControlCodeCutDown> controlCodeCutDownList;
+  private BulkControlCodeCutDowns bulkControlCodeCutDowns;
 
-  public ControlCodeConditionFullView(LocalControlCodeCondition localControlCodeCondition, List<ControlCodeCutDown> controlCodeCutDownList) {
+  public ControlCodeConditionFullView(LocalControlCodeCondition localControlCodeCondition, BulkControlCodeCutDowns bulkControlCodeCutDowns) {
     this.localControlCodeCondition = localControlCodeCondition;
-    this.controlCodeCutDownList = controlCodeCutDownList;
+    this.bulkControlCodeCutDowns = bulkControlCodeCutDowns;
   }
 
   public String getOgelID() {
@@ -25,8 +23,8 @@ public class ControlCodeConditionFullView {
     return localControlCodeCondition.getConditionDescription();
   }
 
-  public List<ControlCodeCutDown> getConditionDescriptionControlCodes() {
-    return controlCodeCutDownList;
+  public BulkControlCodeCutDowns getConditionDescriptionControlCodes() {
+    return bulkControlCodeCutDowns;
   }
 
   public boolean isItemsAllowed() {
