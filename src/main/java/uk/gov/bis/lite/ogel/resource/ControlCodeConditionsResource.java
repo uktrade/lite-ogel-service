@@ -72,7 +72,7 @@ public class ControlCodeConditionsResource {
   @Path("{ogelID}/{controlCode}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getOgelByOgelID(@NotNull @PathParam("ogelID") String ogelID,
-                                                      @NotNull @PathParam("controlCode") String controlCode) {
+                                  @NotNull @PathParam("controlCode") String controlCode) {
     LocalOgel localOgelFound = localOgelService.findLocalOgelById(ogelID);
     if (localOgelFound == null) {
       LOGGER.warn("Local OGEL Not Found for OGEL ID: {}", ogelID);
@@ -87,7 +87,7 @@ public class ControlCodeConditionsResource {
     }
 
     if (localControlCodeConditions.getConditionDescriptionControlCodes().size() > 0) {
-      WebTarget controlCodeServiceTarget = httpClient.target(controlCodeServiceUrl).path("/control-codes/bulk");
+      WebTarget controlCodeServiceTarget = httpClient.target(controlCodeServiceUrl).path("/bulk-control-codes");
       for (String cc : localControlCodeConditions.getConditionDescriptionControlCodes()) {
         controlCodeServiceTarget = controlCodeServiceTarget.queryParam("controlCode", cc);
       }
