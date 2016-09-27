@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.ogel.database.dao;
+package uk.gov.bis.lite.ogel.database.dao.ogel;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

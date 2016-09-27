@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.ogel.database.dao;
+package uk.gov.bis.lite.ogel.database.dao.ogel;
 
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 

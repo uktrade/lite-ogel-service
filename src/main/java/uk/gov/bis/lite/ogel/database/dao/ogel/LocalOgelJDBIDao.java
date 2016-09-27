@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.ogel.database.dao;
+package uk.gov.bis.lite.ogel.database.dao.ogel;
 
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;

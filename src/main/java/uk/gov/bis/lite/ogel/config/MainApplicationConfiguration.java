@@ -2,6 +2,7 @@ package uk.gov.bis.lite.ogel.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
+import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.db.DataSourceFactory;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -65,5 +66,22 @@ public class MainApplicationConfiguration extends Configuration {
 
   public String getPassword() {
     return password;
+  }
+
+  @Valid
+  @NotNull
+  private JerseyClientConfiguration jerseyClient = new JerseyClientConfiguration();
+
+  @JsonProperty("jerseyClient")
+  public JerseyClientConfiguration getJerseyClientConfiguration() {
+    return jerseyClient;
+  }
+
+  @NotEmpty
+  @JsonProperty
+  private String controlCodeServiceUrl;
+
+  public String getControlCodeServiceUrl() {
+    return controlCodeServiceUrl;
   }
 }

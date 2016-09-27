@@ -53,3 +53,5 @@ soapPassword: dev
 cacheTimeout: 1000
 login: user
 password: pass
+
+controlCodeServiceUrl: http://localhost:8092
