@@ -52,6 +52,12 @@ public class GuiceModule extends AbstractModule {
     return configuration.getControlCodeServiceUrl();
   }
 
+  @Provides
+  @Named("virtualEuOgelId")
+  public String provideVirtualEuOgelId(MainApplicationConfiguration configuration) {
+    return configuration.getVirtualEuOgelId();
+  }
+
   @Override
   protected void configure() {
     bind(SchedulerConfiguration.class).toInstance(new SchedulerConfiguration("uk.gov.bis.lite.ogel"));

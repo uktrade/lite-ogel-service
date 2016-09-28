@@ -1,5 +1,8 @@
 package uk.gov.bis.lite.ogel.model;
 
+import java.util.Collections;
+import java.util.List;
+
 public enum ActivityType {
   TECH("TECH"),
   MIL_GOV("MIL_GOV"),
@@ -12,6 +15,10 @@ public enum ActivityType {
 
   ActivityType(String name) {
     this.name = name;
+  }
+
+  public List<ActivityType> asList() {
+    return Collections.singletonList(this);
   }
 
   public static ActivityType fromName(String name) {

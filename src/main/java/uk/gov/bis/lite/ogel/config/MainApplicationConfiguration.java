@@ -44,6 +44,10 @@ public class MainApplicationConfiguration extends Configuration {
   @JsonProperty
   private String password;
 
+  @NotEmpty
+  @JsonProperty
+  private String virtualEuOgelId;
+
   public String getSoapUrl() {
     return soapUrl;
   }
@@ -83,5 +87,9 @@ public class MainApplicationConfiguration extends Configuration {
 
   public String getControlCodeServiceUrl() {
     return controlCodeServiceUrl;
+  }
+
+  public String getVirtualEuOgelId() {
+    return virtualEuOgelId;
   }
 }
