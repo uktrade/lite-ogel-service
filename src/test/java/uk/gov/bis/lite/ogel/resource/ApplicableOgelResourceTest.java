@@ -75,9 +75,11 @@ public class ApplicableOgelResourceTest {
 
   @Test
   public void controllerReturnsExpectedOgelList() {
-    when(spireOgelService.findOgel(anyString(), anyString(), anyListOf(ActivityType.class))).thenReturn(spireOgels);
+    when(spireOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class))).thenReturn(spireOgels);
     final Response response = resources.client().target("/applicable-ogels").queryParam("controlCode", "ML1a")
-        .queryParam("sourceCountry", "41").queryParam("destinationCountry", "1")
+        .queryParam("sourceCountry", "41")
+        .queryParam("destinationCountry", "1")
+        .queryParam("destinationCountry", "2")
         .queryParam("activityType", "TECH").request().get();
 
     final List<SpireOgel> spireOgelsResponse = (List<SpireOgel>) response.readEntity(List.class);
@@ -90,7 +92,7 @@ public class ApplicableOgelResourceTest {
   @Test
   public void returnsInternalServerErrorWhenListEmpty() {
     String errorMessage = "Spire Ogel List Empty";
-    when(spireOgelService.findOgel(anyString(), anyString(), anyListOf(ActivityType.class)))
+    when(spireOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class)))
         .thenThrow(new RuntimeException(errorMessage));
     final Response response = resources.client().target("/applicable-ogels").queryParam("controlCode", "ML1a")
         .queryParam("sourceCountry", "41").queryParam("destinationCountry", "1")
@@ -101,7 +103,7 @@ public class ApplicableOgelResourceTest {
 
   @Test
   public void throwsWebApplicationExceptionForInvalidCategory() throws IOException {
-    when(spireOgelService.findOgel(anyString(), anyString(), anyListOf(ActivityType.class))).thenCallRealMethod();
+    when(spireOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class))).thenCallRealMethod();
     final Response response = resources.client().target("/applicable-ogels").queryParam("controlCode", "ML1a")
         .queryParam("sourceCountry", "41").queryParam("destinationCountry", "1")
         .queryParam("activityType", "Invalid").request().get();
@@ -111,7 +113,7 @@ public class ApplicableOgelResourceTest {
 
   @Test
   public void returnsEmptyListWhenNoOgelsMatched() {
-    when(spireOgelService.findOgel(anyString(), anyString(), anyListOf(ActivityType.class))).thenReturn(Collections.emptyList());
+    when(spireOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class))).thenReturn(Collections.emptyList());
     final Response response = resources.client()
         .target("/applicable-ogels")
         .queryParam("controlCode", "ML1a")

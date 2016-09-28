@@ -10,17 +10,17 @@ import java.util.stream.Collectors;
 public class SpireOgelFilter {
 
   public static List<SpireOgel> filterSpireOgels(List<SpireOgel> ogelsList, String rating,
-                                                 String destinationCountryId, List<ActivityType> categorites) {
+                                                 List<String> destinationCountries, List<ActivityType> categories) {
     return ogelsList.stream().filter(
         ogel -> applyRatingIsIncluded(ogel, rating) &&
-            categorites.contains(ogel.getActivityType()) &&
-            (applyExcludedCountriesIfPresent(ogel, destinationCountryId)
-                && applyIncludedCountriesIfPresent(ogel, destinationCountryId)))
+            categories.contains(ogel.getActivityType()) &&
+            (applyExcludedCountriesIfPresent(ogel, destinationCountries)
+                && applyIncludedCountriesIfPresent(ogel, destinationCountries)))
         .collect(Collectors.toList());
   }
 
-  private static boolean countryMatchesDestination(Country country, String destination) {
-    return country.getId().equalsIgnoreCase(destination);
+  private static boolean countryMatchesDestination(Country country, List<String> destinations) {
+    return destinations.stream().filter(s -> s.equalsIgnoreCase(country.getId())).findFirst().isPresent();
   }
 
   private static boolean applyRatingIsIncluded(SpireOgel ogel, String rating) {
@@ -28,16 +28,16 @@ public class SpireOgelFilter {
         .flatMap(oc -> oc.getRatingList().stream()).anyMatch(r -> r.getRatingCode().equalsIgnoreCase(rating));
   }
 
-  private static boolean applyExcludedCountriesIfPresent(SpireOgel ogel, String destinationCountry) {
+  private static boolean applyExcludedCountriesIfPresent(SpireOgel ogel, List<String> destinationCountries) {
     return ogel.getOgelConditions().stream().
-        flatMap(oc -> oc.getExcludedCountries().stream()).noneMatch(c -> countryMatchesDestination(c, destinationCountry));
+        flatMap(oc -> oc.getExcludedCountries().stream()).noneMatch(c -> countryMatchesDestination(c, destinationCountries));
   }
 
-  private static boolean applyIncludedCountriesIfPresent(SpireOgel ogel, String destinationCountry) {
+  private static boolean applyIncludedCountriesIfPresent(SpireOgel ogel, List<String> destinationCountries) {
    if (ogel.getOgelConditions().stream().flatMap(oc -> oc.getIncludedCountries().stream()).count() == 0) {
       return true;
     }
     return ogel.getOgelConditions().stream()
-        .flatMap(oc -> oc.getIncludedCountries().stream()).anyMatch(c -> countryMatchesDestination(c, destinationCountry));
+        .flatMap(oc -> oc.getIncludedCountries().stream()).anyMatch(c -> countryMatchesDestination(c, destinationCountries));
   }
 }

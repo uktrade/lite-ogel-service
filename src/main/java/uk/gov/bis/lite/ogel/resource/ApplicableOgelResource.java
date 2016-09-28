@@ -42,8 +42,12 @@ public class ApplicableOgelResource {
   @CacheControl(maxAge = 1, maxAgeUnit = TimeUnit.DAYS)
   public Response getOgelList(@NotNull(message = "controlCode required") @QueryParam("controlCode") String controlCode,
                               @NotNull(message = "sourceCountry required") @QueryParam("sourceCountry") String sourceCountry,
-                              @NotNull(message = "destinationCountry required") @QueryParam("destinationCountry") String destinationCountry,
+                              @QueryParam("destinationCountry") List<String> destinationCountries,
                               @QueryParam("activityType") List<String> activityTypesParam) {
+
+    if (destinationCountries.size() == 0) {
+      throw new WebApplicationException("At least one destinationCountry must be provided", 400);
+    }
 
     for (String activityTypeParam : activityTypesParam) {
       if (!ActivityType.typeExists(activityTypeParam)) {
@@ -59,7 +63,7 @@ public class ApplicableOgelResource {
 
     try {
       List<ApplicableOgelView> applicableOgels = spireOgelService
-          .findOgel(controlCode, destinationCountry, activityTypes)
+          .findOgel(controlCode, destinationCountries, activityTypes)
           .stream()
           .map(e -> ApplicableOgelView.create(e, localOgelService.findLocalOgelById(e.getId())))
           .collect(Collectors.toList());
