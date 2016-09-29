@@ -23,7 +23,7 @@ import uk.gov.bis.lite.ogel.model.Rating;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
-import uk.gov.bis.lite.ogel.util.SpireOgelTestUtility;
+import uk.gov.bis.lite.ogel.util.TestUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,15 +49,15 @@ public class ApplicableOgelResourceTest {
     List<Country> bannedCountries = Arrays.asList(firstBannedCountry, secondBannedCountry, thirdBannedCountry);
 
     List<Rating> ratings = new ArrayList<>();
-    ratings.add(SpireOgelTestUtility.createRating("ML21a", true));
-    ratings.add(SpireOgelTestUtility.createRating("ML21b1", true));
-    ratings.add(SpireOgelTestUtility.createRating("ML21b2", false));
+    ratings.add(TestUtil.createRating("ML21a"));
+    ratings.add(TestUtil.createRating("ML21b1"));
+    ratings.add(TestUtil.createRating("ML21b2"));
 
     OgelCondition ogelCondition = new OgelCondition();
-    ogelCondition.setExcludedCountries(bannedCountries);
+    ogelCondition.setCountries(bannedCountries, OgelCondition.CountryStatus.EXCLUDED);
     ogelCondition.setRatingList(ratings);
     List<OgelCondition> conditionsList = Collections.singletonList(ogelCondition);
-    SpireOgel firstOgel = SpireOgelTestUtility.createOgel("OGL0", "description", conditionsList, ActivityType.TECH);
+    SpireOgel firstOgel = TestUtil.createStandardOgel("OGL0", conditionsList, ActivityType.TECH);
     spireOgels = Collections.singletonList(firstOgel);
 
   }

@@ -1,16 +1,20 @@
 package uk.gov.bis.lite.ogel.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OgelCondition implements Serializable {
 
-
   private int id;
   private List<Rating> ratingList;
-  private List<Country> includedCountries;
-  private List<Country> excludedCountries;
+  private List<Country> countries;
+  private CountryStatus countryStatus;
   private List<Rating> secondaryRatingList;
+
+  public enum CountryStatus {
+    INCLUDED, EXCLUDED;
+  }
 
   public int getId() {
     return id;
@@ -28,20 +32,28 @@ public class OgelCondition implements Serializable {
     this.ratingList = ratingList;
   }
 
-  public List<Country> getIncludedCountries() {
-    return includedCountries;
+  public void setCountries(List<Country> countries, CountryStatus status) {
+    this.countries = countries;
+    this.countryStatus = status;
   }
 
-  public void setIncludedCountries(List<Country> includedCountries) {
-    this.includedCountries = includedCountries;
+  public List<Country> getCountries() {
+    return countries;
   }
 
-  public List<Country> getExcludedCountries() {
-    return excludedCountries;
+  public List<Country> getCountries(CountryStatus countryStatus) {
+    if(countryStatus.equals(this.countryStatus)) {
+      return countries;
+    }
+    return new ArrayList<>();
   }
 
-  public void setExcludedCountries(List<Country> excludedCountries) {
-    this.excludedCountries = excludedCountries;
+  public CountryStatus getCountryStatus() {
+    return countryStatus;
+  }
+
+  public void setCountryStatus(CountryStatus countryStatus) {
+    this.countryStatus = countryStatus;
   }
 
   public List<Rating> getSecondaryRatingList() {
@@ -57,8 +69,8 @@ public class OgelCondition implements Serializable {
     return "OgelCondition{" +
         "id=" + id +
         ", ratingList=" + ratingList +
-        ", includedCountries=" + includedCountries +
-        ", excludedCountries=" + excludedCountries +
+        ", countries=" + countries +
+        ", countryStatus=" + countryStatus.name() +
         ", secondaryRatingList=" + secondaryRatingList +
         '}';
   }

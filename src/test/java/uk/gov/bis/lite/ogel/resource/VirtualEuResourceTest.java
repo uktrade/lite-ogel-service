@@ -20,7 +20,7 @@ import uk.gov.bis.lite.ogel.model.OgelCondition;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
-import uk.gov.bis.lite.ogel.util.SpireOgelTestUtility;
+import uk.gov.bis.lite.ogel.util.TestUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,11 +43,11 @@ public class VirtualEuResourceTest {
   @Before
   public void setUp() {
     OgelCondition condition = new OgelCondition();
-    condition.setIncludedCountries(Arrays.asList(new Country("id3", "AF", "France")));
-    condition.setRatingList(Arrays.asList(SpireOgelTestUtility.createRating("ML21a", true)));
+    condition.setCountries(Arrays.asList(new Country("id3", "AF", "France")), OgelCondition.CountryStatus.INCLUDED);
+    condition.setRatingList(Arrays.asList(TestUtil.createRating("ML21a")));
     List<OgelCondition> conditions = Collections.singletonList(condition);
-    virtualEuOgels = Collections.singletonList(SpireOgelTestUtility.createOgel("OGL61", "desc", conditions, ActivityType.DU_ANY));
-    nonVirtualEuOgels = Collections.singletonList(SpireOgelTestUtility.createOgel("OGXXX", "desc", conditions, ActivityType.DU_ANY));
+    virtualEuOgels = Collections.singletonList(TestUtil.createStandardOgel("OGL61", conditions, ActivityType.DU_ANY));
+    nonVirtualEuOgels = Collections.singletonList(TestUtil.createStandardOgel("OGXXX", conditions, ActivityType.DU_ANY));
   }
 
   @After
