@@ -45,41 +45,4 @@ public class SpireOgelFilter {
     return ogel.getActivityType() == null || activityTypes.stream()
         .anyMatch(activityType -> activityType == ogel.getActivityType());
   }
-
-  /*return ogelsList.stream().filter(
-        ogel -> applyRatingIsIncluded(ogel, rating) &&
-            activityTypes.contains(ogel.getActivityType()) &&
-            (applyExcludedCountriesIfPresent(ogel, destinationCountries)
-                && applyIncludedCountriesIfPresent(ogel, destinationCountries)))
-        .collect(Collectors.toList());*/
-  /*
-  public static List<SpireOgel> filterSpireOgels(List<SpireOgel> ogelsList, String rating,
-                                                 String destinationCountryId, List<ActivityType> activityTypes) {
-    return ogelsList.stream().filter(
-        ogel -> applyActivityTypes(ogel, activityTypes) && ogel.getOgelConditions().stream()
-                .anyMatch(ogelCondition ->
-                    applyRatingIsIncluded(ogelCondition, rating)
-                    && !applyExcludedCountriesIfPresent(ogelCondition, destinationCountryId)
-                    && applyIncludedCountriesIfPresent(ogelCondition, destinationCountryId)
-                )).collect(Collectors.toList());
-  }
-   */
-  /*
-  private static boolean applyIncludedCountriesIfPresent(SpireOgel ogel, List<String> destinationCountries) {
-    if (ogel.getOgelConditions().stream().flatMap(oc -> oc.getIncludedCountries().stream()).count() == 0) {
-      return true;
-    }
-    return ogel.getOgelConditions().stream()
-        .flatMap(oc -> oc.getIncludedCountries().stream()).anyMatch(c -> countryMatchesDestination(c, destinationCountries));
-  }*/
-/*
-  private static boolean applyExcludedCountriesIfPresent(SpireOgel ogel, List<String> destinationCountries) {
-    return ogel.getOgelConditions().stream().
-        flatMap(oc -> oc.getExcludedCountries().stream()).noneMatch(c -> countryMatchesDestination(c, destinationCountries));
-  }*/
-/*
-  private static boolean applyRatingIsIncluded(SpireOgel ogel, String rating) {
-    return ogel.getOgelConditions().stream()
-        .flatMap(oc -> oc.getRatingList().stream()).anyMatch(r -> r.getRatingCode().equalsIgnoreCase(rating));
-  }*/
 }
