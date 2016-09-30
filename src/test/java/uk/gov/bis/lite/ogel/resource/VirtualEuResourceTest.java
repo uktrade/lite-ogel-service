@@ -15,15 +15,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.bis.lite.ogel.model.ActivityType;
-import uk.gov.bis.lite.ogel.model.Country;
-import uk.gov.bis.lite.ogel.model.OgelCondition;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
@@ -33,21 +30,21 @@ public class VirtualEuResourceTest {
 
   private static final SpireOgelService spireOgelService = Mockito.mock(SpireOgelService.class);
   private static final LocalOgelService localOgelService = Mockito.mock(LocalOgelService.class);
-  private List<SpireOgel> virtualEuOgels;
-  private List<SpireOgel> nonVirtualEuOgels;
 
-  private final String VIRTUAL_EU_TRUE = "{\"virtualEu\": true}";
-  private final String VIRTUAL_EU_FALSE = "{\"virtualEu\": false}";
+  private List<SpireOgel> euOgels;
+  private List<SpireOgel> noEuOgels;
 
-  /**/
+  private final String CONTROL_CODE_NAME = "controlCode";
+  private final String CONTROL_CODE_PARAM = "CC01";
+  private final String SOURCE_COUNTRY_NAME = "sourceCountry";
+  private final String SOURCE_COUNTRY_PARAM = "1";
+  private final String DESTINATION_COUNTRY_NAME = "destinationCountry";
+  private final String DESTINATION_COUNTRY_PARAM = "2";
+
   @Before
   public void setUp() {
-    OgelCondition condition = new OgelCondition();
-    condition.setCountries(Arrays.asList(new Country("id3", "AF", "France")), OgelCondition.CountryStatus.INCLUDED);
-    condition.setRatingList(Arrays.asList(TestUtil.createRating("ML21a")));
-    List<OgelCondition> conditions = Collections.singletonList(condition);
-    virtualEuOgels = Collections.singletonList(TestUtil.createStandardOgel("OGL61", conditions, ActivityType.DU_ANY));
-    nonVirtualEuOgels = Collections.singletonList(TestUtil.createStandardOgel("OGXXX", conditions, ActivityType.DU_ANY));
+    this.euOgels = Arrays.asList(TestUtil.ogelEU(), TestUtil.ogelY(), TestUtil.ogelZ());
+    this.noEuOgels = Arrays.asList(TestUtil.ogelX(), TestUtil.ogelY(), TestUtil.ogelZ());
   }
 
   @After
@@ -58,28 +55,29 @@ public class VirtualEuResourceTest {
 
   @ClassRule
   public static final ResourceTestRule resources = ResourceTestRule.builder()
-      .addResource(new VirtualEuResource(spireOgelService, "OGL61"))
-      .build();
+      .addResource(new VirtualEuResource(spireOgelService, TestUtil.OGL61)).build();
 
   @Test
   public void controllerReturnsVirtualEuTrue() {
-    when(spireOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class)))
-        .thenReturn(virtualEuOgels);
-    final Response response = resources.client().target("/virtual-eu").queryParam("controlCode", "ML1a")
-        .queryParam("sourceCountry", "41")
-        .queryParam("destinationCountry", "1").request().get();
+    when(spireOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class))).thenReturn(euOgels);
+    Response response = resources.client().target("/virtual-eu")
+        .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
+        .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
+        .queryParam(DESTINATION_COUNTRY_NAME, DESTINATION_COUNTRY_PARAM)
+        .request().get();
     assertEquals(200, response.getStatus());
-    assertEquals(response.readEntity(String.class), VIRTUAL_EU_TRUE);
+    assertEquals(response.readEntity(String.class), "{\"virtualEu\": true}");
   }
 
   @Test
   public void controllerReturnsVirtualEuFalse() {
-    when(spireOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class)))
-        .thenReturn(nonVirtualEuOgels);
-    final Response response = resources.client().target("/virtual-eu").queryParam("controlCode", "ML1a")
-        .queryParam("sourceCountry", "41")
-        .queryParam("destinationCountry", "1").request().get();
+    when(spireOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class))).thenReturn(noEuOgels);
+    Response response = resources.client().target("/virtual-eu")
+        .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
+        .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
+        .queryParam(DESTINATION_COUNTRY_NAME, DESTINATION_COUNTRY_PARAM)
+        .request().get();
     assertEquals(200, response.getStatus());
-    assertEquals(response.readEntity(String.class), VIRTUAL_EU_FALSE);
+    assertEquals(response.readEntity(String.class), "{\"virtualEu\": false}");
   }
 }

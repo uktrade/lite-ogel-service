@@ -3,7 +3,6 @@ package uk.gov.bis.lite.ogel.resource;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import io.dropwizard.jersey.caching.CacheControl;
-import io.dropwizard.jersey.errors.ErrorMessage;
 import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
 import org.glassfish.jersey.message.internal.OutboundMessageContext;
 import uk.gov.bis.lite.ogel.model.ActivityType;
@@ -61,21 +60,16 @@ public class ApplicableOgelResource {
 
     List<ActivityType> activityTypes = activityTypesParam.stream().map(ActivityType::valueOf).collect(Collectors.toList());
 
-    try {
-      List<ApplicableOgelView> applicableOgels = spireOgelService
-          .findOgel(controlCode, destinationCountries, activityTypes)
-          .stream()
-          .map(e -> ApplicableOgelView.create(e, localOgelService.findLocalOgelById(e.getId())))
-          .collect(Collectors.toList());
+    List<ApplicableOgelView> applicableOgels = spireOgelService
+        .findOgel(controlCode, destinationCountries, activityTypes)
+        .stream()
+        .map(e -> ApplicableOgelView.create(e, localOgelService.findLocalOgelById(e.getId())))
+        .collect(Collectors.toList());
 
-      OutboundMessageContext messageContext = new OutboundMessageContext();
-      messageContext.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-      messageContext.setEntity(applicableOgels);
+    OutboundMessageContext messageContext = new OutboundMessageContext();
+    messageContext.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+    messageContext.setEntity(applicableOgels);
 
-      return new OutboundJaxrsResponse(Response.Status.OK, messageContext);
-
-    } catch (RuntimeException e) {
-      return Response.status(500).entity(new ErrorMessage(e.getMessage())).build();
-    }
+    return new OutboundJaxrsResponse(Response.Status.OK, messageContext);
   }
 }
