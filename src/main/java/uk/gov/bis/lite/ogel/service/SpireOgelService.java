@@ -54,11 +54,6 @@ public class SpireOgelService {
   }
 
   public List<SpireOgel> findOgel(String controlCode, List<String> destinationCountries, List<ActivityType> activityTypes) {
-
-    destinationCountries.forEach((value) -> {
-      System.out.println("Value : " + value);
-    });
-
     if (cache.isEmpty()) {
       throw new CacheNotPopulatedException("Communication with Spire failed. Spire Ogel list is not populated");
     }
