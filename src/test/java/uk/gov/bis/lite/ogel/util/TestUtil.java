@@ -20,7 +20,7 @@ public class TestUtil {
   public static String OGLX = "OGLX";
   public static String OGLY = "OGLY";
   public static String OGLZ = "OGLZ";
-  private static String OGLMIX = "OGLMIX";
+  public static String OGLMIX = "OGLMIX";
   public static String OGL61 = "OGL61"; // Virtual EU ogel
   public static String OGL_ = "OGL_"; // This Ogel does not exist
   public static String OGLTEMP = "OGLTEMP";
@@ -31,7 +31,7 @@ public class TestUtil {
   public static String RAT4 = "rat4";
   public static String RAT5 = "rat5";
   public static String RATA = "ratA";
-  private static String RATB = "ratB";
+  public static String RATB = "ratB";
   public static String RATX = "ratx";
 
   private static ActivityType TECH = ActivityType.TECH;
@@ -60,14 +60,14 @@ public class TestUtil {
     return ogel(OGLZ, conditions(ratings(RAT1, RAT5), countries(1), countries(2, 3, 4)), TECH);
   }
 
-  public static SpireOgel ogelEU() {
-    return ogel(OGL61, conditions(ratings(RAT1, RAT2, RAT3), countries(1, 2, 3), countries(4)), TECH);
-  }
-
   public static SpireOgel ogelMix() {
     OgelCondition condition1 = createCondition(ratings(RATA), countries(5), OgelCondition.CountryStatus.INCLUDED);
     OgelCondition condition2 = createCondition(ratings(RATB), countries(6), OgelCondition.CountryStatus.INCLUDED);
     return ogel(OGLMIX, Arrays.asList(condition1, condition2), TECH);
+  }
+
+  public static SpireOgel ogelEU() {
+    return ogel(OGL61, conditions(ratings(RAT1, RAT2, RAT3), countries(1, 2, 3), countries(4)), TECH);
   }
 
   public static LocalOgel localX() {
