@@ -1,6 +1,5 @@
 package uk.gov.bis.lite.ogel.resource;
 
-import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -19,21 +18,19 @@ import io.dropwizard.auth.basic.BasicCredentials;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.model.ActivityType;
+import uk.gov.bis.lite.ogel.model.OgelFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
+import uk.gov.bis.lite.ogel.util.TestUtil;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -44,17 +41,18 @@ import javax.ws.rs.core.Response;
 import javax.xml.soap.SOAPException;
 import javax.xml.xpath.XPathExpressionException;
 
-@Ignore
 public class OgelResourceTest {
-  private SpireOgelService ogelSpireService = Mockito.mock(SpireOgelService.class);
-  private LocalOgelService ogelLocalService = Mockito.mock(LocalOgelService.class);
-  private LocalOgel localOgel = new LocalOgel();
-  private SpireOgel spireOgel = new SpireOgel();
+  private SpireOgelService spireService = Mockito.mock(SpireOgelService.class);
+  private LocalOgelService localService = Mockito.mock(LocalOgelService.class);
+
+  private LocalOgel logel = new LocalOgel();
+  private SpireOgel ogel = new SpireOgel();
+
   private HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("username", "password");
 
   @Rule
   public ResourceTestRule resources = ResourceTestRule.builder()
-      .addResource(new OgelResource(ogelSpireService, ogelLocalService))
+      .addResource(new OgelResource(spireService, localService))
       .addResource(new OgelNotFoundException.OgelNotFoundExceptionHandler())
       .addResource(new AuthDynamicFeature(
           new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
@@ -66,95 +64,87 @@ public class OgelResourceTest {
 
   @Before
   public void setUp() {
-    localOgel.setId("OGL1");
-    OgelConditionSummary summary = new OgelConditionSummary();
-    summary.setCanList(Arrays.asList("cando1", "cando2", "cando3"));
-    summary.setCantList(Arrays.asList("illegal1", "illegal2"));
-    summary.setMustList(Arrays.asList("mustdo1", "mustdo2"));
-    summary.setHowToUseList(Arrays.asList("howtoUse1", "howtoUse2"));
-    localOgel.setSummary(summary);
-
-    spireOgel.setId("OGL1");
-    spireOgel.setActivityType(ActivityType.REPAIR);
+    this.ogel = TestUtil.ogelX();
+    this.logel = TestUtil.localX();
   }
 
   @Test
-  public void getAllOgels() {
-    when(ogelLocalService.getAllLocalOgels()).thenReturn(Collections.singletonList(localOgel));
-    when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
+  public void allOgels() {
+    when(localService.getAllLocalOgels()).thenReturn(Collections.singletonList(logel));
+    when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
     Response response = resources.client().target("/ogels").request().get();
     assertEquals(200, response.getStatus());
-    List allOgels = response.readEntity(List.class);
-    Map returnedHashMap = (Map) allOgels.get(0);
-    assertEquals(spireOgel.getId(), returnedHashMap.get("id"));
-    assertEquals(4, ((Map) returnedHashMap.get("summary")).size());
+    List<OgelFullView> views = getOgelFullViews(response);
+    assertEquals(1, views.size());
+    assertEquals(TestUtil.OGLX, getMapped(views).get("id"));
   }
 
   @Test
-  public void getsExpectedSpireOgel() throws SOAPException, XPathExpressionException, IOException {
-    when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
-    when(ogelSpireService.findSpireOgelById(anyString())).thenReturn(spireOgel);
-    when(ogelLocalService.findLocalOgelById(anyString())).thenReturn(localOgel);
-    final Response response = resources.client().target("/ogels/OGL1").request().get();
-    ObjectMapper objectMapper = new ObjectMapper();
-    //jackson won't auto deserialize the custom OgelFullView object
-    final JsonNode responseJsonNode = objectMapper.readTree(response.readEntity(String.class));
-    assertEquals("OGL1", responseJsonNode.get("id").asText());
-    assertEquals(3, responseJsonNode.get("summary").get("canList").size());
-    assertEquals("cando2", responseJsonNode.get("summary").get("canList").get(1).asText());
-    assertEquals("illegal1", responseJsonNode.get("summary").get("cantList").get(0).asText());
-    assertEquals(2, responseJsonNode.get("summary").get("mustList").size());
+  public void expectedSpireOgel() throws SOAPException, XPathExpressionException, IOException {
+    when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
+    when(spireService.findSpireOgelById(anyString())).thenReturn(ogel);
+    when(localService.findLocalOgelById(anyString())).thenReturn(logel);
+    final Response response = resources.client().target("/ogels/" + TestUtil.OGLX).request().get();
+
+    JsonNode node = getResponseNode(response);
+    assertEquals(TestUtil.OGLX, node.get("id").asText());
+    assertEquals(3, node.get("summary").get("canList").size());
+    assertEquals("can2", node.get("summary").get("canList").get(1).asText());
+    assertEquals("cannot1", node.get("summary").get("cantList").get(0).asText());
+    assertEquals(2, node.get("summary").get("mustList").size());
   }
 
   @Test
-  public void OgelNotFoundExceptionIsHandled() {
-    when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
-    when(ogelSpireService.findSpireOgelById(anyString())).thenCallRealMethod();
-    final Response response = resources.client().target("/ogels/invalid").request().get();
+  public void ogelNotFoundException() {
+    when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
+    when(spireService.findSpireOgelById(anyString())).thenThrow(new OgelNotFoundException(TestUtil.OGL_));
+    final Response response = resources.client().target("/ogels/" + TestUtil.OGL_).request().get();
     assertEquals(404, response.getStatus());
-    assertEquals("No Ogel Found With Given Ogel ID: invalid", response.readEntity(String.class));
   }
 
   @Test
-  public void LocalOgelNotFoundCaseIsHandled() {
-    SpireOgel spireOgel = new SpireOgel();
-    spireOgel.setId("OGL1");
-    spireOgel.setActivityType(ActivityType.REPAIR);
-    when(ogelSpireService.findSpireOgelById(anyString())).thenReturn(spireOgel);
-    when(ogelLocalService.findLocalOgelById((anyString()))).thenReturn(null);
-    Response response = resources.client().target("/ogels/unknown").request().get();
+  public void localOgelNotFound() {
+    when(spireService.findSpireOgelById(anyString())).thenReturn(TestUtil.ogelX());
+    when(localService.findLocalOgelById((anyString()))).thenReturn(null);
+    Response response = resources.client().target("/ogels/" + TestUtil.OGL_).request().get();
     assertEquals(200, response.getStatus());
+  }
+
+  @Test
+  public void insertInvalidOgel() {
+    SpireOgel spireOgel = new SpireOgel();
+    spireOgel.setLink("link");
+    Response response = resources.client().register(feature).target("/ogels/" + TestUtil.OGLTEMP)
+        .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.invalidOgel(), MediaType.APPLICATION_JSON));
+    assertEquals(400, response.getStatus());
   }
 
   @Test
   public void insertOrUpdateRequestIsHandledCorrectly() throws SQLException {
-    when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
-    when(ogelSpireService.findSpireOgelById(anyString())).thenCallRealMethod();
-    when(ogelLocalService.insertOrUpdateOgel(any(LocalOgel.class))).thenReturn(localOgel);
-    Response response = resources.client().register(feature)
-        .target("/ogels/OGL1").request(MediaType.APPLICATION_JSON).put(Entity.entity(localOgel, MediaType.APPLICATION_JSON));
+    when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
+    when(spireService.findSpireOgelById(anyString())).thenReturn(TestUtil.ogelX());
+    when(localService.insertOrUpdateOgel(any(LocalOgel.class))).thenReturn(logel);
+    Response response = resources.client().register(feature).target("/ogels/" + TestUtil.OGLX)
+        .request(MediaType.APPLICATION_JSON).put(Entity.entity(logel, MediaType.APPLICATION_JSON));
     assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
   }
 
-  @Test
-  public void insertOrUpdateMissingSpireOgel() {
-    when(ogelSpireService.getAllOgels()).thenReturn(Collections.singletonList(spireOgel));
-    when(ogelSpireService.findSpireOgelById(anyString())).thenCallRealMethod();
-    Response response = resources.client().register(feature)
-        .target("/ogels/OGL2").request(MediaType.APPLICATION_JSON).put(Entity.entity(localOgel, MediaType.APPLICATION_JSON));
-    assertNotNull(response);
-    assertEquals(500, response.getStatus());
-    assertEquals("No Ogel Found With Given Ogel ID: OGL2", response.readEntity(String.class));
+  private JsonNode getResponseNode(Response response) {
+    JsonNode node = null;
+    ObjectMapper objectMapper = new ObjectMapper();
+    try {
+      node = objectMapper.readTree(response.readEntity(String.class));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return node;
   }
 
-  @Test
-  public void insertOgelWithInvalidField() {
-    SpireOgel spireOgel = new SpireOgel();
-    spireOgel.setLink("link");
-    Response response = resources.client().register(feature)
-        .target("/ogels/OGL2").request(MediaType.APPLICATION_JSON).put(Entity.entity(spireOgel, MediaType.APPLICATION_JSON));
-    assertEquals(400, response.getStatus());
-    assertEquals("Invalid or empty property name found in the request json", response.readEntity(String.class));
+  private Map getMapped(List<OgelFullView> views) {
+    return (Map) views.get(0);
+  }
+  private List<OgelFullView> getOgelFullViews(Response response) {
+    return (List<OgelFullView>) response.readEntity(List.class);
   }
 
   private static class TestAuthenticator implements Authenticator<BasicCredentials, PrincipalImpl> {
@@ -163,6 +153,4 @@ public class OgelResourceTest {
       return Optional.of(new PrincipalImpl("testAuth"));
     }
   }
-
-
 }

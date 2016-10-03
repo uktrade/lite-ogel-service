@@ -5,9 +5,13 @@ import java.io.Serializable;
 public class Rating implements Serializable {
 
   private String ratingCode;
-  private boolean conditionalRating;
+  private boolean conditionalRating; // retrieved from Spire but not currently being used in Ogel Service logic
 
   public Rating() {
+  }
+
+  public Rating(String code) {
+    this.ratingCode = code;
   }
 
   public Rating(String code, boolean conditional) {
@@ -21,10 +25,6 @@ public class Rating implements Serializable {
 
   public void setRatingCode(String ratingCode) {
     this.ratingCode = ratingCode;
-  }
-
-  public boolean isConditionalRating() {
-    return conditionalRating;
   }
 
   public void setConditionalRating(boolean conditionalRating) {

@@ -55,3 +55,4 @@ login: user
 password: pass
 
 controlCodeServiceUrl: http://localhost:8092
+virtualEuOgelId: OGL61

@@ -31,6 +31,7 @@ import uk.gov.bis.lite.ogel.healthcheck.SpireHealthCheck;
 import uk.gov.bis.lite.ogel.resource.ApplicableOgelResource;
 import uk.gov.bis.lite.ogel.resource.ControlCodeConditionsResource;
 import uk.gov.bis.lite.ogel.resource.OgelResource;
+import uk.gov.bis.lite.ogel.resource.VirtualEuResource;
 import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
 
 public class OgelApplication extends Application<MainApplicationConfiguration> {
@@ -77,7 +78,8 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     guiceBundle = GuiceBundle.<MainApplicationConfiguration>builder()
         .modules(new GuiceModule())
         .installers(ResourceInstaller.class, HealthCheckInstaller.class)
-        .extensions(OgelResource.class, ApplicableOgelResource.class, ControlCodeConditionsResource.class, SpireHealthCheck.class)
+        .extensions(OgelResource.class, ApplicableOgelResource.class, ControlCodeConditionsResource.class,
+            SpireHealthCheck.class, VirtualEuResource.class)
         .build(Stage.PRODUCTION);
 
     bootstrap.addBundle(guiceBundle);

@@ -7,7 +7,6 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-import io.dropwizard.jersey.errors.ErrorMessage;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.After;
 import org.junit.Before;
@@ -17,20 +16,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.bis.lite.ogel.model.ActivityType;
-import uk.gov.bis.lite.ogel.model.Country;
-import uk.gov.bis.lite.ogel.model.OgelCondition;
-import uk.gov.bis.lite.ogel.model.Rating;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
-import uk.gov.bis.lite.ogel.util.SpireOgelTestUtility;
+import uk.gov.bis.lite.ogel.util.TestUtil;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
@@ -39,27 +32,22 @@ public class ApplicableOgelResourceTest {
 
   private static final SpireOgelService spireOgelService = Mockito.mock(SpireOgelService.class);
   private static final LocalOgelService localOgelService = Mockito.mock(LocalOgelService.class);
-  List<SpireOgel> spireOgels;
+
+  private List<SpireOgel> ogels;
+
+  private final String CONTROL_CODE_NAME = "controlCode";
+  private final String CONTROL_CODE_PARAM = "CC01";
+  private final String SOURCE_COUNTRY_NAME = "sourceCountry";
+  private final String SOURCE_COUNTRY_PARAM = "1";
+  private final String DEST_COUNTRY_NAME = "destinationCountry";
+  private final String DEST1_COUNTRY_PARAM = "2";
+  private final String DEST2_COUNTRY_PARAM = "3";
+  private final String ACTIVITY_NAME = "activityType";
+  private final String ACTIVITY_PARAM = "TECH";
 
   @Before
   public void setUp() {
-    Country firstBannedCountry = new Country("id3", "AF", "Afghanistan");
-    Country secondBannedCountry = new Country("id4", "SY", "Syria");
-    Country thirdBannedCountry = new Country("id5", "NZ", "New Zealand");
-    List<Country> bannedCountries = Arrays.asList(firstBannedCountry, secondBannedCountry, thirdBannedCountry);
-
-    List<Rating> ratings = new ArrayList<>();
-    ratings.add(SpireOgelTestUtility.createRating("ML21a", true));
-    ratings.add(SpireOgelTestUtility.createRating("ML21b1", true));
-    ratings.add(SpireOgelTestUtility.createRating("ML21b2", false));
-
-    OgelCondition ogelCondition = new OgelCondition();
-    ogelCondition.setExcludedCountries(bannedCountries);
-    ogelCondition.setRatingList(ratings);
-    List<OgelCondition> conditionsList = Collections.singletonList(ogelCondition);
-    SpireOgel firstOgel = SpireOgelTestUtility.createOgel("OGL0", "description", conditionsList, ActivityType.TECH);
-    spireOgels = Collections.singletonList(firstOgel);
-
+    this.ogels = Arrays.asList(TestUtil.ogelX(), TestUtil.ogelY(), TestUtil.ogelZ());
   }
 
   @After
@@ -74,54 +62,75 @@ public class ApplicableOgelResourceTest {
       .build();
 
   @Test
-  public void controllerReturnsExpectedOgelList() {
-    when(spireOgelService.findOgel(anyString(), anyString(), anyListOf(ActivityType.class))).thenReturn(spireOgels);
-    final Response response = resources.client().target("/applicable-ogels").queryParam("controlCode", "ML1a")
-        .queryParam("sourceCountry", "41").queryParam("destinationCountry", "1")
-        .queryParam("activityType", "TECH").request().get();
+  public void goodRequestWithResults() {
+    when(spireOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogels);
+    Response response = resources.client().target("/applicable-ogels")
+        .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
+        .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
+        .queryParam(DEST_COUNTRY_NAME, DEST1_COUNTRY_PARAM)
+        .queryParam(DEST_COUNTRY_NAME, DEST2_COUNTRY_PARAM)
+        .queryParam(ACTIVITY_NAME, ACTIVITY_PARAM)
+        .request().get();
 
-    final List<SpireOgel> spireOgelsResponse = (List<SpireOgel>) response.readEntity(List.class);
-    assertEquals(this.spireOgels.size(), spireOgelsResponse.size());
-    assertEquals(this.spireOgels.get(0).getName(), ((Map) spireOgelsResponse.get(0)).get("name"));
-    assertEquals(this.spireOgels.get(0).getId(), ((Map) spireOgelsResponse.get(0)).get("id"));
-
+    assertEquals(200, response.getStatus());
+    assertEquals(3, getEntityOgels(response).size());
   }
 
   @Test
-  public void returnsInternalServerErrorWhenListEmpty() {
-    String errorMessage = "Spire Ogel List Empty";
-    when(spireOgelService.findOgel(anyString(), anyString(), anyListOf(ActivityType.class)))
-        .thenThrow(new RuntimeException(errorMessage));
-    final Response response = resources.client().target("/applicable-ogels").queryParam("controlCode", "ML1a")
-        .queryParam("sourceCountry", "41").queryParam("destinationCountry", "1")
-        .queryParam("activityType", "TECH").request().get();
-    assertEquals(500, response.getStatus());
-    assertEquals(errorMessage, response.readEntity(ErrorMessage.class).getMessage());
-  }
-
-  @Test
-  public void throwsWebApplicationExceptionForInvalidCategory() throws IOException {
-    when(spireOgelService.findOgel(anyString(), anyString(), anyListOf(ActivityType.class))).thenCallRealMethod();
-    final Response response = resources.client().target("/applicable-ogels").queryParam("controlCode", "ML1a")
-        .queryParam("sourceCountry", "41").queryParam("destinationCountry", "1")
-        .queryParam("activityType", "Invalid").request().get();
-    assertNotNull(response);
-    assertEquals(response.getStatus(), 400); //Bad Request
-  }
-
-  @Test
-  public void returnsEmptyListWhenNoOgelsMatched() {
-    when(spireOgelService.findOgel(anyString(), anyString(), anyListOf(ActivityType.class))).thenReturn(Collections.emptyList());
+  public void goodRequestWithNoResults() {
+    when(spireOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(Collections.emptyList());
     final Response response = resources.client()
         .target("/applicable-ogels")
-        .queryParam("controlCode", "ML1a")
-        .queryParam("sourceCountry", "41")
-        .queryParam("destinationCountry", "1")
-        .queryParam("activityType", "TECH")
+        .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
+        .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
+        .queryParam(DEST_COUNTRY_NAME, DEST1_COUNTRY_PARAM)
+        .queryParam(DEST_COUNTRY_NAME, DEST2_COUNTRY_PARAM)
+        .queryParam(ACTIVITY_NAME, ACTIVITY_PARAM)
         .request().get();
-    final List<SpireOgel> spireOgelsResponse = (List<SpireOgel>) response.readEntity(List.class);
+
     assertEquals(200, response.getStatus());
-    assertEquals(0, spireOgelsResponse.size());
+    assertEquals(0, getEntityOgels(response).size());
   }
 
+  @Test
+  public void invalidActivityType() {
+    final Response response = resources.client().target("/applicable-ogels")
+        .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
+        .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
+        .queryParam(DEST_COUNTRY_NAME, DEST1_COUNTRY_PARAM)
+        .queryParam(ACTIVITY_NAME, ACTIVITY_PARAM + "X")
+        .request().get();
+    assertNotNull(response);
+    assertEquals(response.getStatus(), 400);
+  }
+
+  @Test
+  public void noActivityType() {
+    final Response response = resources.client().target("/applicable-ogels")
+        .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
+        .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
+        .queryParam(DEST_COUNTRY_NAME, DEST1_COUNTRY_PARAM)
+        .request().get();
+    assertNotNull(response);
+    assertEquals(response.getStatus(), 400);
+  }
+
+  @Test
+  public void noDestinationCountry() {
+    final Response response = resources.client().target("/applicable-ogels")
+        .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
+        .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
+        .queryParam(ACTIVITY_NAME, ACTIVITY_PARAM)
+        .request().get();
+    assertNotNull(response);
+    assertEquals(response.getStatus(), 400);
+  }
+
+  public static <T> List<String> any() {
+    return Arrays.asList(anyString());
+  }
+
+  private List<SpireOgel> getEntityOgels(Response response) {
+    return (List<SpireOgel>) response.readEntity(List.class);
+  }
 }

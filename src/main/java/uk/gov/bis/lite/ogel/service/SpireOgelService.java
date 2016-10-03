@@ -40,11 +40,11 @@ public class SpireOgelService {
     this.unmarshaller = unmarshaller;
   }
 
-  public List<SpireOgel> findOgel(String controlCode, String destinationCountryId, List<ActivityType> activityTypes) {
+  public List<SpireOgel> findOgel(String controlCode, List<String> destinationCountries, List<ActivityType> activityTypes) {
     if (cache.isEmpty()) {
       throw new CacheNotPopulatedException("Communication with Spire failed. Spire Ogel list is not populated");
     }
-    return SpireOgelFilter.filterSpireOgels(getAllOgels(), controlCode, destinationCountryId, activityTypes);
+    return SpireOgelFilter.filterSpireOgels(getAllOgels(), controlCode, destinationCountries, activityTypes);
   }
 
   public List<SpireOgel> getAllOgels() {
