@@ -3,6 +3,7 @@ package uk.gov.bis.lite.ogel.service;
 import com.fiestacabin.dropwizard.quartz.Scheduled;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.xml.soap.SOAPMessage;
 
@@ -33,6 +35,8 @@ public class SpireOgelService {
   private SpireOgelClient client;
   private SpireOgelSOAPUnmarshaller unmarshaller;
   private SpireHealthStatus healthStatus = SpireHealthStatus.unhealthy("Service not initialised");
+  private static final String COUNTRY_PREFIX = "CTRY";
+
 
   @Inject
   public SpireOgelService(SpireOgelClient client, SpireOgelSOAPUnmarshaller unmarshaller) {
@@ -40,7 +44,21 @@ public class SpireOgelService {
     this.unmarshaller = unmarshaller;
   }
 
+  /**
+   * Removes 'CTRY' from any list item, returns altered list
+   */
+  public List<String> stripCountryPrefix(List<String> countries) {
+    return countries.stream()
+        .map (c -> StringUtils.remove(c, COUNTRY_PREFIX))
+        .collect (Collectors.toList());
+  }
+
   public List<SpireOgel> findOgel(String controlCode, List<String> destinationCountries, List<ActivityType> activityTypes) {
+
+    destinationCountries.forEach((value) -> {
+      System.out.println("Value : " + value);
+    });
+
     if (cache.isEmpty()) {
       throw new CacheNotPopulatedException("Communication with Spire failed. Spire Ogel list is not populated");
     }

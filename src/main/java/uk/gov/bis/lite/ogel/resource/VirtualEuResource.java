@@ -46,7 +46,8 @@ public class VirtualEuResource {
       throw new WebApplicationException("At least one destinationCountry must be provided", 400);
     }
 
-    List<SpireOgel> ogels = spireOgelService.findOgel(controlCode, destinationCountries, ActivityType.DU_ANY.asList());
+    List<SpireOgel> ogels = spireOgelService.findOgel(controlCode, spireOgelService.stripCountryPrefix(destinationCountries),
+        ActivityType.DU_ANY.asList());
     boolean found = ogels.stream().filter(s -> s.getId().equalsIgnoreCase(virtualEuOgelId)).findFirst().isPresent();
 
     String json = found ? VIRTUAL_EU_TRUE : VIRTUAL_EU_FALSE;

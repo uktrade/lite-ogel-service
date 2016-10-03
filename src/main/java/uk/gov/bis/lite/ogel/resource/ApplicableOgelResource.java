@@ -61,7 +61,7 @@ public class ApplicableOgelResource {
     List<ActivityType> activityTypes = activityTypesParam.stream().map(ActivityType::valueOf).collect(Collectors.toList());
 
     List<ApplicableOgelView> applicableOgels = spireOgelService
-        .findOgel(controlCode, destinationCountries, activityTypes)
+        .findOgel(controlCode, spireOgelService.stripCountryPrefix(destinationCountries), activityTypes)
         .stream()
         .map(e -> ApplicableOgelView.create(e, localOgelService.findLocalOgelById(e.getId())))
         .collect(Collectors.toList());
