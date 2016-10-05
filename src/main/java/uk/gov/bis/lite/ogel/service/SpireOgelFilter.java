@@ -37,8 +37,9 @@ public class SpireOgelFilter {
   }
 
   private static boolean applyIncludedCountriesIfPresent(OgelCondition ogelCondition, List<String> destinationCountries) {
-    return ogelCondition.getCountries(OgelCondition.CountryStatus.INCLUDED).isEmpty() || ogelCondition.getCountries().stream()
-        .anyMatch(country -> countryMatchesDestination(country, destinationCountries));
+    return ogelCondition.getCountries(OgelCondition.CountryStatus.INCLUDED).isEmpty() || destinationCountries.stream()
+        .allMatch(country -> ogelCondition.getCountries(OgelCondition.CountryStatus.INCLUDED)
+            .stream().anyMatch(c -> c.getId().toLowerCase().equals(country)));
   }
 
   private static boolean applyActivityTypes(SpireOgel ogel, List<ActivityType> activityTypes) {

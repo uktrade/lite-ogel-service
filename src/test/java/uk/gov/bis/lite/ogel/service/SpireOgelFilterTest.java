@@ -47,13 +47,13 @@ public class SpireOgelFilterTest {
     assertNotNull(filter1);
     assertEquals(0, filter1.size());
 
-    List<SpireOgel> filter2 = SpireOgelFilter.filterSpireOgels(ogels, TestUtil.RAT1, TestUtil.countryIds(1, 2, 3), TestUtil.activities());
-    assertThat(filter2).extracting(SpireOgel::getId).containsOnly(TestUtil.OGLX, TestUtil.OGLY, TestUtil.OGLZ);
+    List<SpireOgel> filter2 = SpireOgelFilter.filterSpireOgels(ogels, TestUtil.RAT1, TestUtil.countryIds(1, 2), TestUtil.activities());
+    assertThat(filter2).extracting(SpireOgel::getId).containsOnly(TestUtil.OGLX, TestUtil.OGLY);
 
     List<SpireOgel> filter3 = SpireOgelFilter.filterSpireOgels(ogels, TestUtil.RAT3, TestUtil.countryIds(1, 2, 3), TestUtil.activities());
     assertThat(filter3).extracting(SpireOgel::getId).containsOnly(TestUtil.OGLX);
 
-    List<SpireOgel> filter4 = SpireOgelFilter.filterSpireOgels(ogels, TestUtil.RAT5, TestUtil.countryIds(1, 2, 3), TestUtil.activities());
+    List<SpireOgel> filter4 = SpireOgelFilter.filterSpireOgels(ogels, TestUtil.RAT5, TestUtil.countryIds(1), TestUtil.activities());
     assertThat(filter4).extracting(SpireOgel::getId).containsOnly(TestUtil.OGLY, TestUtil.OGLZ);
   }
 
@@ -62,11 +62,11 @@ public class SpireOgelFilterTest {
     List<SpireOgel> filter1 = SpireOgelFilter.filterSpireOgels(ogels, TestUtil.RAT5, TestUtil.countryIds(2), TestUtil.activities());
     assertThat(filter1).extracting(SpireOgel::getId).containsOnly(TestUtil.OGLY);
 
-    List<SpireOgel> filter2 = SpireOgelFilter.filterSpireOgels(ogels, TestUtil.RAT5, TestUtil.countryIds(1, 2, 3), TestUtil.activities());
+    List<SpireOgel> filter2 = SpireOgelFilter.filterSpireOgels(ogels, TestUtil.RAT5, TestUtil.countryIds(1), TestUtil.activities());
     assertThat(filter2).extracting(SpireOgel::getId).containsOnly(TestUtil.OGLY, TestUtil.OGLZ);
 
     List<SpireOgel> filter3 = SpireOgelFilter.filterSpireOgels(ogels, TestUtil.RAT2, TestUtil.countryIds(2, 3), TestUtil.activities());
-    assertThat(filter3).extracting(SpireOgel::getId).containsOnly(TestUtil.OGLX, TestUtil.OGLY);
+    assertThat(filter3).extracting(SpireOgel::getId).containsOnly(TestUtil.OGLX);
 
     List<SpireOgel> filter4 = SpireOgelFilter.filterSpireOgels(ogels, TestUtil.RAT1, TestUtil.countryIds(4), TestUtil.activities());
     assertEquals(0, filter4.size());
@@ -74,10 +74,10 @@ public class SpireOgelFilterTest {
 
   @Test
   public void filterByActivityType() {
-    List<SpireOgel> filter1 = SpireOgelFilter.filterSpireOgels(ogels, TestUtil.RAT1, TestUtil.countryIds(1, 2, 3), TestUtil.tech());
+    List<SpireOgel> filter1 = SpireOgelFilter.filterSpireOgels(ogels, TestUtil.RAT1, TestUtil.countryIds(1), TestUtil.tech());
     assertThat(filter1).extracting(SpireOgel::getId).containsOnly(TestUtil.OGLX, TestUtil.OGLZ);
 
-    List<SpireOgel> filter2 = SpireOgelFilter.filterSpireOgels(ogels, TestUtil.RAT1, TestUtil.countryIds(1, 2, 3), TestUtil.repair());
+    List<SpireOgel> filter2 = SpireOgelFilter.filterSpireOgels(ogels, TestUtil.RAT1, TestUtil.countryIds(1), TestUtil.repair());
     assertThat(filter2).extracting(SpireOgel::getId).containsOnly(TestUtil.OGLY);
   }
 

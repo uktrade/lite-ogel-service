@@ -49,7 +49,7 @@ public class SpireOgelConditionUnmarshaller implements SpireOgelUnmarshaller {
             if(!includedCountries.isEmpty()) {
               condition.setCountries(includedCountries, OgelCondition.CountryStatus.INCLUDED);
             } else if(!excludedCountries.isEmpty()) {
-              condition.setCountries(includedCountries, OgelCondition.CountryStatus.EXCLUDED);
+              condition.setCountries(excludedCountries, OgelCondition.CountryStatus.EXCLUDED);
             }
             // Logs data if both includedCountries list and excludedCountries list are populated
             logUnexpectedData(conditionNo, includedCountries, excludedCountries);
