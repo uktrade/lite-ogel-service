@@ -42,7 +42,14 @@ class LocalControlCodeConditionListValidator implements ConstraintValidator<Chec
         value.stream().anyMatch(lo2 -> lo.getOgelID().equalsIgnoreCase(lo2.getOgelID()) && lo.getControlCode().equalsIgnoreCase(lo2.getControlCode()) && !lo.equals(lo2))
     ).collect(Collectors.toList());
     if (!duplicateControlCodeConditions.isEmpty()) {
-      getCustomizedErrorMessage(context, "Duplicate OGEL Control Code Condition found in bulk update data: " + duplicateControlCodeConditions.get(0).getOgelID());
+
+      String duplicates = duplicateControlCodeConditions
+          .stream()
+          .map(e -> e.getOgelID() + "/" + e.getControlCode())
+          .distinct()
+          .collect(Collectors.joining(", "));
+
+      getCustomizedErrorMessage(context, "Duplicate OGEL Control Code Conditions found in bulk update data: " + duplicates);
       return false;
     }
     return true;
