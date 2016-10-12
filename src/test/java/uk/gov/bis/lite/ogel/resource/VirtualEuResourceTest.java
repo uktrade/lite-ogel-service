@@ -7,6 +7,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 import io.dropwizard.testing.junit.ResourceTestRule;
+import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -14,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
@@ -58,7 +60,7 @@ public class VirtualEuResourceTest {
       .addResource(new VirtualEuResource(spireOgelService, TestUtil.OGL61)).build();
 
   @Test
-  public void controllerReturnsVirtualEuTrue() {
+  public void controllerReturnsVirtualEuTrue() throws JSONException {
     when(spireOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class))).thenReturn(euOgels);
     Response response = resources.client().target("/virtual-eu")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
@@ -66,11 +68,11 @@ public class VirtualEuResourceTest {
         .queryParam(DESTINATION_COUNTRY_NAME, DESTINATION_COUNTRY_PARAM)
         .request().get();
     assertEquals(200, response.getStatus());
-    assertEquals(response.readEntity(String.class), "{\"virtualEu\": true}");
+    JSONAssert.assertEquals("{\"ogelId\": \"" + TestUtil.OGL61 + "\", \"virtualEu\": true}", response.readEntity(String.class), true);
   }
 
   @Test
-  public void controllerReturnsVirtualEuFalse() {
+  public void controllerReturnsVirtualEuFalse() throws JSONException {
     when(spireOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class))).thenReturn(noEuOgels);
     Response response = resources.client().target("/virtual-eu")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
@@ -78,6 +80,6 @@ public class VirtualEuResourceTest {
         .queryParam(DESTINATION_COUNTRY_NAME, DESTINATION_COUNTRY_PARAM)
         .request().get();
     assertEquals(200, response.getStatus());
-    assertEquals(response.readEntity(String.class), "{\"virtualEu\": false}");
+    JSONAssert.assertEquals("{\"virtualEu\": false}", response.readEntity(String.class), true);
   }
 }

@@ -8,7 +8,9 @@ import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
@@ -27,9 +29,6 @@ public class VirtualEuResource {
 
   private final SpireOgelService spireOgelService;
   private final String virtualEuOgelId;
-
-  private final String VIRTUAL_EU_TRUE = "{\"virtualEu\": true}";
-  private final String VIRTUAL_EU_FALSE = "{\"virtualEu\": false}";
 
   @Inject
   public VirtualEuResource(SpireOgelService spireOgelService, @Named("virtualEuOgelId") String virtualEuOgelId) {
@@ -50,7 +49,12 @@ public class VirtualEuResource {
         ActivityType.DU_ANY.asList());
     boolean found = ogels.stream().filter(s -> s.getId().equalsIgnoreCase(virtualEuOgelId)).findFirst().isPresent();
 
-    String json = found ? VIRTUAL_EU_TRUE : VIRTUAL_EU_FALSE;
-    return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    Map<String, Object> result = new HashMap<>();
+    result.put("virtualEu", found);
+    if (found) {
+      result.put("ogelId", virtualEuOgelId);
+    }
+
+    return Response.ok(result, MediaType.APPLICATION_JSON).build();
   }
 }
