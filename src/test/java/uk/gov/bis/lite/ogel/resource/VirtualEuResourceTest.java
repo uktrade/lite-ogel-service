@@ -57,7 +57,7 @@ public class VirtualEuResourceTest {
 
   @ClassRule
   public static final ResourceTestRule resources = ResourceTestRule.builder()
-      .addResource(new VirtualEuResource(spireOgelService, TestUtil.OGL61)).build();
+      .addResource(new VirtualEuResource(spireOgelService, TestUtil.OGLEU)).build();
 
   @Test
   public void controllerReturnsVirtualEuTrue() throws JSONException {
@@ -68,7 +68,7 @@ public class VirtualEuResourceTest {
         .queryParam(DESTINATION_COUNTRY_NAME, DESTINATION_COUNTRY_PARAM)
         .request().get();
     assertEquals(200, response.getStatus());
-    JSONAssert.assertEquals("{\"ogelId\": \"" + TestUtil.OGL61 + "\", \"virtualEu\": true}", response.readEntity(String.class), true);
+    JSONAssert.assertEquals("{\"ogelId\": \"" + TestUtil.OGLEU + "\", \"virtualEu\": true}", response.readEntity(String.class), true);
   }
 
   @Test

@@ -21,7 +21,7 @@ public class TestUtil {
   public static String OGLY = "OGLY";
   public static String OGLZ = "OGLZ";
   public static String OGLMIX = "OGLMIX";
-  public static String OGL61 = "OGL61"; // Virtual EU ogel
+  public static String OGLEU = "OGL61"; // Virtual EU ogel
   public static String OGL_ = "OGL_"; // This Ogel does not exist
   public static String OGLTEMP = "OGLTEMP";
 
@@ -67,7 +67,7 @@ public class TestUtil {
   }
 
   public static SpireOgel ogelEU() {
-    return ogel(OGL61, conditions(ratings(RAT1, RAT2, RAT3), countries(1, 2, 3), countries(4)), TECH);
+    return ogel(OGLEU, conditions(ratings(RAT1, RAT2, RAT3), countries(1, 2, 3), countries(4)), TECH);
   }
 
   public static LocalOgel localX() {

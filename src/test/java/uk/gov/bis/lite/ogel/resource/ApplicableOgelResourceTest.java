@@ -1,5 +1,6 @@
 package uk.gov.bis.lite.ogel.resource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyListOf;
@@ -21,10 +22,13 @@ import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -58,7 +62,7 @@ public class ApplicableOgelResourceTest {
 
   @ClassRule
   public static final ResourceTestRule resources = ResourceTestRule.builder()
-      .addResource(new ApplicableOgelResource(spireOgelService, localOgelService))
+      .addResource(new ApplicableOgelResource(spireOgelService, localOgelService, TestUtil.OGLEU))
       .build();
 
   @Test
@@ -90,6 +94,29 @@ public class ApplicableOgelResourceTest {
 
     assertEquals(200, response.getStatus());
     assertEquals(0, getEntityOgels(response).size());
+  }
+
+  @Test
+  public void filtersVirtualEuWhenMatched() {
+    //If the virtual EU OGEL is matched, the resource should not return it
+    List<SpireOgel> ogelsWithVirtualEu = new ArrayList<>(ogels);
+    ogelsWithVirtualEu.add(TestUtil.ogelEU());
+
+    when(spireOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogelsWithVirtualEu);
+
+    Response response = resources.client().target("/applicable-ogels")
+        .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
+        .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
+        .queryParam(DEST_COUNTRY_NAME, DEST1_COUNTRY_PARAM)
+        .queryParam(ACTIVITY_NAME, ACTIVITY_PARAM)
+        .request().get();
+
+    assertEquals(200, response.getStatus());
+
+    List<Map<String, Object>> entityOgels = getEntityOgels(response);
+
+    assertEquals(3, entityOgels.size());
+    assertThat(entityOgels).extracting("id").containsOnly(TestUtil.OGLX, TestUtil.OGLY, TestUtil.OGLZ);
   }
 
   @Test
@@ -130,7 +157,7 @@ public class ApplicableOgelResourceTest {
     return Arrays.asList(anyString());
   }
 
-  private List<SpireOgel> getEntityOgels(Response response) {
-    return (List<SpireOgel>) response.readEntity(List.class);
+  private List<Map<String, Object>> getEntityOgels(Response response) {
+    return response.readEntity(new GenericType<List<Map<String, Object>>>(){});
   }
 }

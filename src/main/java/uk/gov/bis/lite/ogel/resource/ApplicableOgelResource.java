@@ -2,6 +2,7 @@ package uk.gov.bis.lite.ogel.resource;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import io.dropwizard.jersey.caching.CacheControl;
 import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
 import org.glassfish.jersey.message.internal.OutboundMessageContext;
@@ -29,11 +30,14 @@ public class ApplicableOgelResource {
 
   private final SpireOgelService spireOgelService;
   private final LocalOgelService localOgelService;
+  private final String virtualEuOgelId;
 
   @Inject
-  public ApplicableOgelResource(SpireOgelService spireOgelService, LocalOgelService localOgelService) {
+  public ApplicableOgelResource(SpireOgelService spireOgelService, LocalOgelService localOgelService,
+                                @Named("virtualEuOgelId") String virtualEuOgelId) {
     this.spireOgelService = spireOgelService;
     this.localOgelService = localOgelService;
+    this.virtualEuOgelId = virtualEuOgelId;
   }
 
   @GET
@@ -63,6 +67,7 @@ public class ApplicableOgelResource {
     List<ApplicableOgelView> applicableOgels = spireOgelService
         .findOgel(controlCode, spireOgelService.stripCountryPrefix(destinationCountries), activityTypes)
         .stream()
+        .filter(e -> !virtualEuOgelId.equals(e.getId()))
         .map(e -> ApplicableOgelView.create(e, localOgelService.findLocalOgelById(e.getId())))
         .collect(Collectors.toList());
 
