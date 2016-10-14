@@ -8,6 +8,7 @@ logging:
     - type: console
       threshold: INFO
       target: stderr
+      logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"
 
 database:
   # the name of your JDBC driver

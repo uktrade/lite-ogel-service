@@ -8,17 +8,16 @@ import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.PrincipalImpl;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
-import io.dropwizard.client.HttpClientBuilder;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.apache.http.client.HttpClient;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
 import ru.vyarus.dropwizard.guice.module.installer.feature.health.HealthCheckInstaller;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
+import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
@@ -58,6 +57,7 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     environment.jersey().register(CustomJsonProcessingExceptionMapper.class);
     environment.jersey().register(CheckLocalOgelExceptionMapper.class);
     environment.jersey().register(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class));
+    environment.jersey().register(ContainerCorrelationIdFilter.class);
 
     //Perform/validate flyway migration on startup
     DataSourceFactory dataSourceFactory = configuration.getDataSourceFactory();

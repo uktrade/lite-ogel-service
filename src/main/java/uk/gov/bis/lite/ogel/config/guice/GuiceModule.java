@@ -12,6 +12,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 import org.skife.jdbi.v2.DBI;
+import uk.gov.bis.lite.common.jersey.filter.ClientCorrelationIdFilter;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.LocalControlCodeConditionDAO;
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.SqliteLocalControlCodeConditionDAOImpl;
@@ -85,6 +86,7 @@ public class GuiceModule extends AbstractModule {
   Client provideHttpClient(Environment environment, MainApplicationConfiguration configuration) {
     final Client client = new JerseyClientBuilder(environment).using(configuration.getJerseyClientConfiguration())
         .build("jerseyClient");
+    client.register(ClientCorrelationIdFilter.class);
     return client;
   }
 }

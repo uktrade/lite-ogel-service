@@ -13,6 +13,14 @@ mainClassName = "uk.gov.bis.lite.ogel.OgelApplication"
 
 repositories {
   mavenCentral()
+  maven {
+    name "snapshots"
+    url "http://nexus.mgmt.int.licensing.service.trade.gov.uk/repository/maven-snapshots"
+  }
+  maven {
+    name "releases"
+    url "http://nexus.mgmt.int.licensing.service.trade.gov.uk/repository/maven-releases"
+  }
 }
 
 dependencies {
@@ -24,7 +32,8 @@ dependencies {
       'ru.vyarus:dropwizard-guicey:3.2.0',
       'com.fiestacabin.dropwizard.quartz:dropwizard-quartz:0.7.2',
       'org.xerial:sqlite-jdbc:3.8.11.2',
-      'org.flywaydb:flyway-core:4.0.1'
+      'org.flywaydb:flyway-core:4.0.1',
+      'uk.gov.bis.lite:jersey-correlation-id:1.0'
 
   testCompile 'junit:junit:4.12',
       'org.mockito:mockito-all:1.9.5',
