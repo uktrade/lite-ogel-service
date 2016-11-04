@@ -68,6 +68,8 @@ public class ApplicableOgelResource {
         .findOgel(controlCode, spireOgelService.stripCountryPrefix(destinationCountries), activityTypes)
         .stream()
         .filter(e -> !virtualEuOgelId.equals(e.getId()))
+        .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())) // Baseline order (by OGEL ID String)
+        .sorted((o1, o2) -> o1.getRanking() - o2.getRanking()) // Ranking order (when duplicated rank, the baseline applies)
         .map(e -> ApplicableOgelView.create(e, localOgelService.findLocalOgelById(e.getId())))
         .collect(Collectors.toList());
 
