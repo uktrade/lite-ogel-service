@@ -153,6 +153,44 @@ public class ApplicableOgelResourceTest {
     assertEquals(response.getStatus(), 400);
   }
 
+  @Test
+  public void orderedByRanking() {
+    List<SpireOgel> ogelsByAscendingRanking = Arrays.asList(TestUtil.ogelY(), TestUtil.ogelZ(), TestUtil.ogelX());
+
+    when(spireOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogelsByAscendingRanking);
+
+    Response response = resources.client().target("/applicable-ogels")
+        .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
+        .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
+        .queryParam(DEST_COUNTRY_NAME, DEST1_COUNTRY_PARAM)
+        .queryParam(ACTIVITY_NAME, ACTIVITY_PARAM)
+        .request().get();
+
+    assertEquals(200, response.getStatus());
+
+    assertThat(getEntityOgels(response)).extracting("id").containsExactly(TestUtil.OGLX, TestUtil.OGLY, TestUtil.OGLZ);
+  }
+
+  @Test
+  public void orderedByRankingDuplicateRanking() {
+    // Descending by ID alphabetically
+    List<SpireOgel> ogelsWithSameRanking = Arrays.asList(TestUtil.ogelX(), TestUtil.ogelW());
+
+    when(spireOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogelsWithSameRanking);
+
+    Response response = resources.client().target("/applicable-ogels")
+        .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
+        .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
+        .queryParam(DEST_COUNTRY_NAME, DEST1_COUNTRY_PARAM)
+        .queryParam(ACTIVITY_NAME, ACTIVITY_PARAM)
+        .request().get();
+
+    assertEquals(200, response.getStatus());
+
+    // Ascending by ID alphabetically
+    assertThat(getEntityOgels(response)).extracting("id").containsExactly(TestUtil.OGLW, TestUtil.OGLX);
+  }
+
   public static <T> List<String> any() {
     return Arrays.asList(anyString());
   }
