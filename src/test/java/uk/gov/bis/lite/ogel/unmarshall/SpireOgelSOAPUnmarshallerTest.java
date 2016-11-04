@@ -104,4 +104,18 @@ public class SpireOgelSOAPUnmarshallerTest {
     assertThat(ogels).filteredOn("id", OGL4).extracting(SpireOgel::getOgelConditions)
         .extracting(cons -> cons.get(0)).flatExtracting(OgelCondition::getRatingList).asList().hasSize(80);
   }
+
+  @Test
+  public void testRankings() {
+    assertThat(ogels.stream().filter(o -> o.getId().equals(OGL0)).findFirst().get().getRanking()).isEqualTo(1);
+
+    assertThat(ogels.stream().filter(o -> o.getId().equals(OGL1)).findFirst().get().getRanking()).isEqualTo(2);
+
+    assertThat(ogels.stream().filter(o -> o.getId().equals(OGL2)).findFirst().get().getRanking()).isEqualTo(3);
+
+    assertThat(ogels.stream().filter(o -> o.getId().equals(OGL3)).findFirst().get().getRanking()).isEqualTo(999);
+
+    assertThat(ogels.stream().filter(o -> o.getId().equals(OGL4)).findFirst().get().getRanking()).isEqualTo(999);
+  }
+
 }
