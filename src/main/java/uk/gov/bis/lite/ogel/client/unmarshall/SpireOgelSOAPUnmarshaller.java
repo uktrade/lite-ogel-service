@@ -73,6 +73,10 @@ public class SpireOgelSOAPUnmarshaller {
           final SpireOgelConditionUnmarshaller conditionUnmarshaller = new SpireOgelConditionUnmarshaller();
           List<OgelCondition> ogelConditions = conditionUnmarshaller.unmarshall(xpath, currentOgelNode, CONDITIONS_LIST_EXPRESSION);
           currentOgel.setOgelConditions(ogelConditions);
+
+          final int ranking = SpireOgelRankingUnmarshaller.unmarshall(xpath, currentOgelNode, currentOgel.getId());
+          currentOgel.setRanking(ranking);
+
           spireOgelList.add(currentOgel);
 
         } catch (XPathExpressionException e) {

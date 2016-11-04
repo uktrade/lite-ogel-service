@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
 
-@JsonPropertyOrder({"id", "name", "description", "link", "summary"})
+@JsonPropertyOrder({"id", "name", "description", "link", "ranking", "summary"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OgelFullView {
 
@@ -59,5 +59,10 @@ public class OgelFullView {
   @JsonProperty("link")
   public String getPdfLink() {
     return spireOgel.getLink();
+  }
+
+  @JsonProperty("ranking")
+  public int ranking() {
+    return spireOgel.getRanking();
   }
 }
