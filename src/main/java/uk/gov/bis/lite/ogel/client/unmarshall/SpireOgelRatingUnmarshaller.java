@@ -13,9 +13,6 @@ import javax.xml.xpath.XPathExpressionException;
 
 public class SpireOgelRatingUnmarshaller implements SpireOgelUnmarshaller {
 
-  private static final String RATING_CODE_EXPRESSION = "RATING_NAME";
-  private static final String RATING_CONDITION_EXPRESSION = "CONDITIONAL_RATING";
-
   @Override
   public List<Rating> unmarshall(XPath xpath, Node ogelNode, String xPathExpression) throws XPathExpressionException {
     List<Rating> ratingsList = new ArrayList<>();
@@ -26,8 +23,8 @@ public class SpireOgelRatingUnmarshaller implements SpireOgelUnmarshaller {
       if (ratingNode != null) {
         if (ratingNode.getNodeType() == Node.ELEMENT_NODE) {
           Rating newRating = new Rating();
-          newRating.setRatingCode(((Node) xpath.evaluate(RATING_CODE_EXPRESSION, ratingNode, XPathConstants.NODE)).getTextContent());
-          newRating.setConditionalRating(Boolean.parseBoolean(((Node) xpath.evaluate(RATING_CONDITION_EXPRESSION, ratingNode, XPathConstants.NODE)).getTextContent()));
+          newRating.setRatingCode(((Node) xpath.evaluate("RATING_NAME", ratingNode, XPathConstants.NODE)).getTextContent());
+          newRating.setConditionalRating(Boolean.parseBoolean(((Node) xpath.evaluate("CONDITIONAL_RATING", ratingNode, XPathConstants.NODE)).getTextContent()));
           ratingsList.add(newRating);
         }
       }

@@ -13,10 +13,6 @@ import javax.xml.xpath.XPathExpressionException;
 
 public class SpireOgelCountryUnmarshaller implements SpireOgelUnmarshaller {
 
-  private static final String COUNTRY_CODE_EXPRESSION = "COUNTRY_ID";
-  private static final String COUNTRY_SET_ID_EXPRESSION = "COUNTRY_SET_ID";
-  private static final String COUNTRY_NAME_EXPRESSION = "COUNTRY_NAME";
-
   @Override
   public List<Country> unmarshall(XPath xpath, Node ogelNode, String xPathExpression) throws XPathExpressionException {
     final Node specialCountriesNode = (Node) xpath.evaluate(xPathExpression, ogelNode, XPathConstants.NODE);
@@ -28,11 +24,11 @@ public class SpireOgelCountryUnmarshaller implements SpireOgelUnmarshaller {
           Node excludedCountryNode = specialCountriesNodeChildList.item(k).cloneNode(true);
           if (excludedCountryNode != null) {
             Country priviligedCountry = new Country();
-            priviligedCountry.setId(((Node) xpath.evaluate(COUNTRY_CODE_EXPRESSION,
+            priviligedCountry.setId(((Node) xpath.evaluate("COUNTRY_ID",
                 excludedCountryNode, XPathConstants.NODE)).getTextContent());
-            priviligedCountry.setSetID(((Node) xpath.evaluate(COUNTRY_SET_ID_EXPRESSION,
+            priviligedCountry.setSetID(((Node) xpath.evaluate("COUNTRY_SET_ID",
                 excludedCountryNode, XPathConstants.NODE)).getTextContent());
-            priviligedCountry.setName(((Node) xpath.evaluate(COUNTRY_NAME_EXPRESSION,
+            priviligedCountry.setName(((Node) xpath.evaluate("COUNTRY_NAME",
                 excludedCountryNode, XPathConstants.NODE)).getTextContent());
             excludedCountriesList.add(priviligedCountry);
           }

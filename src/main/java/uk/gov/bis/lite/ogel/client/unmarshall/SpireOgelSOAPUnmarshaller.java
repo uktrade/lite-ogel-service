@@ -24,13 +24,8 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 public class SpireOgelSOAPUnmarshaller {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(SpireOgelSOAPUnmarshaller.class);
-  private static final String OGEL_TYPES_LIST_EXPRESSION = "//OGEL_TYPES_LIST";
-  private static final String OGEL_TYPE_REF_EXPRESSION = "OGEL_TYPE_REF";
-  private static final String NAME_EXPRESSION = "NAME";
-  private static final String LINK_TO_OGL_EXPRESSION = "LINK_TO_OGL";
-  private static final String OGL_ACTIVITY_EXPRESSION = "OGL_ACTIVITY";
-  private static final String CONDITIONS_LIST_EXPRESSION = "CONDITIONS_LIST";
 
   public List<SpireOgel> execute(SOAPMessage message) {
 
@@ -39,7 +34,7 @@ public class SpireOgelSOAPUnmarshaller {
     try {
       soapBody = message.getSOAPBody();
       XPath xpath = XPathFactory.newInstance().newXPath();
-      nodeList = (NodeList) xpath.evaluate(OGEL_TYPES_LIST_EXPRESSION, soapBody, XPathConstants.NODESET);
+      nodeList = (NodeList) xpath.evaluate("//OGEL_TYPES_LIST", soapBody, XPathConstants.NODESET);
       if (nodeList != null) {
         return parseSoapBody(nodeList, xpath);
       }
@@ -60,19 +55,19 @@ public class SpireOgelSOAPUnmarshaller {
       Node currentOgelNode = nodeList.item(i).cloneNode(true);
       if (currentOgelNode.getNodeType() == Node.ELEMENT_NODE) {
         try {
-          currentOgel.setId(((Node) xpath.evaluate(OGEL_TYPE_REF_EXPRESSION, currentOgelNode, XPathConstants.NODE)).getTextContent());
+          currentOgel.setId(((Node) xpath.evaluate("OGEL_TYPE_REF", currentOgelNode, XPathConstants.NODE)).getTextContent());
 
-          currentOgel.setName(((Node) xpath.evaluate(NAME_EXPRESSION, currentOgelNode, XPathConstants.NODE)).getTextContent());
-          final Node linkToOgelNode = (Node) xpath.evaluate(LINK_TO_OGL_EXPRESSION, currentOgelNode, XPathConstants.NODE);
+          currentOgel.setName(((Node) xpath.evaluate("NAME", currentOgelNode, XPathConstants.NODE)).getTextContent());
+          final Node linkToOgelNode = (Node) xpath.evaluate("LINK_TO_OGL", currentOgelNode, XPathConstants.NODE);
           if (linkToOgelNode != null) {
             currentOgel.setLink(linkToOgelNode.getTextContent());
           }
-          final Node ogelActivityNode = (Node) xpath.evaluate(OGL_ACTIVITY_EXPRESSION, currentOgelNode, XPathConstants.NODE);
+          final Node ogelActivityNode = (Node) xpath.evaluate("OGL_ACTIVITY", currentOgelNode, XPathConstants.NODE);
           if (ogelActivityNode != null) {
             currentOgel.setActivityType(ActivityType.valueOf(ogelActivityNode.getTextContent()));
           }
           final SpireOgelConditionUnmarshaller conditionUnmarshaller = new SpireOgelConditionUnmarshaller();
-          List<OgelCondition> ogelConditions = conditionUnmarshaller.unmarshall(xpath, currentOgelNode, CONDITIONS_LIST_EXPRESSION);
+          List<OgelCondition> ogelConditions = conditionUnmarshaller.unmarshall(xpath, currentOgelNode, "CONDITIONS_LIST");
           currentOgel.setOgelConditions(ogelConditions);
 
           final int ranking = unmarshallRanking(xpath, currentOgelNode, currentOgel.getId());
