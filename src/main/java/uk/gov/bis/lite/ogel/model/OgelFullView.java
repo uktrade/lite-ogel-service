@@ -61,8 +61,4 @@ public class OgelFullView {
     return spireOgel.getLink();
   }
 
-  @JsonProperty("ranking")
-  public int ranking() {
-    return spireOgel.getRanking();
-  }
 }
