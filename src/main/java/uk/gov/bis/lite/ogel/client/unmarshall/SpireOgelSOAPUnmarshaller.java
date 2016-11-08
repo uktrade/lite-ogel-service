@@ -1,6 +1,7 @@
 package uk.gov.bis.lite.ogel.client.unmarshall;
 
 import com.google.common.base.Stopwatch;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -74,7 +75,7 @@ public class SpireOgelSOAPUnmarshaller {
           List<OgelCondition> ogelConditions = conditionUnmarshaller.unmarshall(xpath, currentOgelNode, CONDITIONS_LIST_EXPRESSION);
           currentOgel.setOgelConditions(ogelConditions);
 
-          final int ranking = SpireOgelRankingUnmarshaller.unmarshall(xpath, currentOgelNode, currentOgel.getId());
+          final int ranking = unmarshallRanking(xpath, currentOgelNode, currentOgel.getId());
           currentOgel.setRanking(ranking);
 
           spireOgelList.add(currentOgel);
@@ -87,5 +88,33 @@ public class SpireOgelSOAPUnmarshaller {
     stopwatch.stop();
     LOGGER.info("The unmarshalling of the Spire Response took " + stopwatch.elapsed(TimeUnit.SECONDS) + " seconds ");
     return spireOgelList;
+  }
+
+  private int unmarshallRanking(XPath xpath, Node ogelNode, String ogelId) throws XPathExpressionException {
+    final String oglRankingElementName = "OGL_RANKING";
+    final int rankingDefaultValue = 999;
+    final Node rankingNode = (Node) xpath.evaluate(oglRankingElementName, ogelNode, XPathConstants.NODE);
+    if (rankingNode != null) {
+      if (StringUtils.isNotEmpty(rankingNode.getTextContent())) {
+        try {
+          return Integer.parseInt(rankingNode.getTextContent());
+        }
+        catch (NumberFormatException ex) {
+          LOGGER.info(String.format("%s element for %s contains an invalid number, using %d instead",
+              oglRankingElementName, ogelId, rankingDefaultValue));
+          return rankingDefaultValue;
+        }
+      }
+      else {
+        LOGGER.info(String.format("%s element for %s is empty, using %d instead", oglRankingElementName, ogelId,
+            rankingDefaultValue));
+        return rankingDefaultValue;
+      }
+    }
+    else {
+      LOGGER.info(String.format("%s element not found for %s, using %d instead", oglRankingElementName, ogelId,
+          rankingDefaultValue));
+      return rankingDefaultValue;
+    }
   }
 }
