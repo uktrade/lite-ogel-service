@@ -18,15 +18,9 @@ public class SpireOgelConditionUnmarshaller implements SpireOgelUnmarshaller {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SpireOgelConditionUnmarshaller.class);
 
-  private static final String RATING_LIST_EXPRESSION = "RATINGS_LIST";
-  private static final String CONDITIONS_LIST_EXPRESSION = "CONDITIONS_LIST";
-  private static final String EXCLUDED_COUNTRIES_EXPRESSION = "DEST_COUNTRY_EXCLUDE_LIST";
-  private static final String INCLUDED_COUNTRIES_EXPRESSION = "DEST_COUNTRY_INCLUDE_LIST";
-  private static final String CONDITION_NO_EXPRESSION = "CONDITION_NO";
-
   @Override
   public List<OgelCondition> unmarshall(XPath xpath, Node ogelNode, String xPathExpression) throws XPathExpressionException {
-    final Node conditionsNode = (Node) xpath.evaluate(CONDITIONS_LIST_EXPRESSION, ogelNode, XPathConstants.NODE);
+    final Node conditionsNode = (Node) xpath.evaluate("CONDITIONS_LIST", ogelNode, XPathConstants.NODE);
     NodeList nodeList = conditionsNode.getChildNodes();
     if (nodeList != null) {
       List<OgelCondition> conditions = new ArrayList<>();
@@ -35,15 +29,15 @@ public class SpireOgelConditionUnmarshaller implements SpireOgelUnmarshaller {
         Node node = nodeList.item(j);
         if (node != null) {
           if (node.getNodeType() == Node.ELEMENT_NODE) {
-            int conditionNo = Integer.parseInt(((Node) xpath.evaluate(CONDITION_NO_EXPRESSION, node, XPathConstants.NODE)).getTextContent());
+            int conditionNo = Integer.parseInt(((Node) xpath.evaluate("CONDITION_NO", node, XPathConstants.NODE)).getTextContent());
 
             SpireOgelRatingUnmarshaller ratingUnmarshaller = new SpireOgelRatingUnmarshaller();
-            condition.setRatingList(ratingUnmarshaller.unmarshall(xpath, node, RATING_LIST_EXPRESSION));
+            condition.setRatingList(ratingUnmarshaller.unmarshall(xpath, node, "RATINGS_LIST"));
 
             SpireOgelCountryUnmarshaller countryUnmarshaller = new SpireOgelCountryUnmarshaller();
 
-            List<Country> includedCountries = countryUnmarshaller.unmarshall(xpath, node, INCLUDED_COUNTRIES_EXPRESSION);
-            List<Country> excludedCountries = countryUnmarshaller.unmarshall(xpath, node, EXCLUDED_COUNTRIES_EXPRESSION);
+            List<Country> includedCountries = countryUnmarshaller.unmarshall(xpath, node, "DEST_COUNTRY_INCLUDE_LIST");
+            List<Country> excludedCountries = countryUnmarshaller.unmarshall(xpath, node, "DEST_COUNTRY_EXCLUDE_LIST");
 
             // We expect either a list of included countries or a list of excluded countries, not both
             if(!includedCountries.isEmpty()) {

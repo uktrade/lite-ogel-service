@@ -17,6 +17,7 @@ import java.util.Map;
 
 public class TestUtil {
 
+  public static String OGLW = "OGLW";
   public static String OGLX = "OGLX";
   public static String OGLY = "OGLY";
   public static String OGLZ = "OGLZ";
@@ -48,26 +49,30 @@ public class TestUtil {
     countryMap.put(6, new Country("6", "66", "Country6"));
   }
 
+  public static SpireOgel ogelW() {
+    return ogel(OGLW, conditions(ratings(RAT1, RAT2, RAT3), countries(1, 2, 3), countries(4)), TECH, 1);
+  }
+
   public static SpireOgel ogelX() {
-    return ogel(OGLX, conditions(ratings(RAT1, RAT2, RAT3), countries(1, 2, 3), countries(4)), TECH);
+    return ogel(OGLX, conditions(ratings(RAT1, RAT2, RAT3), countries(1, 2, 3), countries(4)), TECH, 1);
   }
 
   public static SpireOgel ogelY() {
-    return ogel(OGLY, conditions(ratings(RAT1, RAT2, RAT4, RAT5), countries(1, 2), countries(3, 4)), REPAIR);
+    return ogel(OGLY, conditions(ratings(RAT1, RAT2, RAT4, RAT5), countries(1, 2), countries(3, 4)), REPAIR, 2);
   }
 
   public static SpireOgel ogelZ() {
-    return ogel(OGLZ, conditions(ratings(RAT1, RAT5), countries(1), countries(2, 3, 4)), TECH);
+    return ogel(OGLZ, conditions(ratings(RAT1, RAT5), countries(1), countries(2, 3, 4)), TECH, 3);
   }
 
   public static SpireOgel ogelMix() {
     OgelCondition condition1 = createCondition(ratings(RATA), countries(5), OgelCondition.CountryStatus.INCLUDED);
     OgelCondition condition2 = createCondition(ratings(RATB), countries(6), OgelCondition.CountryStatus.INCLUDED);
-    return ogel(OGLMIX, Arrays.asList(condition1, condition2), TECH);
+    return ogel(OGLMIX, Arrays.asList(condition1, condition2), TECH, 999);
   }
 
   public static SpireOgel ogelEU() {
-    return ogel(OGLEU, conditions(ratings(RAT1, RAT2, RAT3), countries(1, 2, 3), countries(4)), TECH);
+    return ogel(OGLEU, conditions(ratings(RAT1, RAT2, RAT3), countries(1, 2, 3), countries(4)), TECH, 999);
   }
 
   public static LocalOgel localX() {
@@ -112,12 +117,13 @@ public class TestUtil {
     return new ArrayList<>();
   }
 
-  private static SpireOgel ogel(String code, List<OgelCondition> conditions, ActivityType activity) {
+  private static SpireOgel ogel(String code, List<OgelCondition> conditions, ActivityType activity, int ranking) {
     SpireOgel ogel = new SpireOgel();
     ogel.setOgelConditions(conditions);
     ogel.setId(code);
     ogel.setName("Name" + code);
     ogel.setActivityType(activity);
+    ogel.setRanking(ranking);
     return ogel;
   }
 

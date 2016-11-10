@@ -17,6 +17,7 @@ public class SpireOgel {
   private List<OgelCondition> ogelConditions;
   @JsonIgnore
   private ActivityType activityType;
+  private int ranking;
 
   public String getId() {
     return id;
@@ -58,6 +59,14 @@ public class SpireOgel {
 
   public void setOgelConditions(List<OgelCondition> ogelConditions) {
     this.ogelConditions = ogelConditions;
+  }
+
+  public int getRanking() {
+    return ranking;
+  }
+
+  public void setRanking(int ranking) {
+    this.ranking = ranking;
   }
 
 }
