@@ -13,32 +13,26 @@ import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 import org.skife.jdbi.v2.DBI;
 import uk.gov.bis.lite.common.jersey.filter.ClientCorrelationIdFilter;
+import uk.gov.bis.lite.common.spire.client.SpireClientConfig;
+import uk.gov.bis.lite.common.spire.client.SpireRequestConfig;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.LocalControlCodeConditionDAO;
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.SqliteLocalControlCodeConditionDAOImpl;
 import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.database.dao.ogel.SqliteLocalOgelDAOImpl;
+import uk.gov.bis.lite.ogel.spire.SpireOgelClient;
+import uk.gov.bis.lite.ogel.spire.parsers.OgelParser;
 
 import javax.ws.rs.client.Client;
 
 public class GuiceModule extends AbstractModule {
 
   @Provides
-  @Named("soapUrl")
-  public String provideSpireOgelUrl(MainApplicationConfiguration configuration) {
-    return configuration.getSoapUrl();
-  }
-
-  @Provides
-  @Named("soapUserName")
-  public String provideSpireOgelClientUserName(MainApplicationConfiguration configuration) {
-    return configuration.getSoapUserName();
-  }
-
-  @Provides
-  @Named("soapPassword")
-  public String provideSpireOgelClientPassword(MainApplicationConfiguration configuration) {
-    return configuration.getSoapPassword();
+  @Singleton
+  SpireOgelClient provideSpireOgelClient(MainApplicationConfiguration config) {
+    return new SpireOgelClient(new OgelParser(),
+        new SpireClientConfig(config.getSpireClientUserName(), config.getSpireClientPassword(), config.getSpireClientUrl()),
+        new SpireRequestConfig("SPIRE_OGEL_TYPES", "getOgelTypes", true));
   }
 
   @Provides

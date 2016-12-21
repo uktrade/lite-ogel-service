@@ -33,7 +33,8 @@ dependencies {
       'com.fiestacabin.dropwizard.quartz:dropwizard-quartz:0.7.2',
       'org.xerial:sqlite-jdbc:3.8.11.2',
       'org.flywaydb:flyway-core:4.0.1',
-      'uk.gov.bis.lite:jersey-correlation-id:1.0'
+      'uk.gov.bis.lite:jersey-correlation-id:1.0',
+      'uk.gov.bis.lite:spire-client:1.2'
 
   testCompile 'junit:junit:4.12',
       'org.mockito:mockito-all:1.9.5',

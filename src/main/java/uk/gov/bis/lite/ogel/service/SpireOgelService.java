@@ -11,13 +11,13 @@ import org.quartz.JobExecutionException;
 import org.quartz.PersistJobDataAfterExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.bis.lite.ogel.client.SpireOgelClient;
-import uk.gov.bis.lite.ogel.client.unmarshall.SpireOgelSOAPUnmarshaller;
+import uk.gov.bis.lite.common.spire.client.SpireRequest;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.job.SpireHealthStatus;
+import uk.gov.bis.lite.ogel.spire.SpireOgelClient;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,21 +27,28 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.xml.soap.SOAPMessage;
-
 @Singleton
 public class SpireOgelService {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SpireOgelService.class);
+
   private static Map<String, SpireOgel> cache = new HashMap<>();
-  private SpireOgelClient client;
-  private SpireOgelSOAPUnmarshaller unmarshaller;
   private SpireHealthStatus healthStatus = SpireHealthStatus.unhealthy("Service not initialised");
   private static final String COUNTRY_PREFIX = "CTRY";
 
+  private SpireOgelClient ogelClient;
 
   @Inject
-  public SpireOgelService(SpireOgelClient client, SpireOgelSOAPUnmarshaller unmarshaller) {
-    this.client = client;
-    this.unmarshaller = unmarshaller;
+  public SpireOgelService(SpireOgelClient ogelClient) {
+    this.ogelClient = ogelClient;
+  }
+
+  public void updateOgels() {
+    HashMap<String, SpireOgel> spireOgelMap = new HashMap<>();
+    List<SpireOgel> ogelList = getAllOgelsFromSpire();
+    ogelList.forEach(o -> spireOgelMap.put(o.getId(), o));
+    if (spireOgelMap.size() > 0) {
+      cache = Collections.unmodifiableMap(spireOgelMap);
+    }
   }
 
   /**
@@ -68,8 +75,8 @@ public class SpireOgelService {
   }
 
   private List<SpireOgel> getAllOgelsFromSpire() {
-    final SOAPMessage soapMessage = client.executeRequest();
-    return unmarshaller.execute(soapMessage);
+    SpireRequest request = ogelClient.createRequest();
+    return ogelClient.sendRequest(request);
   }
 
   public SpireOgel findSpireOgelById(String id) throws OgelNotFoundException {

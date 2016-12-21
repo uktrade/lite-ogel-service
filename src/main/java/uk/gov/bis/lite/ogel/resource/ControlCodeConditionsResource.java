@@ -11,7 +11,6 @@ import io.dropwizard.jersey.errors.ErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.exception.SOAPParseException;
 import uk.gov.bis.lite.ogel.model.BulkControlCodeCutDowns;
 import uk.gov.bis.lite.ogel.model.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
@@ -63,8 +62,7 @@ public class ControlCodeConditionsResource {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<LocalControlCodeCondition> getAllControlCodeConditions()
-      throws OgelNotFoundException, SOAPParseException {
+  public List<LocalControlCodeCondition> getAllControlCodeConditions() throws OgelNotFoundException {
     return localControlCodeConditionService.getAllControlCodeConditions();
   }
 
