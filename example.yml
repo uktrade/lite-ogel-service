@@ -1,19 +1,9 @@
-# soapUrl: https://spiredevalpha.fivium.co.uk/spirefox4dev/fox/ispire/SPIRE_OGEL_TYPES
-# soapUserName: bisdev.api@test.com
-# soapPassword: dev
 cacheTimeout: 1000
 login: user
 password: pass
 
 controlCodeServiceUrl: http://localhost:8090
 virtualEuOgelId: OGL61
-
-# spireClientUserName: bisuat.api@test.com
-# spireClientPassword: sp1reUAT
-# spireClientUrl: https://www.spiretest.trade.gov.uk/spireuat/fox/ispire/
-# sspireClientUserName: bisdev.api@test.com
-# sspireClientPassword: dev
-# sspireClientUrl: https://spiredevalpha.fivium.co.uk/spirefox4dev/fox/ispire/
 
 spireClientUserName: bisuat.api@test.com
 spireClientPassword: sp1reUAT
@@ -24,8 +14,8 @@ logging:
   appenders:
     - type: console
       threshold: INFO
-      target: stderr
-      logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"
+      # target: stderr
+      # logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"
   loggers:
      uk.gov.bis.lite.common.spire.client: TRACE
 

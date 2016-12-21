@@ -42,15 +42,6 @@ public class SpireOgelService {
     this.ogelClient = ogelClient;
   }
 
-  public void updateOgels() {
-    HashMap<String, SpireOgel> spireOgelMap = new HashMap<>();
-    List<SpireOgel> ogelList = getAllOgelsFromSpire();
-    ogelList.forEach(o -> spireOgelMap.put(o.getId(), o));
-    if (spireOgelMap.size() > 0) {
-      cache = Collections.unmodifiableMap(spireOgelMap);
-    }
-  }
-
   /**
    * Removes 'CTRY' from any list item, returns altered list
    */

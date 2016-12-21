@@ -49,13 +49,6 @@ public class OgelResource {
   }
 
   @GET
-  @Path("/update-ogels")
-  public Response insertOrUpdateOgel() {
-    ogelService.updateOgels();
-    return Response.ok().build();
-  }
-
-  @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<OgelFullView> getAllOgels() throws OgelNotFoundException {
     List<SpireOgel> allSpireOgels = ogelService.getAllOgels();
