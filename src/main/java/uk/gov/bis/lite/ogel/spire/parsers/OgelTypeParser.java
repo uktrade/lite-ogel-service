@@ -24,9 +24,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-public class OgelParser implements SpireParser<List<SpireOgel>> {
+public class OgelTypeParser implements SpireParser<List<SpireOgel>> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(OgelParser.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OgelTypeParser.class);
   private final XPath xpath = XPathFactory.newInstance().newXPath();
 
   @Override

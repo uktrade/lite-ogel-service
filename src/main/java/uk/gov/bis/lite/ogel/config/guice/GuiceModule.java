@@ -21,7 +21,7 @@ import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.SqliteLocalControl
 import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.database.dao.ogel.SqliteLocalOgelDAOImpl;
 import uk.gov.bis.lite.ogel.spire.SpireOgelClient;
-import uk.gov.bis.lite.ogel.spire.parsers.OgelParser;
+import uk.gov.bis.lite.ogel.spire.parsers.OgelTypeParser;
 
 import javax.ws.rs.client.Client;
 
@@ -30,7 +30,7 @@ public class GuiceModule extends AbstractModule {
   @Provides
   @Singleton
   SpireOgelClient provideSpireOgelClient(MainApplicationConfiguration config) {
-    return new SpireOgelClient(new OgelParser(),
+    return new SpireOgelClient(new OgelTypeParser(),
         new SpireClientConfig(config.getSpireClientUserName(), config.getSpireClientPassword(), config.getSpireClientUrl()),
         new SpireRequestConfig("SPIRE_OGEL_TYPES", "getOgelTypes", true));
   }
