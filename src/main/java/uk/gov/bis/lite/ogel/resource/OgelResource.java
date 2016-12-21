@@ -11,7 +11,6 @@ import io.dropwizard.jersey.errors.ErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.exception.SOAPParseException;
 import uk.gov.bis.lite.ogel.model.OgelFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.ConditionType;
@@ -51,10 +50,10 @@ public class OgelResource {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<OgelFullView> getAllOgels()
-      throws OgelNotFoundException, SOAPParseException {
+  public List<OgelFullView> getAllOgels() throws OgelNotFoundException {
     List<SpireOgel> allSpireOgels = ogelService.getAllOgels();
-    return allSpireOgels.stream().map(so -> new OgelFullView(so, localOgelService.findLocalOgelById(so.getId())))
+    return allSpireOgels
+        .stream().map(so -> new OgelFullView(so, localOgelService.findLocalOgelById(so.getId())))
         .collect(Collectors.toList());
   }
 

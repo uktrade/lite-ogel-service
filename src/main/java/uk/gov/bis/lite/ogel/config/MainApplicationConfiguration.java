@@ -22,18 +22,6 @@ public class MainApplicationConfiguration extends Configuration {
 
   @NotEmpty
   @JsonProperty
-  private String soapUrl;
-
-  @NotEmpty
-  @JsonProperty
-  private String soapUserName;
-
-  @NotEmpty
-  @JsonProperty
-  private String soapPassword;
-
-  @NotEmpty
-  @JsonProperty
   private String cacheTimeout;
 
   @NotEmpty
@@ -48,16 +36,29 @@ public class MainApplicationConfiguration extends Configuration {
   @JsonProperty
   private String virtualEuOgelId;
 
-  public String getSoapUrl() {
-    return soapUrl;
+  @NotEmpty
+  @JsonProperty
+  private String spireClientUserName;
+
+  @NotEmpty
+  @JsonProperty
+  private String spireClientPassword;
+
+  @NotEmpty
+  @JsonProperty
+  private String spireClientUrl;
+
+
+  public String getSpireClientUserName() {
+    return spireClientUserName;
   }
 
-  public String getSoapUserName() {
-    return soapUserName;
+  public String getSpireClientPassword() {
+    return spireClientPassword;
   }
 
-  public String getSoapPassword() {
-    return soapPassword;
+  public String getSpireClientUrl() {
+    return spireClientUrl;
   }
 
   public String getCacheTimeout() {

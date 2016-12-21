@@ -18,6 +18,7 @@ import ru.vyarus.dropwizard.guice.GuiceBundle;
 import ru.vyarus.dropwizard.guice.module.installer.feature.health.HealthCheckInstaller;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
 import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
+import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
@@ -25,7 +26,6 @@ import uk.gov.bis.lite.ogel.exception.CheckLocalOgelExceptionMapper;
 import uk.gov.bis.lite.ogel.exception.CustomJsonProcessingExceptionMapper;
 import uk.gov.bis.lite.ogel.exception.OgelIDNotFoundException;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.exception.SOAPParseException;
 import uk.gov.bis.lite.ogel.healthcheck.SpireHealthCheck;
 import uk.gov.bis.lite.ogel.resource.ApplicableOgelResource;
 import uk.gov.bis.lite.ogel.resource.ControlCodeConditionsResource;
@@ -46,7 +46,8 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     final Injector injector = guiceBundle.getInjector();
 
     environment.jersey().register(OgelNotFoundException.OgelNotFoundExceptionHandler.class);
-    environment.jersey().register(SOAPParseException.SOAPParseExceptionHandler.class);
+    environment.jersey().register(SpireClientException.ServiceExceptionMapper.class);
+
     //Authorization and authentication handlers
     environment.jersey().register(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
         .setAuthenticator(new SimpleAuthenticator(configuration.getLogin(), configuration.getPassword()))

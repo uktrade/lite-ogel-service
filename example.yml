@@ -1,14 +1,23 @@
-# Logging settings.
+cacheTimeout: 1000
+login: user
+password: pass
+
+controlCodeServiceUrl: http://localhost:8090
+virtualEuOgelId: OGL61
+
+spireClientUserName: bisuat.api@test.com
+spireClientPassword: sp1reUAT
+spireClientUrl: https://www.spiretest.trade.gov.uk/spireuat/fox/ispire/
+
 logging:
-
-  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
   level: INFO
-
   appenders:
     - type: console
       threshold: INFO
-      target: stderr
-      logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"
+      # target: stderr
+      # logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"
+  loggers:
+     uk.gov.bis.lite.common.spire.client: TRACE
 
 database:
   # the name of your JDBC driver
@@ -48,12 +57,4 @@ database:
   # the minimum amount of time an connection must sit idle in the pool before it is eligible for eviction
   minIdleTime: 1 minute
 
-soapUrl: https://spiredevalpha.fivium.co.uk/spirefox4dev/fox/ispire/SPIRE_OGEL_TYPES
-soapUserName: bisdev.api@test.com
-soapPassword: dev
-cacheTimeout: 1000
-login: user
-password: pass
 
-controlCodeServiceUrl: http://localhost:8092
-virtualEuOgelId: OGL61
