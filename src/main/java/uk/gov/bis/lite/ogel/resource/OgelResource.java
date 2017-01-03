@@ -72,12 +72,10 @@ public class OgelResource {
   @PUT
   @Path("{id}/summary/{conditionFieldName}")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response updateOgelCondition(
-      @Auth PrincipalImpl user,
-      @NotNull @PathParam("id") String ogelId,
-      @NotNull @PathParam("conditionFieldName") String conditionFieldName,
-      String message) throws
-      IOException {
+  public Response updateOgelCondition(@Auth PrincipalImpl user,
+                                      @NotNull @PathParam("id") String ogelId,
+                                      @NotNull @PathParam("conditionFieldName") String conditionFieldName,
+                                      String message) {
     try {
       ConditionType.fromString(conditionFieldName);
     } catch (IllegalArgumentException e) {
