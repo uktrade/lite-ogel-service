@@ -37,13 +37,13 @@ import static org.mockito.Mockito.when;
 
 public class AdminResourceTest {
 
-  private LocalOgelService localOgelService = mock(LocalOgelService.class);
-  private SpireOgelService spireOgelService = mock(SpireOgelService.class);
-  private LocalControlCodeConditionService controlCodeConditionService = mock(LocalControlCodeConditionService.class);
-  private Client client = mock(Client.class);
+  private final LocalOgelService localOgelService = mock(LocalOgelService.class);
+  private final SpireOgelService spireOgelService = mock(SpireOgelService.class);
+  private final LocalControlCodeConditionService controlCodeConditionService = mock(LocalControlCodeConditionService.class);
+  private final Client client = mock(Client.class);
 
   @Rule
-  public ResourceTestRule resources = ResourceTestRule.builder()
+  public final ResourceTestRule resources = ResourceTestRule.builder()
     .addResource(new AdminResource(localOgelService, spireOgelService, controlCodeConditionService, "someUrl", client))
     .addProvider(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
       .setAuthenticator(new SimpleAuthenticator("user", "password"))
@@ -57,7 +57,7 @@ public class AdminResourceTest {
     when(localOgelService.getAllLocalOgels()).thenReturn(localOgels("OG1", "OG30", "OG31", "OG32"));
     when(spireOgelService.getAllOgels()).thenReturn(spireOgels("OG1", "OG2", "OG3", "OG4"));
     when(controlCodeConditionService.getAllControlCodeConditions())
-      .thenReturn(controlCodeConditions(ImmutableMap.of(
+      .thenReturn(controlCodeConditions("OG1", ImmutableMap.of(
         "C1", new ArrayList<>(),
         "C2", new ArrayList<>(),
         "C3", Arrays.asList("C1", "C100"),
@@ -82,7 +82,7 @@ public class AdminResourceTest {
     assertThat(result.getStatus()).isEqualTo(200);
     ValidateView validateView = result.readEntity(ValidateView.class);
     assertThat(validateView).isNotNull();
-    assertThat(validateView.getUnmatchedControlCodes()).isEqualTo(Arrays.asList("C3", "C100"));
+    assertThat(validateView.getUnmatchedControlCodes()).isEqualTo(ImmutableMap.of("OG1", Arrays.asList("C3", "C100")));
     assertThat(validateView.getUnmatchedLocalOgelIds()).isEqualTo(Arrays.asList("OG30", "OG31", "OG32"));
     assertThat(validateView.getUnmatchedSpireOgelIds()).isEqualTo(Arrays.asList("OG2", "OG3", "OG4"));
   }
@@ -103,9 +103,10 @@ public class AdminResourceTest {
     }).collect(Collectors.toList());
   }
 
-  private List<LocalControlCodeCondition> controlCodeConditions(Map<String,List<String>> controlCodes) {
+  private List<LocalControlCodeCondition> controlCodeConditions(String ogelId, Map<String,List<String>> controlCodes) {
     return controlCodes.entrySet().stream().map(i -> {
       LocalControlCodeCondition controlCodeCondition = new LocalControlCodeCondition();
+      controlCodeCondition.setOgelID(ogelId);
       controlCodeCondition.setControlCode(i.getKey());
       controlCodeCondition.setConditionDescriptionControlCodes(i.getValue());
       return controlCodeCondition;

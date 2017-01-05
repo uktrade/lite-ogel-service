@@ -1,6 +1,8 @@
 package uk.gov.bis.lite.ogel.model;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class ValidateView {
 
@@ -8,7 +10,7 @@ public class ValidateView {
 
   private List<String> unmatchedSpireOgelIds;
 
-  private List<String> unmatchedControlCodes;
+  private Map<String, Collection<String>> unmatchedControlCodes;
 
   public List<String> getUnmatchedLocalOgelIds() {
     return unmatchedLocalOgelIds;
@@ -26,11 +28,11 @@ public class ValidateView {
     this.unmatchedSpireOgelIds = unmatchedSpireOgelIds;
   }
 
-  public List<String> getUnmatchedControlCodes() {
+  public Map<String, Collection<String>> getUnmatchedControlCodes() {
     return unmatchedControlCodes;
   }
 
-  public void setUnmatchedControlCodes(List<String> unmatchedControlCodes) {
+  public void setUnmatchedControlCodes(Map<String, Collection<String>> unmatchedControlCodes) {
     this.unmatchedControlCodes = unmatchedControlCodes;
   }
 }

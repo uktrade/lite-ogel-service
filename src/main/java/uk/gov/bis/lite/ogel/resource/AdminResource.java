@@ -1,5 +1,7 @@
 package uk.gov.bis.lite.ogel.resource;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.SetMultimap;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import io.dropwizard.auth.Auth;
@@ -24,7 +26,6 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,21 +78,21 @@ public class AdminResource {
       filter(o -> !localOgelIds.contains(o))
       .collect(Collectors.toList());
 
-    List<String> unmatchedControlCodes = controlCodeConditions.stream()
-      .map(c -> checkControlCodes(c, externalControlCodes))
-      .distinct()
-      .flatMap(Collection::stream)
-      .collect(Collectors.toList());
+
+    SetMultimap<String, String> unmatchedControlCodes = HashMultimap.create();
+    controlCodeConditions.forEach(c ->
+      unmatchedControlCodes.putAll(c.getOgelID(), checkControlCodes(c, externalControlCodes)));
 
     ValidateView validateView = new ValidateView();
-    validateView.setUnmatchedControlCodes(unmatchedControlCodes);
+    validateView.setUnmatchedControlCodes(unmatchedControlCodes.asMap());
     validateView.setUnmatchedLocalOgelIds(unmatchedLocalOgelIds);
     validateView.setUnmatchedSpireOgelIds(unmatchedSpireOgelIds);
 
     return validateView;
   }
 
-  private List<String> checkControlCodes(LocalControlCodeCondition controlCodeCondition, List<String> externalControlCodes) {
+  private List<String> checkControlCodes(LocalControlCodeCondition controlCodeCondition,
+                                         List<String> externalControlCodes) {
     List<String> unmatchedControlCodes = new ArrayList<>();
     String controlCode = controlCodeCondition.getControlCode();
     if (!externalControlCodes.contains(controlCode)) {

@@ -3,8 +3,8 @@ package uk.gov.bis.lite.ogel.model;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 
 public class ControlCodeConditionFullView {
-  private LocalControlCodeCondition localControlCodeCondition;
-  private BulkControlCodeCutDowns bulkControlCodeCutDowns;
+  private final LocalControlCodeCondition localControlCodeCondition;
+  private final BulkControlCodeCutDowns bulkControlCodeCutDowns;
 
   public ControlCodeConditionFullView(LocalControlCodeCondition localControlCodeCondition, BulkControlCodeCutDowns bulkControlCodeCutDowns) {
     this.localControlCodeCondition = localControlCodeCondition;
