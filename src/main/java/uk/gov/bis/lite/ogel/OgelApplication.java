@@ -27,6 +27,7 @@ import uk.gov.bis.lite.ogel.exception.CustomJsonProcessingExceptionMapper;
 import uk.gov.bis.lite.ogel.exception.OgelIDNotFoundException;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.healthcheck.SpireHealthCheck;
+import uk.gov.bis.lite.ogel.resource.AdminResource;
 import uk.gov.bis.lite.ogel.resource.ApplicableOgelResource;
 import uk.gov.bis.lite.ogel.resource.ControlCodeConditionsResource;
 import uk.gov.bis.lite.ogel.resource.OgelResource;
@@ -79,8 +80,8 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     guiceBundle = GuiceBundle.<MainApplicationConfiguration>builder()
         .modules(new GuiceModule())
         .installers(ResourceInstaller.class, HealthCheckInstaller.class)
-        .extensions(OgelResource.class, ApplicableOgelResource.class, ControlCodeConditionsResource.class,
-            SpireHealthCheck.class, VirtualEuResource.class)
+        .extensions(AdminResource.class, ApplicableOgelResource.class, OgelResource.class,
+          ControlCodeConditionsResource.class, SpireHealthCheck.class, VirtualEuResource.class)
         .build(Stage.PRODUCTION);
 
     bootstrap.addBundle(guiceBundle);
