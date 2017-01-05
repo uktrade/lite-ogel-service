@@ -1,0 +1,34 @@
+cacheTimeout: 1000
+login: user
+password: pass
+
+controlCodeServiceUrl: http://localhost:8090
+virtualEuOgelId: OGL61
+
+spireClientUserName: bisuat.api@test.com
+spireClientPassword: sp1reUAT
+spireClientUrl: https://www.spiretest.trade.gov.uk/spireuat/fox/ispire/
+
+logging:
+  level: INFO
+  appenders:
+      - type: console
+        includeCallerData : true
+        logFormat: '[%mdc{corrID}] [%d{HH:mm:ss.SSS}] [%-5level] [%class{0}:%method:%line] %msg %n'
+  loggers:
+     uk.gov.bis.lite.common.spire.client: TRACE
+
+database:
+  driverClass: org.sqlite.JDBC
+  url: jdbc:sqlite:localOgel.db
+  properties:
+    charSet: UTF-8
+  maxWaitForConnection: 30s
+  validationQuery: "/* MyService Health Check */ SELECT 1"
+  minSize: 8
+  maxSize: 32
+  checkConnectionWhileIdle: false
+  evictionInterval: 10s
+  minIdleTime: 1 minute
+
+

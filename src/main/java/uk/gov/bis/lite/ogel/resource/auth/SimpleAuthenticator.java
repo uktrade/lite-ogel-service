@@ -17,10 +17,10 @@ public class SimpleAuthenticator implements Authenticator<BasicCredentials, Prin
   }
 
   @Override
-  public Optional<PrincipalImpl> authenticate(BasicCredentials credentials) throws AuthenticationException {
+  public java.util.Optional<PrincipalImpl> authenticate(BasicCredentials credentials) throws AuthenticationException {
     if (password.equals(credentials.getPassword()) && login.equals(credentials.getUsername())){
-      return Optional.of(new PrincipalImpl(credentials.getUsername()));
+      return java.util.Optional.of(new PrincipalImpl(credentials.getUsername()));
     }
-    return Optional.absent();
+    return java.util.Optional.empty();
   }
 }
