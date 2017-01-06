@@ -8,6 +8,8 @@ import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Rule;
 import org.junit.Test;
+import uk.gov.bis.lite.ogel.client.ControlCodeClient;
+import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.model.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.ValidateView;
@@ -18,10 +20,6 @@ import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -31,7 +29,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -40,15 +37,16 @@ public class AdminResourceTest {
   private final LocalOgelService localOgelService = mock(LocalOgelService.class);
   private final SpireOgelService spireOgelService = mock(SpireOgelService.class);
   private final LocalControlCodeConditionService controlCodeConditionService = mock(LocalControlCodeConditionService.class);
-  private final Client client = mock(Client.class);
+  private final ControlCodeClient controlCodeClient = mock(ControlCodeClient.class);
 
   @Rule
   public final ResourceTestRule resources = ResourceTestRule.builder()
-    .addResource(new AdminResource(localOgelService, spireOgelService, controlCodeConditionService, "someUrl", client))
+    .addResource(new AdminResource(localOgelService, spireOgelService, controlCodeConditionService, controlCodeClient))
     .addProvider(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
       .setAuthenticator(new SimpleAuthenticator("user", "password"))
       .setRealm("SUPER SECRET STUFF")
       .buildAuthFilter()))
+    .addProvider(CacheNotPopulatedException.CacheNotPopulatedExceptionHandler.class)
     .addResource(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class))
     .build();
 
@@ -57,22 +55,12 @@ public class AdminResourceTest {
     when(localOgelService.getAllLocalOgels()).thenReturn(localOgels("OG1", "OG30", "OG31", "OG32"));
     when(spireOgelService.getAllOgels()).thenReturn(spireOgels("OG1", "OG2", "OG3", "OG4"));
     when(controlCodeConditionService.getAllControlCodeConditions())
-      .thenReturn(controlCodeConditions("OG1", ImmutableMap.of(
+      .thenReturn(controlCodeConditions(ImmutableMap.of(
         "C1", new ArrayList<>(),
         "C2", new ArrayList<>(),
         "C3", Arrays.asList("C1", "C100"),
         "C4", new ArrayList<>())));
-    WebTarget webTarget = mock(WebTarget.class);
-    WebTarget webTarget2 = mock(WebTarget.class);
-    Invocation.Builder builder = mock(Invocation.Builder.class);
-    when(webTarget2.request()).thenReturn(builder);
-    when(webTarget.path("/control-codes")).thenReturn(webTarget2);
-    when(client.target("someUrl")).thenReturn(webTarget);
-    Response response = mock(Response.class);
-    when(response.getStatus()).thenReturn(Response.Status.OK.getStatusCode());
-    when(response.readEntity(any(GenericType.class))).thenReturn(controlCodes("C1", "C2", "C1", "C4"));
-    when(builder.get()).thenReturn(response);
-
+    when(controlCodeClient.getAllControlCodes()).thenReturn(controlCodes("C1", "C2", "C1", "C4"));
 
     Response result  = resources.getJerseyTest().target("/admin/validate")
       .request(MediaType.APPLICATION_JSON_TYPE)
@@ -85,6 +73,29 @@ public class AdminResourceTest {
     assertThat(validateView.getUnmatchedControlCodes()).isEqualTo(ImmutableMap.of("OG1", Arrays.asList("C3", "C100")));
     assertThat(validateView.getUnmatchedLocalOgelIds()).isEqualTo(Arrays.asList("OG30", "OG31", "OG32"));
     assertThat(validateView.getUnmatchedSpireOgelIds()).isEqualTo(Arrays.asList("OG2", "OG3", "OG4"));
+  }
+
+  @Test
+  public void shouldReturnInternalServerErrorStatusForAnyErrors() throws Exception {
+
+    when(spireOgelService.getAllOgels()).thenThrow(new CacheNotPopulatedException(null));
+    Response result  = resources.getJerseyTest().target("/admin/validate")
+      .request(MediaType.APPLICATION_JSON_TYPE)
+      .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+      .get();
+
+    assertThat(result.getStatus()).isEqualTo(500);
+  }
+
+  @Test
+  public void shouldReturnUnauthorisedStatus() throws Exception {
+
+    Response result  = resources.getJerseyTest().target("/admin/validate")
+      .request(MediaType.APPLICATION_JSON_TYPE)
+      .header("Authorization", "blah")
+      .get();
+
+    assertThat(result.getStatus()).isEqualTo(401);
   }
 
   private List<LocalOgel> localOgels(String... ids) {
@@ -103,10 +114,10 @@ public class AdminResourceTest {
     }).collect(Collectors.toList());
   }
 
-  private List<LocalControlCodeCondition> controlCodeConditions(String ogelId, Map<String,List<String>> controlCodes) {
+  private List<LocalControlCodeCondition> controlCodeConditions(Map<String,List<String>> controlCodes) {
     return controlCodes.entrySet().stream().map(i -> {
       LocalControlCodeCondition controlCodeCondition = new LocalControlCodeCondition();
-      controlCodeCondition.setOgelID(ogelId);
+      controlCodeCondition.setOgelID("OG1");
       controlCodeCondition.setControlCode(i.getKey());
       controlCodeCondition.setConditionDescriptionControlCodes(i.getValue());
       return controlCodeCondition;

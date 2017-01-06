@@ -3,10 +3,10 @@ package uk.gov.bis.lite.ogel.resource;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.auth.PrincipalImpl;
 import org.apache.commons.lang3.StringUtils;
+import uk.gov.bis.lite.ogel.client.ControlCodeClient;
 import uk.gov.bis.lite.ogel.model.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.ValidateView;
@@ -19,12 +19,7 @@ import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,19 +31,16 @@ public class AdminResource {
   private final LocalOgelService localOgelService;
   private final SpireOgelService spireOgelService;
   private final LocalControlCodeConditionService controlCodeConditionService;
-  private final String controlCodeServiceUrl;
-  private final Client client;
+  private final ControlCodeClient controlCodeClient;
 
   @Inject
   public AdminResource(LocalOgelService localOgelService, SpireOgelService spireOgelService,
                        LocalControlCodeConditionService controlCodeConditionService,
-                       @Named("controlCodeServiceUrl") String controlCodeServiceUrl,
-                       Client client) {
+                       ControlCodeClient controlCodeClient) {
     this.localOgelService = localOgelService;
     this.spireOgelService = spireOgelService;
     this.controlCodeConditionService = controlCodeConditionService;
-    this.controlCodeServiceUrl = controlCodeServiceUrl;
-    this.client = client;
+    this.controlCodeClient = controlCodeClient;
   }
 
   @GET
@@ -110,15 +102,7 @@ public class AdminResource {
   }
 
   private List<ControlCodeFullView> getExternalControlCodes() {
-    WebTarget webTarget = client.target(controlCodeServiceUrl).path("/control-codes");
-    Response response = webTarget.request().get();
-
-    if (response.getStatus() == Response.Status.OK.getStatusCode()) {
-      return response.readEntity(new GenericType<List<ControlCodeFullView>>(){});
-    } else {
-      throw new WebApplicationException("Unable to get control code details from the control code service",
-        Response.Status.INTERNAL_SERVER_ERROR);
-    }
+    return controlCodeClient.getAllControlCodes();
   }
 
 }
