@@ -51,16 +51,16 @@ public class AdminResourceTest {
     .build();
 
   @Test
-  public void shouldGetValidate() throws Exception {
-    when(localOgelService.getAllLocalOgels()).thenReturn(localOgels("OG1", "OG30", "OG31", "OG32"));
+  public void validateShouldReturnOkStatus() throws Exception {
+    when(localOgelService.getAllLocalOgels()).thenReturn(localOgels("OG1", "OG2", "OG3", "OG4"));
     when(spireOgelService.getAllOgels()).thenReturn(spireOgels("OG1", "OG2", "OG3", "OG4"));
     when(controlCodeConditionService.getAllControlCodeConditions())
       .thenReturn(controlCodeConditions(ImmutableMap.of(
         "C1", new ArrayList<>(),
         "C2", new ArrayList<>(),
-        "C3", Arrays.asList("C1", "C100"),
+        "C3", Arrays.asList("C1"),
         "C4", new ArrayList<>())));
-    when(controlCodeClient.getAllControlCodes()).thenReturn(controlCodes("C1", "C2", "C1", "C4"));
+    when(controlCodeClient.getAllControlCodes()).thenReturn(controlCodes("C1", "C2", "C3", "C4"));
 
     Response result  = resources.getJerseyTest().target("/admin/validate")
       .request(MediaType.APPLICATION_JSON_TYPE)
@@ -70,7 +70,32 @@ public class AdminResourceTest {
     assertThat(result.getStatus()).isEqualTo(200);
     ValidateView validateView = result.readEntity(ValidateView.class);
     assertThat(validateView).isNotNull();
-    assertThat(validateView.getUnmatchedControlCodes()).isEqualTo(ImmutableMap.of("OG1", Arrays.asList("C3", "C100")));
+    assertThat(validateView.getUnmatchedControlCodes()).isEmpty();
+    assertThat(validateView.getUnmatchedLocalOgelIds()).isEmpty();
+    assertThat(validateView.getUnmatchedSpireOgelIds()).isEmpty();
+  }
+
+  @Test
+  public void validateShouldReturnErrors() throws Exception {
+    when(localOgelService.getAllLocalOgels()).thenReturn(localOgels("OG1", "OG30", "OG31", "OG32"));
+    when(spireOgelService.getAllOgels()).thenReturn(spireOgels("OG1", "OG2", "OG3", "OG4"));
+    when(controlCodeConditionService.getAllControlCodeConditions())
+      .thenReturn(controlCodeConditions(ImmutableMap.of(
+        "C1", new ArrayList<>(),
+        "C2", new ArrayList<>(),
+        "C3", Arrays.asList("C1", "C100"),
+        "C4", new ArrayList<>())));
+    when(controlCodeClient.getAllControlCodes()).thenReturn(controlCodes("C1", "C2", "C3", "C4"));
+
+    Response result  = resources.getJerseyTest().target("/admin/validate")
+      .request(MediaType.APPLICATION_JSON_TYPE)
+      .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+      .get();
+
+    assertThat(result.getStatus()).isEqualTo(500);
+    ValidateView validateView = result.readEntity(ValidateView.class);
+    assertThat(validateView).isNotNull();
+    assertThat(validateView.getUnmatchedControlCodes()).isEqualTo(ImmutableMap.of("OG1", Arrays.asList("C100")));
     assertThat(validateView.getUnmatchedLocalOgelIds()).isEqualTo(Arrays.asList("OG30", "OG31", "OG32"));
     assertThat(validateView.getUnmatchedSpireOgelIds()).isEqualTo(Arrays.asList("OG2", "OG3", "OG4"));
   }

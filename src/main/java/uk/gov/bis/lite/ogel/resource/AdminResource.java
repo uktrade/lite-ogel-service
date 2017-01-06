@@ -20,9 +20,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static javax.ws.rs.core.Response.Status.OK;
 
 @Path("/admin")
 @Produces(MediaType.APPLICATION_JSON)
@@ -46,7 +50,7 @@ public class AdminResource {
   @GET
   @Path("/validate")
   @Produces(MediaType.APPLICATION_JSON)
-  public ValidateView validate(@Auth PrincipalImpl user) {
+  public Response validate(@Auth PrincipalImpl user) {
 
     List<String> localOgelIds = localOgelService.getAllLocalOgels().stream()
       .map(LocalOgel::getId)
@@ -80,7 +84,12 @@ public class AdminResource {
     validateView.setUnmatchedLocalOgelIds(unmatchedLocalOgelIds);
     validateView.setUnmatchedSpireOgelIds(unmatchedSpireOgelIds);
 
-    return validateView;
+    if (validateView.getUnmatchedControlCodes().isEmpty()
+      && validateView.getUnmatchedLocalOgelIds().isEmpty() && validateView.getUnmatchedSpireOgelIds().isEmpty()) {
+      return Response.status(OK.getStatusCode()).entity(validateView).build();
+    } else {
+      return Response.status(INTERNAL_SERVER_ERROR.getStatusCode()).entity(validateView).build();
+    }
   }
 
   private List<String> checkControlCodes(LocalControlCodeCondition controlCodeCondition,
