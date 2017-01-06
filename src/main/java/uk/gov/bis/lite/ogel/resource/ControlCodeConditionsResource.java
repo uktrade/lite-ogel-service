@@ -10,6 +10,7 @@ import io.dropwizard.auth.PrincipalImpl;
 import io.dropwizard.jersey.errors.ErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.bis.lite.ogel.client.ControlCodeClient;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.BulkControlCodeCutDowns;
 import uk.gov.bis.lite.ogel.model.ControlCodeConditionFullView;
@@ -45,19 +46,16 @@ public class ControlCodeConditionsResource {
   private final SpireOgelService ogelService;
   private final LocalOgelService localOgelService;
   private final LocalControlCodeConditionService localControlCodeConditionService;
-  private final String controlCodeServiceUrl;
-  private final Client httpClient;
+  private final ControlCodeClient controlCodeClient;
 
   @Inject
   public ControlCodeConditionsResource(SpireOgelService ogelService, LocalOgelService localOgelService,
                                        LocalControlCodeConditionService localControlCodeConditionService,
-                                       Client httpClient,
-                                       @Named("controlCodeServiceUrl") String controlCodeServiceUrl) {
+                                       ControlCodeClient controlCodeClient) {
     this.ogelService = ogelService;
     this.localOgelService = localOgelService;
     this.localControlCodeConditionService = localControlCodeConditionService;
-    this.controlCodeServiceUrl = controlCodeServiceUrl;
-    this.httpClient = httpClient;
+    this.controlCodeClient = controlCodeClient;
   }
 
   @GET
@@ -85,24 +83,7 @@ public class ControlCodeConditionsResource {
     }
 
     if (localControlCodeConditions.getConditionDescriptionControlCodes().size() > 0) {
-      WebTarget controlCodeServiceTarget = httpClient.target(controlCodeServiceUrl).path("/bulk-control-codes");
-      for (String cc : localControlCodeConditions.getConditionDescriptionControlCodes()) {
-        controlCodeServiceTarget = controlCodeServiceTarget.queryParam("controlCode", cc);
-      }
-
-      try {
-        Response response = controlCodeServiceTarget.request().get();
-        String controlCodeServiceResponse = response.readEntity(String.class);
-        BulkControlCodeCutDowns bulkControlCodeCutDowns = new ObjectMapper().readValue(controlCodeServiceResponse, BulkControlCodeCutDowns.class);
-        // Valid responses should be OK or Partial Content when one or more of the control codes could not be found
-        if (response.getStatus() == Response.Status.OK.getStatusCode() || response.getStatus() == Response.Status.PARTIAL_CONTENT.getStatusCode()) {
-          return Response.status(response.getStatus()).entity(new ControlCodeConditionFullView(localControlCodeConditions, bulkControlCodeCutDowns)).build();
-        } else {
-          throw new WebApplicationException("Unable to get control code details from the control code service", Response.Status.INTERNAL_SERVER_ERROR);
-        }
-      } catch (IOException e) {
-        throw new WebApplicationException("Unable to get control code details from the control code service", e, Response.Status.INTERNAL_SERVER_ERROR);
-      }
+      return controlCodeClient.bulkControlCodes(localControlCodeConditions);
     }
     else {
       return Response.ok(new ControlCodeConditionFullView(localControlCodeConditions, null)).build();

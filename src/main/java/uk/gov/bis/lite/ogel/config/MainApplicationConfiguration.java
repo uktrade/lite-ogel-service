@@ -75,9 +75,11 @@ public class MainApplicationConfiguration extends Configuration {
 
   @Valid
   @NotNull
+  @JsonProperty("jerseyClient")
   private JerseyClientConfiguration jerseyClient = new JerseyClientConfiguration();
 
-  @JsonProperty("jerseyClient")
+  @Valid
+  @NotNull
   public JerseyClientConfiguration getJerseyClientConfiguration() {
     return jerseyClient;
   }

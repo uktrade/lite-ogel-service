@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class SpireOgelService {
-  private static final Logger LOGGER = LoggerFactory.getLogger(SpireOgelService.class);
 
   private static Map<String, SpireOgel> cache = new HashMap<>();
   private SpireHealthStatus healthStatus = SpireHealthStatus.unhealthy("Service not initialised");

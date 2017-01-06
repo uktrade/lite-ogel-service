@@ -35,4 +35,5 @@ public class LocalOgelService {
   public List<LocalOgel> getAllLocalOgels() {
     return localOgelDAO.getAllOgels();
   }
+
 }
