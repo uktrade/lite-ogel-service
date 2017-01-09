@@ -1,9 +1,12 @@
-package uk.gov.bis.lite.ogel.model;
+package uk.gov.bis.lite.ogel.api.view;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ValidateView {
 
   private List<String> unmatchedLocalOgelIds;
@@ -35,4 +38,5 @@ public class ValidateView {
   public void setUnmatchedControlCodes(Map<String, Collection<String>> unmatchedControlCodes) {
     this.unmatchedControlCodes = unmatchedControlCodes;
   }
+
 }

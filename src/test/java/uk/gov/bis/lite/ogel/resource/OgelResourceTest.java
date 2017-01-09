@@ -21,7 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.model.OgelFullView;
+import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;

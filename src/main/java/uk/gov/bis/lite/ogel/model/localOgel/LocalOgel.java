@@ -9,13 +9,13 @@ public class LocalOgel {
 
   private String id;
   private String name;
-  private OgelConditionSummary summary;
+  private LocalOgelConditionSummary summary;
 
   public LocalOgel() {
   }
 
   @JsonCreator
-  public LocalOgel(@JsonProperty("name") String name, @JsonProperty("summary") OgelConditionSummary summary) {
+  public LocalOgel(@JsonProperty("name") String name, @JsonProperty("summary") LocalOgelConditionSummary summary) {
     this.name = name;
     this.summary = summary;
   }
@@ -36,11 +36,11 @@ public class LocalOgel {
     this.name = name;
   }
 
-  public OgelConditionSummary getSummary() {
+  public LocalOgelConditionSummary getSummary() {
     return summary;
   }
 
-  public void setSummary(OgelConditionSummary summary) {
+  public void setSummary(LocalOgelConditionSummary summary) {
     this.summary = summary;
   }
 }

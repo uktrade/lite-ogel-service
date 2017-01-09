@@ -11,7 +11,8 @@ import io.dropwizard.jersey.errors.ErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.model.OgelFullView;
+import uk.gov.bis.lite.ogel.api.view.OgelFullView;
+import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.ConditionType;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
@@ -53,7 +54,7 @@ public class OgelResource {
   public List<OgelFullView> getAllOgels() throws OgelNotFoundException {
     List<SpireOgel> allSpireOgels = ogelService.getAllOgels();
     return allSpireOgels
-        .stream().map(so -> new OgelFullView(so, localOgelService.findLocalOgelById(so.getId())))
+        .stream().map(so -> ViewFactory.createOgel(so, localOgelService.findLocalOgelById(so.getId())))
         .collect(Collectors.toList());
   }
 
@@ -66,7 +67,7 @@ public class OgelResource {
     if (localOgelFound == null) {
       LOGGER.warn("Local Ogel Not Found for ogel ID: {}", ogelId);
     }
-    return new OgelFullView(foundSpireOgel, localOgelFound);
+    return ViewFactory.createOgel(foundSpireOgel, localOgelFound);
   }
 
   @PUT

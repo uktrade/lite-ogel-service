@@ -6,7 +6,7 @@ import uk.gov.bis.lite.ogel.model.OgelCondition;
 import uk.gov.bis.lite.ogel.model.Rating;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
+import uk.gov.bis.lite.ogel.model.localOgel.LocalOgelConditionSummary;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +38,7 @@ public class TestUtil {
   private static ActivityType TECH = ActivityType.TECH;
   private static ActivityType REPAIR = ActivityType.REPAIR;
 
-  private static Map<Integer, Country> countryMap = new HashMap<Integer, Country>();
+  private static Map<Integer, Country> countryMap = new HashMap<>();
 
   static {
     countryMap.put(1, new Country("1", "11", "Country1"));
@@ -78,7 +78,7 @@ public class TestUtil {
   public static LocalOgel localX() {
     LocalOgel ogel = new LocalOgel();
     ogel.setId(OGLX);
-    OgelConditionSummary summary = new OgelConditionSummary();
+    LocalOgelConditionSummary summary = new LocalOgelConditionSummary();
     summary.setCanList(Arrays.asList("can1", "can2", "can3"));
     summary.setCantList(Arrays.asList("cannot1", "cannot2"));
     summary.setMustList(Arrays.asList("must1", "must2"));

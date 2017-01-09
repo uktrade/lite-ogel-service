@@ -6,11 +6,14 @@ import com.google.inject.name.Named;
 import io.dropwizard.jersey.caching.CacheControl;
 import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
 import org.glassfish.jersey.message.internal.OutboundMessageContext;
+import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.ActivityType;
-import uk.gov.bis.lite.ogel.model.ApplicableOgelView;
+import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
+import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -68,9 +71,9 @@ public class ApplicableOgelResource {
         .findOgel(controlCode, spireOgelService.stripCountryPrefix(destinationCountries), activityTypes)
         .stream()
         .filter(e -> !virtualEuOgelId.equals(e.getId()))
-        .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())) // Baseline order (by OGEL ID String)
-        .sorted((o1, o2) -> o1.getRanking() - o2.getRanking()) // Ranking order (when duplicated rank, the baseline applies)
-        .map(e -> ApplicableOgelView.create(e, localOgelService.findLocalOgelById(e.getId())))
+        .sorted(Comparator.comparing(SpireOgel::getId)) // Baseline order (by OGEL ID String)
+        .sorted(Comparator.comparingInt(SpireOgel::getRanking)) // Ranking order (when duplicated rank, the baseline applies)
+        .map(e -> ViewFactory.createApplicableOgel(e, localOgelService.findLocalOgelById(e.getId())))
         .collect(Collectors.toList());
 
     OutboundMessageContext messageContext = new OutboundMessageContext();

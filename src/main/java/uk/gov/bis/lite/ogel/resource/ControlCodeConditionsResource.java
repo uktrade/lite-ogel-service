@@ -13,7 +13,8 @@ import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.client.ControlCodeClient;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.BulkControlCodeCutDowns;
-import uk.gov.bis.lite.ogel.model.ControlCodeConditionFullView;
+import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
+import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
@@ -68,7 +69,7 @@ public class ControlCodeConditionsResource {
   @Path("{ogelID}/{controlCode}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getOgelByOgelID(@NotNull @PathParam("ogelID") String ogelID,
-                                  @NotNull @PathParam("controlCode") String controlCode) {
+                                              @NotNull @PathParam("controlCode") String controlCode) {
     LocalOgel localOgelFound = localOgelService.findLocalOgelById(ogelID);
     if (localOgelFound == null) {
       LOGGER.warn("Local OGEL Not Found for OGEL ID: {}", ogelID);
@@ -86,7 +87,8 @@ public class ControlCodeConditionsResource {
       return controlCodeClient.bulkControlCodes(localControlCodeConditions);
     }
     else {
-      return Response.ok(new ControlCodeConditionFullView(localControlCodeConditions, null)).build();
+      ControlCodeConditionFullView controlCodeConditionFullView = ViewFactory.createControlCodeCondition(localControlCodeConditions);
+      return Response.ok(controlCodeConditionFullView).build();
     }
   }
 
