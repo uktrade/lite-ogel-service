@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Optional;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.AuthenticationException;
@@ -34,6 +33,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -112,11 +112,9 @@ public class OgelResourceTest {
 
   @Test
   public void insertInvalidOgel() {
-    SpireOgel spireOgel = new SpireOgel();
-    spireOgel.setLink("link");
     Response response = resources.client().register(feature).target("/ogels/" + TestUtil.OGLTEMP)
         .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.invalidOgel(), MediaType.APPLICATION_JSON));
-    assertEquals(400, response.getStatus());
+    assertEquals(422, response.getStatus());
   }
 
   @Test

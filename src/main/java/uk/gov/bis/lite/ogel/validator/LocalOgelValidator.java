@@ -5,7 +5,7 @@ import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-class LocalOgelValidator implements ConstraintValidator<CheckLocalOgel, LocalOgel> {
+public class LocalOgelValidator implements ConstraintValidator<CheckLocalOgel, LocalOgel> {
   @Override
   public void initialize(CheckLocalOgel constraintAnnotation) {
   }
