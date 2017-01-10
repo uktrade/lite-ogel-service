@@ -17,7 +17,7 @@ public class ViewFactory {
     ControlCodeConditionFullView view = new ControlCodeConditionFullView();
     view.setOgelId(localControlCodeCondition.getOgelID());
     view.setControlCode(localControlCodeCondition.getControlCode());
-    view.setConditionDescriptions(localControlCodeCondition.getConditionDescription());
+    view.setConditionDescription(localControlCodeCondition.getConditionDescription());
     view.setItemsAllowed(localControlCodeCondition.isItemsAllowed());
     return view;
   }
@@ -33,13 +33,8 @@ public class ViewFactory {
 
   public static OgelFullView createOgel(SpireOgel spireOgel, LocalOgel localOgel) {
     OgelFullView ogelFullView = new OgelFullView();
-    ogelFullView.setOgelId(spireOgel.getId());
-
-    if (localOgel == null || StringUtils.isBlank(localOgel.getName())) {
-      ogelFullView.setOgelName(spireOgel.getName());
-    } else {
-      ogelFullView.setOgelName(localOgel.getName());
-    }
+    ogelFullView.setId(spireOgel.getId());
+    ogelFullView.setName(getOgelName(localOgel, spireOgel));
 
     OgelFullView.OgelConditionSummary summary = new OgelFullView.OgelConditionSummary();
     if (localOgel != null) {

@@ -10,7 +10,7 @@ public class ControlCodeConditionFullView {
 
   private String ogelId;
   private String controlCode;
-  private String conditionDescriptions;
+  private String conditionDescription;
   private ConditionDescriptionControlCodes conditionDescriptionControlCodes;
   private boolean isItemsAllowed;
 
@@ -30,12 +30,12 @@ public class ControlCodeConditionFullView {
     this.controlCode = controlCode;
   }
 
-  public String getConditionDescriptions() {
-    return conditionDescriptions;
+  public String getConditionDescription() {
+    return conditionDescription;
   }
 
-  public void setConditionDescriptions(String conditionDescriptions) {
-    this.conditionDescriptions = conditionDescriptions;
+  public void setConditionDescription(String conditionDescription) {
+    this.conditionDescription = conditionDescription;
   }
 
   public ConditionDescriptionControlCodes getConditionDescriptionControlCodes() {

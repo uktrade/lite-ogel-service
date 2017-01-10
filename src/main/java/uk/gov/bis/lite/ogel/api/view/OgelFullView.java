@@ -10,18 +10,18 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OgelFullView {
 
-  private String ogelId;
-  private String ogelName;
+  private String id;
+  private String name;
   private OgelConditionSummary summary;
   private String description;
   private String link;
 
-  public void setOgelId(String ogelId) {
-    this.ogelId = ogelId;
+  public void setId(String id) {
+    this.id = id;
   }
 
-  public void setOgelName(String ogelName) {
-    this.ogelName = ogelName;
+  public void setName(String name) {
+    this.name = name;
   }
 
   public void setSummary(OgelConditionSummary summary) {
@@ -36,13 +36,12 @@ public class OgelFullView {
     this.link = link;
   }
 
-  @JsonProperty("id")
-  public String getOgelId() {
-    return ogelId;
+  public String getId() {
+    return id;
   }
 
-  public String getOgelName() {
-    return ogelName;
+  public String getName() {
+    return name;
   }
 
   public OgelConditionSummary getSummary() {

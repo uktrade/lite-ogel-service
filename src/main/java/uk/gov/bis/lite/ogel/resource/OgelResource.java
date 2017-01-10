@@ -121,7 +121,7 @@ public class OgelResource {
     localOgelService.insertOgelList(ogelList);
     List<String> updatedOgelIds = ogelList.stream().map(LocalOgel::getId).collect(Collectors.toList());
     return Response.status(Response.Status.CREATED).entity(
-        getAllOgels().stream().filter(o -> updatedOgelIds.contains(o.getOgelId())).collect(Collectors.toList()))
+        getAllOgels().stream().filter(o -> updatedOgelIds.contains(o.getId())).collect(Collectors.toList()))
         .type(MediaType.APPLICATION_JSON).build();
   }
 }
