@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.client.ControlCodeClient;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
+import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;

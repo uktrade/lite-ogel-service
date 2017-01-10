@@ -9,8 +9,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.bis.lite.ogel.client.ControlCodeClient;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
+import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.BulkControlCodeCutDowns;
-import uk.gov.bis.lite.ogel.model.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.model.ControlCodeCutDown;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
@@ -85,7 +85,7 @@ public class ControlCodeConditionsResourceTest {
       .get();
 
     assertThat(result.getStatus()).isEqualTo(200);
-    String expectedJson = "{\"controlCode\":ML1a,\"conditionDescription\":Goods,\"itemsAllowed\":false,\"ogelID\":\"OGL01\",\"conditionDescriptionControlCodes\":null}";
+    String expectedJson = "{\"controlCode\":ML1a,\"conditionDescription\":Goods,\"itemsAllowed\":false,\"ogelId\":\"OGL01\",\"conditionDescriptionControlCodes\":null}";
     String actualStr = result.readEntity(String.class);
     assertEquals(expectedJson, actualStr, false);
   }
@@ -103,7 +103,7 @@ public class ControlCodeConditionsResourceTest {
     controlCodeCutDown.setControlCode(CONTROL_CODE);
     controlCodeCutDown.setFriendlyDescription("Goods");
     BulkControlCodeCutDowns bulkControlCodeCutDowns =  new BulkControlCodeCutDowns(Arrays.asList(controlCodeCutDown), new ArrayList<>());
-    Response response = Response.ok(new ControlCodeConditionFullView(controlCodeCondition, bulkControlCodeCutDowns)).build();
+    Response response = Response.ok(ViewFactory.createControlCodeCondition(controlCodeCondition, bulkControlCodeCutDowns)).build();
     when(controlCodeClient.bulkControlCodes(any(LocalControlCodeCondition.class))).thenReturn(response);
 
     Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")
@@ -111,7 +111,7 @@ public class ControlCodeConditionsResourceTest {
       .get();
 
     assertThat(result.getStatus()).isEqualTo(200);
-    String expectedJson = "{\"controlCode\":\"ML1a\",\"conditionDescription\":\"Goods\",\"conditionDescriptionControlCodes\":{\"missingControlCodes\":[],\"controlCodes\":[{\"id\":\"123\",\"controlCode\":\"ML1a\",\"friendlyDescription\":\"Goods\"}]},\"itemsAllowed\":false,\"ogelID\":\"OGL01\"}";
+    String expectedJson = "{\"controlCode\":\"ML1a\",\"conditionDescription\":\"Goods\",\"conditionDescriptionControlCodes\":{\"missingControlCodes\":[],\"controlCodes\":[{\"id\":\"123\",\"controlCode\":\"ML1a\",\"friendlyDescription\":\"Goods\"}]},\"itemsAllowed\":false,\"ogelId\":\"OGL01\"}";
     String actualStr = result.readEntity(String.class);
     assertEquals(expectedJson, actualStr, false);
   }
