@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-class LocalOgelListValidator implements ConstraintValidator<CheckLocalOgelList, List<LocalOgel>> {
+public class LocalOgelListValidator implements ConstraintValidator<CheckLocalOgelList, List<LocalOgel>> {
 
   @Override
   public void initialize(CheckLocalOgelList constraintAnnotation) {
