@@ -2,7 +2,7 @@ cacheTimeout: 1000
 login: user
 password: pass
 
-controlCodeServiceUrl: http://localhost:8090
+controlCodeServiceUrl: http://controlc-code-service.svc.licensing.service.trade.gov.uk.test
 virtualEuOgelId: OGL61
 
 spireClientUserName: bisuat.api@test.com

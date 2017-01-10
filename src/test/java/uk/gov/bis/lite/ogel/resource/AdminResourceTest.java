@@ -101,7 +101,7 @@ public class AdminResourceTest {
   }
 
   @Test
-  public void shouldReturnInternalServerErrorStatusForAnyErrors() throws Exception {
+  public void validateShouldReturnInternalServerErrorStatusForAnyErrors() throws Exception {
 
     when(spireOgelService.getAllOgels()).thenThrow(new CacheNotPopulatedException(null));
     Response result  = resources.getJerseyTest().target("/admin/validate")
@@ -113,9 +113,9 @@ public class AdminResourceTest {
   }
 
   @Test
-  public void shouldReturnUnauthorisedStatus() throws Exception {
+  public void validateShouldReturnUnauthorisedStatus() throws Exception {
 
-    Response result  = resources.getJerseyTest().target("/admin/validate")
+    Response result = resources.getJerseyTest().target("/admin/validate")
       .request(MediaType.APPLICATION_JSON_TYPE)
       .header("Authorization", "blah")
       .get();
