@@ -8,7 +8,6 @@ public class ControlCodeFullView {
   private String id;
   private String controlCode;
 
-
   public void setId(String id) {
     this.id = id;
   }
