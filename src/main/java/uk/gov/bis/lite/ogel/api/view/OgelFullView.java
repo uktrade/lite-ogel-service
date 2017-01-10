@@ -36,6 +36,7 @@ public class OgelFullView {
     this.link = link;
   }
 
+  @JsonProperty("id")
   public String getOgelId() {
     return ogelId;
   }

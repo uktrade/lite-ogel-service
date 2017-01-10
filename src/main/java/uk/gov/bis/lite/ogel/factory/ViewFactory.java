@@ -9,6 +9,8 @@ import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 
+import java.util.ArrayList;
+
 public class ViewFactory {
 
   public static ControlCodeConditionFullView createControlCodeCondition(LocalControlCodeCondition localControlCodeCondition) {
@@ -46,6 +48,7 @@ public class ViewFactory {
       summary.setMustList(localOgel.getSummary().getMustList());
       summary.setHowToUseList(localOgel.getSummary().getHowToUseList());
     }
+    ogelFullView.setSummary(summary);
     return ogelFullView;
   }
 
@@ -53,7 +56,11 @@ public class ViewFactory {
     ApplicableOgelView applicableOgelView = new ApplicableOgelView();
     applicableOgelView.setId(spireOgel.getId());
     applicableOgelView.setName(getOgelName(localOgel, spireOgel));
-    applicableOgelView.setUsageSummary(localOgel.getSummary().getCanList());
+    if (localOgel != null) {
+      applicableOgelView.setUsageSummary(localOgel.getSummary().getCanList());
+    } else {
+      applicableOgelView.setUsageSummary(new ArrayList<>());
+    }
     return applicableOgelView;
   }
 
