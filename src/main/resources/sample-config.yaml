@@ -3,6 +3,7 @@ login: user
 password: pass
 
 controlCodeServiceUrl: http://control-code-service.svc.licensing.service.trade.gov.uk.test
+
 virtualEuOgelId: OGL61
 
 spireClientUserName: spireuser
