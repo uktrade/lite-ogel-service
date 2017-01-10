@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.bis.lite.ogel.api.view.VirtualEuView;
 import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
@@ -24,8 +25,6 @@ import javax.ws.rs.core.Response;
 @Path("/virtual-eu")
 @Produces(MediaType.APPLICATION_JSON)
 public class VirtualEuResource {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(VirtualEuResource.class);
 
   private final SpireOgelService spireOgelService;
   private final String virtualEuOgelId;
@@ -49,12 +48,12 @@ public class VirtualEuResource {
         ActivityType.DU_ANY.asList());
     boolean found = ogels.stream().filter(s -> s.getId().equalsIgnoreCase(virtualEuOgelId)).findFirst().isPresent();
 
-    Map<String, Object> result = new HashMap<>();
-    result.put("virtualEu", found);
+    VirtualEuView virtualEuView = new VirtualEuView();
+    virtualEuView.setVirtualEu(found);
     if (found) {
-      result.put("ogelId", virtualEuOgelId);
+      virtualEuView.setOgelId(virtualEuOgelId);
     }
 
-    return Response.ok(result, MediaType.APPLICATION_JSON).build();
+    return Response.ok(virtualEuView).build();
   }
 }
