@@ -2,12 +2,12 @@ cacheTimeout: 1000
 login: user
 password: pass
 
-controlCodeServiceUrl: http://localhost:8090
+controlCodeServiceUrl: http://control-code-service.svc.licensing.service.trade.gov.uk.test
 virtualEuOgelId: OGL61
 
-spireClientUserName: bisuat.api@test.com
-spireClientPassword: sp1reUAT
-spireClientUrl: https://www.spiretest.trade.gov.uk/spireuat/fox/ispire/
+spireClientUserName: spireuser
+spireClientPassword: spirepass
+spireClientUrl: http://service-mocking.svc.licensing.service.trade.gov.uk.test/spire/fox/ispire/
 
 logging:
   level: INFO
@@ -15,8 +15,6 @@ logging:
       - type: console
         includeCallerData : true
         logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"
-  loggers:
-     uk.gov.bis.lite.common.spire.client: TRACE
 
 database:
   driverClass: org.sqlite.JDBC
