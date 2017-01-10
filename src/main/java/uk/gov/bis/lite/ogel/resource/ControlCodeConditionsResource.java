@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.client.ControlCodeClient;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
@@ -19,6 +18,7 @@ import uk.gov.bis.lite.ogel.validator.CheckLocalControlCodeConditionList;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -60,7 +60,7 @@ public class ControlCodeConditionsResource {
   @GET
   @Path("{ogelID}/{controlCode}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getOgelByOgelID(@NotNull @PathParam("ogelID") String ogelID,
+  public Response getControlCodeConditionById(@NotNull @PathParam("ogelID") String ogelID,
                                               @NotNull @PathParam("controlCode") String controlCode) {
     LocalOgel localOgelFound = localOgelService.findLocalOgelById(ogelID);
     if (localOgelFound == null) {
@@ -101,5 +101,10 @@ public class ControlCodeConditionsResource {
     return Response.status(Response.Status.CREATED).entity(
         getAllControlCodeConditions().stream().filter(ccc -> insertedOgelIDs.contains(ccc.getOgelID())).collect(Collectors.toList()))
         .type(MediaType.APPLICATION_JSON).build();
+  }
+
+  @DELETE
+  public void deleteControlCodeConditions(@Auth PrincipalImpl user) {
+    localControlCodeConditionService.deleteControlCodeConditions();
   }
 }

@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -124,4 +125,16 @@ public class OgelResource {
         getAllOgels().stream().filter(o -> updatedOgelIds.contains(o.getId())).collect(Collectors.toList()))
         .type(MediaType.APPLICATION_JSON).build();
   }
+
+  @DELETE
+  public void deleteAllOgels(@Auth PrincipalImpl user) {
+    localOgelService.deleteAllOgels();
+  }
+
+  @DELETE
+  @Path("{id}")
+  public void deleteOgelById(@Auth PrincipalImpl user, @NotNull @PathParam("id") String ogelId) {
+    localOgelService.deleteOgelById(ogelId);
+  }
+
 }

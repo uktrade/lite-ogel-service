@@ -15,4 +15,9 @@ public interface LocalOgelDAO {
   LocalOgel insertOrUpdate(LocalOgel ogel);
 
   List<LocalOgel> getAllOgels();
+
+  void deleteAllOgels();
+
+  void deleteOgelById(String ogelId);
+
 }

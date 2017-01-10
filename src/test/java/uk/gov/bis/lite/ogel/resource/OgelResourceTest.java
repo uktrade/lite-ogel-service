@@ -1,10 +1,5 @@
 package uk.gov.bis.lite.ogel.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.auth.AuthDynamicFeature;
@@ -28,6 +23,12 @@ import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.xml.soap.SOAPException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -35,11 +36,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.xml.soap.SOAPException;
-import javax.xml.xpath.XPathExpressionException;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class OgelResourceTest {
   private SpireOgelService spireService = Mockito.mock(SpireOgelService.class);
@@ -115,6 +118,54 @@ public class OgelResourceTest {
     Response response = resources.client().target("/ogels/" + TestUtil.OGL_).request().get();
 
     assertEquals(200, response.getStatus());
+  }
+
+  @Test
+  public void deleteAllOgels() throws Exception {
+
+    Response result = resources.getJerseyTest().target("/ogels")
+      .request(MediaType.APPLICATION_JSON_TYPE)
+      .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+      .delete();
+
+    assertThat(result.getStatus()).isEqualTo(204);
+    verify(localService).deleteAllOgels();
+  }
+
+  @Test
+  public void deleteShouldReturnUnauthorisedStatus() throws Exception {
+
+    Response result = resources.getJerseyTest().target("/ogels")
+      .request(MediaType.APPLICATION_JSON_TYPE)
+      .header("Authorization", "blah")
+      .delete();
+
+    assertThat(result.getStatus()).isEqualTo(401);
+    verify(localService, never()).deleteAllOgels();
+  }
+
+  @Test
+  public void deleteOgelById() throws Exception {
+
+    Response result = resources.getJerseyTest().target("/ogels/OGL1")
+      .request(MediaType.APPLICATION_JSON_TYPE)
+      .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+      .delete();
+
+    assertThat(result.getStatus()).isEqualTo(204);
+    verify(localService).deleteOgelById("OGL1");
+  }
+
+  @Test
+  public void deleteOgelByIdShouldReturnUnauthorisedStatus() throws Exception {
+
+    Response result = resources.getJerseyTest().target("/ogels/OGL1")
+      .request(MediaType.APPLICATION_JSON_TYPE)
+      .header("Authorization", "blah")
+      .delete();
+
+    assertThat(result.getStatus()).isEqualTo(401);
+    verify(localService, never()).deleteAllOgels();
   }
 
   @Test

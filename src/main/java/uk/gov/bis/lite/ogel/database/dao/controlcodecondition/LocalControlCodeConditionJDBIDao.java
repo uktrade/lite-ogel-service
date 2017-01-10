@@ -27,4 +27,7 @@ public interface LocalControlCodeConditionJDBIDao {
                                           @Bind("conditionDesc") String conditionDesc,
                                           @Bind("conditionDescControlCodes") String conditionDescControlCodes,
                                           @Bind("Allowed") Boolean allowed);
+
+  @SqlUpdate("DELETE FROM LOCAL_CONTROL_CODE_CONDITIONS")
+  void deleteControlCodeConditions();
 }

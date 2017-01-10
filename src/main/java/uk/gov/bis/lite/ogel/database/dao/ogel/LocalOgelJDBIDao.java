@@ -24,4 +24,11 @@ public interface LocalOgelJDBIDao {
   void insertNewLocalOgel(@Bind("id") String id, @Bind("name") String name,
                           @Bind("canList") String canList, @Bind("cantList") String cantList,
                           @Bind("mustList") String mustList, @Bind("howToUseList") String howToUseList);
+
+  @SqlUpdate("DELETE FROM LOCAL_OGEL")
+  void deleteAllOgels();
+
+  @SqlUpdate("DELETE FROM LOCAL_OGEL WHERE ID=:id")
+  void deleteOgelById(@Bind("id") String ogelId);
+
 }

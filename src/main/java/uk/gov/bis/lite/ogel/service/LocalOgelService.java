@@ -36,4 +36,12 @@ public class LocalOgelService {
     return localOgelDAO.getAllOgels();
   }
 
+  public void deleteAllOgels() {
+    localOgelDAO.deleteAllOgels();
+  }
+
+  public void deleteOgelById(String ogelId) {
+    localOgelDAO.deleteOgelById(ogelId);
+  }
+
 }

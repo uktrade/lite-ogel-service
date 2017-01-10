@@ -10,7 +10,8 @@ import java.util.stream.IntStream;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-class LocalControlCodeConditionListValidator implements ConstraintValidator<CheckLocalControlCodeConditionList, List<LocalControlCodeCondition>> {
+public class LocalControlCodeConditionListValidator
+    implements ConstraintValidator<CheckLocalControlCodeConditionList, List<LocalControlCodeCondition>> {
 
   @Override
   public void initialize(CheckLocalControlCodeConditionList constraintAnnotation) {

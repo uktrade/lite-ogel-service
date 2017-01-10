@@ -26,4 +26,8 @@ public class LocalControlCodeConditionService {
   public List<LocalControlCodeCondition> getAllControlCodeConditions() {
     return localControlCodeConditionDAO.getAllControlCodeConditions();
   }
+
+  public void deleteControlCodeConditions() {
+    localControlCodeConditionDAO.deleteControlCodeConditions();
+  }
 }

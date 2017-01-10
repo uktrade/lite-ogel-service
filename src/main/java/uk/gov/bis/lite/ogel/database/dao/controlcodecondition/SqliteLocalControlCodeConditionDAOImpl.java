@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
+import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelJDBIDao;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 
 import java.util.List;
@@ -39,6 +40,14 @@ public class SqliteLocalControlCodeConditionDAOImpl implements LocalControlCodeC
     try (final Handle handle = jdbi.open()) {
       insertLocalControlCodeCondition(localControlCodeCondition, handle);
       return getLocalControlCodeConditionsByIdAndControlCode(localControlCodeCondition.getOgelID(), localControlCodeCondition.getControlCode());
+    }
+  }
+
+  @Override
+  public void deleteControlCodeConditions() {
+    try (final Handle handle = jdbi.open()) {
+      LocalControlCodeConditionJDBIDao jdbiDao = handle.attach(LocalControlCodeConditionJDBIDao.class);
+      jdbiDao.deleteControlCodeConditions();
     }
   }
 

@@ -93,6 +93,22 @@ public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
     return updateLocalOgel(newOgel);
   }
 
+  @Override
+  public void deleteAllOgels() {
+    try (final Handle handle = jdbi.open()) {
+      LocalOgelJDBIDao jdbiDao = handle.attach(LocalOgelJDBIDao.class);
+      jdbiDao.deleteAllOgels();
+    }
+  }
+
+  @Override
+  public void deleteOgelById(String ogelId) {
+    try (final Handle handle = jdbi.open()) {
+      LocalOgelJDBIDao jdbiDao = handle.attach(LocalOgelJDBIDao.class);
+      jdbiDao.deleteOgelById(ogelId);
+    }
+  }
+
   private LocalOgel updateLocalOgel(LocalOgel ogel) {
     StringJoiner sj = new StringJoiner(" ,");
     Map<String, Object> bindMappings = new HashMap<>();

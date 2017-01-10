@@ -11,4 +11,6 @@ public interface LocalControlCodeConditionDAO {
   LocalControlCodeCondition insertLocalControlCodeCondition(LocalControlCodeCondition controlCodeCondition);
 
   List<LocalControlCodeCondition> getAllControlCodeConditions();
+
+  void deleteControlCodeConditions();
 }
