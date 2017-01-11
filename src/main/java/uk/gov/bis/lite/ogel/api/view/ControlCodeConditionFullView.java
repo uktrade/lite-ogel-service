@@ -1,7 +1,6 @@
 package uk.gov.bis.lite.ogel.api.view;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import uk.gov.bis.lite.ogel.model.ControlCodeCutDown;
 
 import java.util.List;
 
@@ -55,15 +54,15 @@ public class ControlCodeConditionFullView {
   }
 
   public static class ConditionDescriptionControlCodes {
-    private List<ControlCodeCutDown> controlCodes;
+    private List<ControlCode> controlCodes;
     private List<String> missingControlCodes;
 
-    public List<ControlCodeCutDown> getControlCodes() {
+    public List<ControlCode> getControlCodes() {
       return controlCodes;
     }
 
-    public void setControlCodes(List<ControlCodeCutDown> controlCodes) {
-      this.controlCodes = controlCodes;
+    public void setControlCodes(List<ControlCode> controlCodeCutDowns) {
+      this.controlCodes = controlCodeCutDowns;
     }
 
     public List<String> getMissingControlCodes() {
@@ -72,6 +71,37 @@ public class ControlCodeConditionFullView {
 
     public void setMissingControlCodes(List<String> missingControlCodes) {
       this.missingControlCodes = missingControlCodes;
+    }
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static class ControlCode {
+    private String id;
+    private String controlCode;
+    private String friendlyDescription;
+
+    public String getId() {
+      return id;
+    }
+
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    public String getControlCode() {
+      return controlCode;
+    }
+
+    public void setControlCode(String controlCode) {
+      this.controlCode = controlCode;
+    }
+
+    public String getFriendlyDescription() {
+      return friendlyDescription;
+    }
+
+    public void setFriendlyDescription(String friendlyDescription) {
+      this.friendlyDescription = friendlyDescription;
     }
   }
 

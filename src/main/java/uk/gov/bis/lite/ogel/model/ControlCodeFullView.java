@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.ogel.api.view;
+package uk.gov.bis.lite.ogel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

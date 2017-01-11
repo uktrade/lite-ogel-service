@@ -10,6 +10,8 @@ import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ViewFactory {
 
@@ -25,7 +27,16 @@ public class ViewFactory {
   public static ControlCodeConditionFullView createControlCodeCondition(LocalControlCodeCondition localControlCodeCondition, BulkControlCodeCutDowns bulkControlCodeCutDowns) {
     ControlCodeConditionFullView view = createControlCodeCondition(localControlCodeCondition);
     ControlCodeConditionFullView.ConditionDescriptionControlCodes conditionDescriptionControlCodes = new ControlCodeConditionFullView.ConditionDescriptionControlCodes();
-    conditionDescriptionControlCodes.setControlCodes(bulkControlCodeCutDowns.getControlCodes());
+    List<ControlCodeConditionFullView.ControlCode> controlCodeCutDowns = bulkControlCodeCutDowns.getControlCodes().stream()
+      .map(c -> {
+        ControlCodeConditionFullView.ControlCode controlCodeCutDown = new ControlCodeConditionFullView.ControlCode();
+        controlCodeCutDown.setId(c.getId());
+        controlCodeCutDown.setControlCode(c.getControlCode());
+        controlCodeCutDown.setFriendlyDescription(c.getFriendlyDescription());
+        return controlCodeCutDown;
+      })
+      .collect(Collectors.toList());
+    conditionDescriptionControlCodes.setControlCodes(controlCodeCutDowns);
     conditionDescriptionControlCodes.setMissingControlCodes(bulkControlCodeCutDowns.getMissingControlCodes());
     view.setConditionDescriptionControlCodes(conditionDescriptionControlCodes);
     return view;
@@ -42,6 +53,11 @@ public class ViewFactory {
       summary.setCantList(localOgel.getSummary().getCantList());
       summary.setMustList(localOgel.getSummary().getMustList());
       summary.setHowToUseList(localOgel.getSummary().getHowToUseList());
+    } else {
+      summary.setCanList(new ArrayList<>());
+      summary.setCantList(new ArrayList<>());
+      summary.setMustList(new ArrayList<>());
+      summary.setHowToUseList(new ArrayList<>());
     }
     ogelFullView.setSummary(summary);
     return ogelFullView;

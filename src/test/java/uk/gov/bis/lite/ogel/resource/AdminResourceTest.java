@@ -10,7 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.bis.lite.ogel.client.ControlCodeClient;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
-import uk.gov.bis.lite.ogel.api.view.ControlCodeFullView;
+import uk.gov.bis.lite.ogel.model.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.api.view.ValidateView;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;

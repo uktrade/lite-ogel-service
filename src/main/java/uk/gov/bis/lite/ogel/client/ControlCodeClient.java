@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
-import uk.gov.bis.lite.ogel.api.view.ControlCodeFullView;
+import uk.gov.bis.lite.ogel.model.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.BulkControlCodeCutDowns;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
