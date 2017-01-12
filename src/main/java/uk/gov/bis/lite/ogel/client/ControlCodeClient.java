@@ -3,9 +3,10 @@ package uk.gov.bis.lite.ogel.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import uk.gov.bis.lite.ogel.model.BulkControlCodeCutDowns;
-import uk.gov.bis.lite.ogel.model.ControlCodeConditionFullView;
+import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.model.ControlCodeFullView;
+import uk.gov.bis.lite.ogel.factory.ViewFactory;
+import uk.gov.bis.lite.ogel.model.BulkControlCodeCutDowns;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 
 import javax.ws.rs.WebApplicationException;
@@ -56,7 +57,8 @@ public class ControlCodeClient {
         BulkControlCodeCutDowns bulkControlCodeCutDowns = new ObjectMapper().readValue(controlCodeServiceResponse, BulkControlCodeCutDowns.class);
         // Valid responses should be OK or Partial Content when one or more of the control codes could not be found
         if (response.getStatus() == Response.Status.OK.getStatusCode() || response.getStatus() == Response.Status.PARTIAL_CONTENT.getStatusCode()) {
-          return Response.status(response.getStatus()).entity(new ControlCodeConditionFullView(localControlCodeCondition, bulkControlCodeCutDowns)).build();
+          ControlCodeConditionFullView controlCodeConditionFullView = ViewFactory.createControlCodeCondition(localControlCodeCondition, bulkControlCodeCutDowns);
+          return Response.status(response.getStatus()).entity(controlCodeConditionFullView).build();
         } else {
           throw new WebApplicationException("Unable to get control code details from the control code service", Response.Status.INTERNAL_SERVER_ERROR);
         }
@@ -64,7 +66,8 @@ public class ControlCodeClient {
         throw new WebApplicationException("Unable to get control code details from the control code service", e, Response.Status.INTERNAL_SERVER_ERROR);
       }
     } else {
-      return Response.ok(new ControlCodeConditionFullView(localControlCodeCondition, null)).build();
+      ControlCodeConditionFullView controlCodeConditionFullView = ViewFactory.createControlCodeCondition(localControlCodeCondition);
+      return Response.ok(controlCodeConditionFullView).build();
     }
 
   }

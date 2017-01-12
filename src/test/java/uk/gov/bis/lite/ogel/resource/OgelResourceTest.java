@@ -16,7 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.model.OgelFullView;
+import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
@@ -75,7 +75,9 @@ public class OgelResourceTest {
   public void allOgels() {
     when(localService.getAllLocalOgels()).thenReturn(Collections.singletonList(logel));
     when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
+
     Response response = resources.client().target("/ogels").request().get();
+
     assertEquals(200, response.getStatus());
     List<OgelFullView> views = getOgelFullViews(response);
     assertEquals(1, views.size());
@@ -87,6 +89,7 @@ public class OgelResourceTest {
     when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
     when(spireService.findSpireOgelById(anyString())).thenReturn(ogel);
     when(localService.findLocalOgelById(anyString())).thenReturn(logel);
+
     final Response response = resources.client().target("/ogels/" + TestUtil.OGLX).request().get();
 
     JsonNode node = getResponseNode(response);
@@ -101,7 +104,9 @@ public class OgelResourceTest {
   public void ogelNotFoundException() {
     when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
     when(spireService.findSpireOgelById(anyString())).thenThrow(new OgelNotFoundException(TestUtil.OGL_));
+
     final Response response = resources.client().target("/ogels/" + TestUtil.OGL_).request().get();
+
     assertEquals(404, response.getStatus());
   }
 
@@ -109,7 +114,9 @@ public class OgelResourceTest {
   public void localOgelNotFound() {
     when(spireService.findSpireOgelById(anyString())).thenReturn(TestUtil.ogelX());
     when(localService.findLocalOgelById((anyString()))).thenReturn(null);
+
     Response response = resources.client().target("/ogels/" + TestUtil.OGL_).request().get();
+
     assertEquals(200, response.getStatus());
   }
 
@@ -165,6 +172,7 @@ public class OgelResourceTest {
   public void insertInvalidOgel() {
     Response response = resources.client().register(feature).target("/ogels/" + TestUtil.OGLTEMP)
         .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.invalidOgel(), MediaType.APPLICATION_JSON));
+
     assertEquals(422, response.getStatus());
   }
 
@@ -173,8 +181,10 @@ public class OgelResourceTest {
     when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
     when(spireService.findSpireOgelById(anyString())).thenReturn(TestUtil.ogelX());
     when(localService.insertOrUpdateOgel(any(LocalOgel.class))).thenReturn(logel);
+
     Response response = resources.client().register(feature).target("/ogels/" + TestUtil.OGLX)
         .request(MediaType.APPLICATION_JSON).put(Entity.entity(logel, MediaType.APPLICATION_JSON));
+
     assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
   }
 

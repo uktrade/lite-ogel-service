@@ -1,6 +1,6 @@
 FROM java:8
 
-ENV JAR_FILE lite-ogel-service-1.0-SNAPSHOT.jar
+ENV JAR_FILE lite-ogel-service-1.0.jar
 ENV CONFIG_FILE /conf/ogel-service-config.yaml
 
 WORKDIR /opt/lite-ogel-service

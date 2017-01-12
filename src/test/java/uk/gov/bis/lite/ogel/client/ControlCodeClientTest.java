@@ -5,7 +5,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.bis.lite.ogel.model.BulkControlCodeCutDowns;
-import uk.gov.bis.lite.ogel.model.ControlCodeConditionFullView;
+import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.model.ControlCodeCutDown;
 import uk.gov.bis.lite.ogel.model.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;

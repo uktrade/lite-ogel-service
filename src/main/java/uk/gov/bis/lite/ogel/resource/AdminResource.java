@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.bis.lite.ogel.client.ControlCodeClient;
 import uk.gov.bis.lite.ogel.model.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
-import uk.gov.bis.lite.ogel.model.ValidateView;
+import uk.gov.bis.lite.ogel.api.view.ValidateView;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;

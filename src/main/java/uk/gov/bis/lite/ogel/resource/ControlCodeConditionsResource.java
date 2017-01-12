@@ -6,9 +6,10 @@ import io.dropwizard.auth.PrincipalImpl;
 import io.dropwizard.jersey.errors.ErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.client.ControlCodeClient;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.model.ControlCodeConditionFullView;
+import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
@@ -79,7 +80,8 @@ public class ControlCodeConditionsResource {
       return controlCodeClient.bulkControlCodes(localControlCodeConditions);
     }
     else {
-      return Response.ok(new ControlCodeConditionFullView(localControlCodeConditions, null)).build();
+      ControlCodeConditionFullView controlCodeConditionFullView = ViewFactory.createControlCodeCondition(localControlCodeConditions);
+      return Response.ok(controlCodeConditionFullView).build();
     }
   }
 

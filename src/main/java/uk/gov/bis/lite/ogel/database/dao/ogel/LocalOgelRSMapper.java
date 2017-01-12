@@ -6,7 +6,7 @@ import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.OgelConditionSummary;
+import uk.gov.bis.lite.ogel.model.localOgel.LocalOgelConditionSummary;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -23,7 +23,7 @@ public class LocalOgelRSMapper implements ResultSetMapper<LocalOgel> {
     LocalOgel localOgel = new LocalOgel();
     localOgel.setId(r.getString("id"));
     localOgel.setName(r.getString("name"));
-    OgelConditionSummary summary = new OgelConditionSummary();
+    LocalOgelConditionSummary summary = new LocalOgelConditionSummary();
     try {
       summary.setCanList(getConditionList("canList", r));
       summary.setCantList(getConditionList("cantList", r));
