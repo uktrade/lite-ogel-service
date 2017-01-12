@@ -53,6 +53,7 @@ public class ControlCodeConditionFullView {
     isItemsAllowed = itemsAllowed;
   }
 
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class ConditionDescriptionControlCodes {
     private List<ControlCode> controlCodes;
     private List<String> missingControlCodes;

@@ -53,6 +53,7 @@ public class OgelFullView {
     return link;
   }
 
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class OgelConditionSummary {
     private List<String> canList;
     private List<String> cantList;
