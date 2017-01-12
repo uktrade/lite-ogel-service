@@ -3,6 +3,7 @@ package uk.gov.bis.lite.ogel.resource;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.auth.PrincipalImpl;
 import org.apache.commons.lang3.StringUtils;
@@ -36,15 +37,17 @@ public class AdminResource {
   private final SpireOgelService spireOgelService;
   private final LocalControlCodeConditionService controlCodeConditionService;
   private final ControlCodeClient controlCodeClient;
+  private String virtualEuOgelId;
 
   @Inject
   public AdminResource(LocalOgelService localOgelService, SpireOgelService spireOgelService,
                        LocalControlCodeConditionService controlCodeConditionService,
-                       ControlCodeClient controlCodeClient) {
+                       ControlCodeClient controlCodeClient, @Named("virtualEuOgelId") String virtualEuOgelId) {
     this.localOgelService = localOgelService;
     this.spireOgelService = spireOgelService;
     this.controlCodeConditionService = controlCodeConditionService;
     this.controlCodeClient = controlCodeClient;
+    this.virtualEuOgelId = virtualEuOgelId;
   }
 
   @GET
@@ -58,6 +61,7 @@ public class AdminResource {
 
     List<String> spireOgelIds = spireOgelService.getAllOgels().stream()
       .map(SpireOgel::getId)
+      .filter(c -> !c.equals(virtualEuOgelId))
       .collect(Collectors.toList());
 
     List<LocalControlCodeCondition> controlCodeConditions = controlCodeConditionService.getAllControlCodeConditions();

@@ -2,6 +2,9 @@ cacheTimeout: 1000
 login: user
 password: pass
 
+jerseyClient:
+  timeout: 10000ms
+
 controlCodeServiceUrl: http://control-code-service.svc.licensing.service.trade.gov.uk.test
 
 virtualEuOgelId: OGL61

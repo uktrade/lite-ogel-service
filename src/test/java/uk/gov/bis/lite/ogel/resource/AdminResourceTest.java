@@ -41,7 +41,7 @@ public class AdminResourceTest {
 
   @Rule
   public final ResourceTestRule resources = ResourceTestRule.builder()
-    .addResource(new AdminResource(localOgelService, spireOgelService, controlCodeConditionService, controlCodeClient))
+    .addResource(new AdminResource(localOgelService, spireOgelService, controlCodeConditionService, controlCodeClient, "testUrl"))
     .addProvider(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
       .setAuthenticator(new SimpleAuthenticator("user", "password"))
       .setRealm("SUPER SECRET STUFF")
