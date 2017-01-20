@@ -1,5 +1,13 @@
 package uk.gov.bis.lite.ogel.resource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.auth.AuthDynamicFeature;
@@ -15,20 +23,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
-import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
+import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.xml.soap.SOAPException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -36,20 +38,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.xml.soap.SOAPException;
+import javax.xml.xpath.XPathExpressionException;
 
 public class OgelResourceTest {
   private SpireOgelService spireService = Mockito.mock(SpireOgelService.class);
   private LocalOgelService localService = Mockito.mock(LocalOgelService.class);
 
-  private LocalOgel logel = new LocalOgel();
-  private SpireOgel ogel = new SpireOgel();
+  private LocalOgel logel;
+  private SpireOgel ogel;
+  private List<LocalOgel> localOgelsMissingOgelId;
 
   private HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("username", "password");
 
@@ -69,6 +70,35 @@ public class OgelResourceTest {
   public void setUp() {
     this.ogel = TestUtil.ogelX();
     this.logel = TestUtil.localX();
+  }
+
+  @Test
+  public void putOgelsSuccess() {
+    Response response = resources.client().register(feature).target("/ogels")
+        .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.getLocalOgels(), MediaType.APPLICATION_JSON));
+    assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+  }
+
+  @Test
+  public void putOgelsMissingOgelId() {
+    Response response = resources.client().register(feature).target("/ogels")
+        .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.getLocalOgelsMissingOgelId()
+            , MediaType.APPLICATION_JSON));
+    assertEquals(422, response.getStatus());
+  }
+
+  @Test()
+  public void putOgelsDuplicate() {
+    Response response = resources.client().register(feature).target("/ogels")
+        .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.getLocalOgelsDuplicate(), MediaType.APPLICATION_JSON));
+    assertEquals(422, response.getStatus());
+  }
+
+  @Test
+  public void putOgelsInvalidData() {
+    Response response = resources.client().register(feature).target("/ogels")
+        .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.getLocalOgelsInvalid(), MediaType.APPLICATION_JSON));
+    assertEquals(422, response.getStatus());
   }
 
   @Test
