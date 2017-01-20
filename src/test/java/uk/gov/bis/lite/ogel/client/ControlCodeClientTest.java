@@ -4,10 +4,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.bis.lite.ogel.model.BulkControlCodeCutDowns;
+import uk.gov.bis.lite.controlcode.api.view.BulkControlCodes;
+import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
-import uk.gov.bis.lite.ogel.model.ControlCodeCutDown;
-import uk.gov.bis.lite.ogel.model.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 
 import javax.ws.rs.GET;
@@ -28,7 +27,7 @@ public class ControlCodeClientTest extends JerseyTest {
 
   private final static List<ControlCodeFullView> CONTROL_CODES = getControlCodes();
 
-  private final static BulkControlCodeCutDowns BULK_CONTROL_CODES = getBulkControlCodes();
+  private final static BulkControlCodes BULK_CONTROL_CODES = getBulkControlCodes();
 
   @Override
   @Before
@@ -48,7 +47,7 @@ public class ControlCodeClientTest extends JerseyTest {
 
     @GET
     @Path("bulk-control-codes")
-    public BulkControlCodeCutDowns bulkControlCodes() {
+    public BulkControlCodes bulkControlCodes() {
       return BULK_CONTROL_CODES;
     }
   }
@@ -89,14 +88,16 @@ public class ControlCodeClientTest extends JerseyTest {
     return controlCodes;
   }
 
-  private static BulkControlCodeCutDowns getBulkControlCodes() {
-    ControlCodeCutDown controlCodeCutDown = new ControlCodeCutDown();
-    controlCodeCutDown.setControlCode("C1");
-    ControlCodeCutDown controlCodeCutDow2 = new ControlCodeCutDown();
-    controlCodeCutDown.setControlCode("C2");
+  private static BulkControlCodes getBulkControlCodes() {
+    ControlCodeFullView controlCodeFullView = new ControlCodeFullView();
+    controlCodeFullView.setControlCode("C1");
+    ControlCodeFullView controlCodeFullView2 = new ControlCodeFullView();
+    controlCodeFullView.setControlCode("C2");
 
-    return new BulkControlCodeCutDowns(Arrays.asList(controlCodeCutDown, controlCodeCutDow2),
-      Arrays.asList("111"));
+    BulkControlCodes bulkControlCodes = new BulkControlCodes();
+    bulkControlCodes.setControlCodeFullViews(Arrays.asList(controlCodeFullView, controlCodeFullView2));
+    bulkControlCodes.setMissingControlCodes(Arrays.asList("111"));
+    return bulkControlCodes;
   }
 
 }
