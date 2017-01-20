@@ -76,8 +76,44 @@ public class TestUtil {
   }
 
   public static LocalOgel localX() {
+    return getLocal(OGLX);
+  }
+
+  public static List<LocalOgel> getLocalOgelsMissingOgelId() {
+    List<LocalOgel> locals = new ArrayList<>();
+    locals.add(getLocal(OGLX));
+    locals.add(getLocal(null));
+    return locals;
+  }
+
+  public static List<LocalOgel> getLocalOgels() {
+    List<LocalOgel> locals = new ArrayList<>();
+    locals.add(getLocal(OGLX));
+    locals.add(getLocal(OGLY));
+    return locals;
+  }
+
+  public static List<LocalOgel> getLocalOgelsDuplicate() {
+    List<LocalOgel> locals = new ArrayList<>();
+    LocalOgel localOgel = getLocal(OGLX);
+    locals.add(localOgel);
+    locals.add(localOgel);
+    return locals;
+  }
+
+  public static List<LocalOgel> getLocalOgelsInvalid() {
+    List<LocalOgel> locals = new ArrayList<>();
+    LocalOgel localOgel = getLocal(OGLX);
     LocalOgel ogel = new LocalOgel();
-    ogel.setId(OGLX);
+    ogel.setId(OGLY);
+    locals.add(localOgel);
+    locals.add(ogel);
+    return locals;
+  }
+
+  private static LocalOgel getLocal(String id) {
+    LocalOgel ogel = new LocalOgel();
+    ogel.setId(id);
     LocalOgelConditionSummary summary = new LocalOgelConditionSummary();
     summary.setCanList(Arrays.asList("can1", "can2", "can3"));
     summary.setCantList(Arrays.asList("cannot1", "cannot2"));
