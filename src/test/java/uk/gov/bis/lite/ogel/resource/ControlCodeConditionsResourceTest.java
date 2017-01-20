@@ -7,11 +7,11 @@ import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Rule;
 import org.junit.Test;
+import uk.gov.bis.lite.controlcode.api.view.BulkControlCodes;
+import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.client.ControlCodeClient;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.factory.ViewFactory;
-import uk.gov.bis.lite.ogel.model.BulkControlCodeCutDowns;
-import uk.gov.bis.lite.ogel.model.ControlCodeCutDown;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
@@ -98,12 +98,14 @@ public class ControlCodeConditionsResourceTest {
     LocalControlCodeCondition controlCodeCondition = buildControlCodeCondition(Arrays.asList("ML1a", "ML1b"));
     when(controlCodeConditionService.getLocalControlCodeConditionsByIdAndControlCode(OGEL_ID, CONTROL_CODE))
       .thenReturn(controlCodeCondition);
-    ControlCodeCutDown controlCodeCutDown = new ControlCodeCutDown();
-    controlCodeCutDown.setId("123");
-    controlCodeCutDown.setControlCode(CONTROL_CODE);
-    controlCodeCutDown.setFriendlyDescription("Goods");
-    BulkControlCodeCutDowns bulkControlCodeCutDowns =  new BulkControlCodeCutDowns(Arrays.asList(controlCodeCutDown), new ArrayList<>());
-    Response response = Response.ok(ViewFactory.createControlCodeCondition(controlCodeCondition, bulkControlCodeCutDowns)).build();
+    ControlCodeFullView controlCodeFullView = new ControlCodeFullView();
+    controlCodeFullView.setId("123");
+    controlCodeFullView.setControlCode(CONTROL_CODE);
+    controlCodeFullView.setFriendlyDescription("Goods");
+    BulkControlCodes bulkControlCodes = new BulkControlCodes();
+    bulkControlCodes.setControlCodeFullViews(Arrays.asList(controlCodeFullView));
+    bulkControlCodes.setMissingControlCodes(new ArrayList<>());
+    Response response = Response.ok(ViewFactory.createControlCodeCondition(controlCodeCondition, bulkControlCodes)).build();
     when(controlCodeClient.bulkControlCodes(any(LocalControlCodeCondition.class))).thenReturn(response);
 
     Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")

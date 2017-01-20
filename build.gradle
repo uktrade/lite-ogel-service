@@ -49,7 +49,8 @@ dependencies {
       'org.xerial:sqlite-jdbc:3.8.11.2',
       'org.flywaydb:flyway-core:4.0.1',
       'uk.gov.bis.lite:jersey-correlation-id:1.0',
-      'uk.gov.bis.lite:spire-client:1.2'
+      'uk.gov.bis.lite:spire-client:1.2',
+      'uk.gov.bis.lite:lite-control-code-service-api:1.0'
 
   testCompile 'junit:junit:4.12',
       'org.mockito:mockito-all:1.9.5',
