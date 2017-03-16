@@ -19,6 +19,7 @@ import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
+import uk.gov.bis.lite.ogel.service.SpireOgelServiceImpl;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -35,7 +36,7 @@ import static org.mockito.Mockito.when;
 public class AdminResourceTest {
 
   private final LocalOgelService localOgelService = mock(LocalOgelService.class);
-  private final SpireOgelService spireOgelService = mock(SpireOgelService.class);
+  private final SpireOgelService spireOgelService = mock(SpireOgelServiceImpl.class);
   private final LocalControlCodeConditionService controlCodeConditionService = mock(LocalControlCodeConditionService.class);
   private final ControlCodeClient controlCodeClient = mock(ControlCodeClient.class);
 

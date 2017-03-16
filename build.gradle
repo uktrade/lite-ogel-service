@@ -3,6 +3,7 @@ plugins {
   id "application"
   id "org.flywaydb.flyway" version "4.0.1"
   id 'com.github.johnrengelman.shadow' version '1.2.3'
+  id "au.com.dius.pact" version "3.2.4"
 }
 
 apply plugin: 'idea'
@@ -56,6 +57,8 @@ dependencies {
       'org.mockito:mockito-all:1.9.5',
       "io.dropwizard:dropwizard-testing:$dropwizardVersion",
       'org.skyscreamer:jsonassert:1.3.0'
+
+  testCompile group: 'au.com.dius', name: 'pact-jvm-provider-junit_2.11', version: '3.3.6'
 }
 
 task apiJar(type: Jar, dependsOn: compileJava) {
@@ -111,6 +114,31 @@ jar {
 
 build {
   dependsOn shadowJar
+}
+
+pact {
+
+  serviceProviders {
+
+    // You can define as many as you need, but each must have a unique name
+    "lite-ogel-service" {
+      // All the provider properties are optional, and have sensible defaults (shown below)
+      protocol = 'http'
+      host = 'ogel-service.svc.dev.licensing.service.trade.gov.uk.test'
+      port = 80
+      path = '/'
+
+      // Again, you can define as many consumers for each provider as you need, but each must have a unique name
+      hasPactWith('lite-ogel-registration') {
+
+        // currently supports a file path using file() or a URL using url()
+        pactFile = file('C:\\work\\frontend\\lite-ogel-registration\\target\\pacts\\lite-ogel-registration-lite-ogel-service.json')
+
+      }
+    }
+
+  }
+
 }
 
 run { args 'server', 'src/main/resources/config.yaml' }

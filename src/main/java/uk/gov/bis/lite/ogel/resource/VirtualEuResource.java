@@ -2,16 +2,13 @@ package uk.gov.bis.lite.ogel.resource;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.api.view.VirtualEuView;
 import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
-import uk.gov.bis.lite.ogel.service.SpireOgelService;
+import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
+import uk.gov.bis.lite.ogel.service.SpireOgelServiceImpl;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
@@ -26,12 +23,12 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 public class VirtualEuResource {
 
-  private final SpireOgelService spireOgelService;
+  private final ApplicableOgelService applicableOgelService;
   private final String virtualEuOgelId;
 
   @Inject
-  public VirtualEuResource(SpireOgelService spireOgelService, @Named("virtualEuOgelId") String virtualEuOgelId) {
-    this.spireOgelService = spireOgelService;
+  public VirtualEuResource(ApplicableOgelService applicableOgelService, @Named("virtualEuOgelId") String virtualEuOgelId) {
+    this.applicableOgelService = applicableOgelService;
     this.virtualEuOgelId = virtualEuOgelId;
   }
 
@@ -44,7 +41,7 @@ public class VirtualEuResource {
       throw new WebApplicationException("At least one destinationCountry must be provided", 400);
     }
 
-    List<SpireOgel> ogels = spireOgelService.findOgel(controlCode, spireOgelService.stripCountryPrefix(destinationCountries),
+    List<SpireOgel> ogels = applicableOgelService.findOgel(controlCode, SpireOgelServiceImpl.stripCountryPrefix(destinationCountries),
         ActivityType.DU_ANY.asList());
     boolean found = ogels.stream().filter(s -> s.getId().equalsIgnoreCase(virtualEuOgelId)).findFirst().isPresent();
 

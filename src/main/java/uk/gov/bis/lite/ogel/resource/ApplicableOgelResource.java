@@ -6,12 +6,13 @@ import com.google.inject.name.Named;
 import io.dropwizard.jersey.caching.CacheControl;
 import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
 import org.glassfish.jersey.message.internal.OutboundMessageContext;
+import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.ActivityType;
-import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
+import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
-import uk.gov.bis.lite.ogel.service.SpireOgelService;
+import uk.gov.bis.lite.ogel.service.SpireOgelServiceImpl;
 
 import java.util.Comparator;
 import java.util.List;
@@ -31,14 +32,14 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 public class ApplicableOgelResource {
 
-  private final SpireOgelService spireOgelService;
+  private final ApplicableOgelService applicableOgelService;
   private final LocalOgelService localOgelService;
   private final String virtualEuOgelId;
 
   @Inject
-  public ApplicableOgelResource(SpireOgelService spireOgelService, LocalOgelService localOgelService,
+  public ApplicableOgelResource(ApplicableOgelService applicableOgelService, LocalOgelService localOgelService,
                                 @Named("virtualEuOgelId") String virtualEuOgelId) {
-    this.spireOgelService = spireOgelService;
+    this.applicableOgelService = applicableOgelService;
     this.localOgelService = localOgelService;
     this.virtualEuOgelId = virtualEuOgelId;
   }
@@ -67,8 +68,8 @@ public class ApplicableOgelResource {
 
     List<ActivityType> activityTypes = activityTypesParam.stream().map(ActivityType::valueOf).collect(Collectors.toList());
 
-    List<ApplicableOgelView> applicableOgels = spireOgelService
-        .findOgel(controlCode, spireOgelService.stripCountryPrefix(destinationCountries), activityTypes)
+    List<ApplicableOgelView> applicableOgels = applicableOgelService
+        .findOgel(controlCode, SpireOgelServiceImpl.stripCountryPrefix(destinationCountries), activityTypes)
         .stream()
         .filter(e -> !virtualEuOgelId.equals(e.getId()))
         .sorted(Comparator.comparing(SpireOgel::getId)) // Baseline order (by OGEL ID String)

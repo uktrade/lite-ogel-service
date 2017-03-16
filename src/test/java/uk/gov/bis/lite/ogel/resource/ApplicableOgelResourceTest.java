@@ -18,8 +18,10 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
+import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
+import uk.gov.bis.lite.ogel.service.SpireOgelServiceImpl;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
 import java.util.ArrayList;
@@ -34,8 +36,9 @@ import javax.ws.rs.core.Response;
 @RunWith(MockitoJUnitRunner.class)
 public class ApplicableOgelResourceTest {
 
-  private static final SpireOgelService spireOgelService = Mockito.mock(SpireOgelService.class);
+  private static final SpireOgelService spireOgelService = Mockito.mock(SpireOgelServiceImpl.class);
   private static final LocalOgelService localOgelService = Mockito.mock(LocalOgelService.class);
+  private static final ApplicableOgelService applicableOgelService = new ApplicableOgelService(spireOgelService);
 
   private List<SpireOgel> ogels;
 
@@ -62,12 +65,12 @@ public class ApplicableOgelResourceTest {
 
   @ClassRule
   public static final ResourceTestRule resources = ResourceTestRule.builder()
-      .addResource(new ApplicableOgelResource(spireOgelService, localOgelService, TestUtil.OGLEU))
+      .addResource(new ApplicableOgelResource(applicableOgelService, localOgelService, TestUtil.OGLEU))
       .build();
 
   @Test
   public void goodRequestWithResults() {
-    when(spireOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogels);
+    when(applicableOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogels);
     Response response = resources.client().target("/applicable-ogels")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
         .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
@@ -82,7 +85,7 @@ public class ApplicableOgelResourceTest {
 
   @Test
   public void goodRequestWithNoResults() {
-    when(spireOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(Collections.emptyList());
+    when(applicableOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(Collections.emptyList());
     final Response response = resources.client()
         .target("/applicable-ogels")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
@@ -102,7 +105,7 @@ public class ApplicableOgelResourceTest {
     List<SpireOgel> ogelsWithVirtualEu = new ArrayList<>(ogels);
     ogelsWithVirtualEu.add(TestUtil.ogelEU());
 
-    when(spireOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogelsWithVirtualEu);
+    when(applicableOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogelsWithVirtualEu);
 
     Response response = resources.client().target("/applicable-ogels")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
@@ -157,7 +160,7 @@ public class ApplicableOgelResourceTest {
   public void orderedByRanking() {
     List<SpireOgel> ogelsByAscendingRanking = Arrays.asList(TestUtil.ogelY(), TestUtil.ogelZ(), TestUtil.ogelX());
 
-    when(spireOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogelsByAscendingRanking);
+    when(applicableOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogelsByAscendingRanking);
 
     Response response = resources.client().target("/applicable-ogels")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
@@ -176,7 +179,7 @@ public class ApplicableOgelResourceTest {
     // Descending by ID alphabetically
     List<SpireOgel> ogelsWithSameRanking = Arrays.asList(TestUtil.ogelX(), TestUtil.ogelW());
 
-    when(spireOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogelsWithSameRanking);
+    when(applicableOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogelsWithSameRanking);
 
     Response response = resources.client().target("/applicable-ogels")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
