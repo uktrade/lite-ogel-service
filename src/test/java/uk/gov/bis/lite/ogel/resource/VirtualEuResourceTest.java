@@ -1,11 +1,5 @@
 package uk.gov.bis.lite.ogel.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
-
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.json.JSONException;
 import org.junit.After;
@@ -20,21 +14,23 @@ import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
-import uk.gov.bis.lite.ogel.service.SpireOgelService;
-import uk.gov.bis.lite.ogel.service.SpireOgelServiceImpl;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
+import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.ws.rs.core.Response;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VirtualEuResourceTest {
 
-  private static final SpireOgelService spireOgelService = Mockito.mock(SpireOgelServiceImpl.class);
   private static final LocalOgelService localOgelService = Mockito.mock(LocalOgelService.class);
-  private static final ApplicableOgelService applicableOgelService = new ApplicableOgelService(spireOgelService);
+  private static final ApplicableOgelService applicableOgelService = Mockito.mock(ApplicableOgelService.class);
 
   private List<SpireOgel> euOgels;
   private List<SpireOgel> noEuOgels;
@@ -54,7 +50,6 @@ public class VirtualEuResourceTest {
 
   @After
   public void tearDown(){
-    reset(spireOgelService);
     reset(localOgelService);
   }
 

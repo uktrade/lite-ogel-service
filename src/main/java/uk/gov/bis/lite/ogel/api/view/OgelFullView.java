@@ -37,7 +37,7 @@ public class OgelFullView {
     return id;
   }
 
-  public String getName2() {
+  public String getName() {
     return name;
   }
 

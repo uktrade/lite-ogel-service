@@ -1,13 +1,5 @@
 package uk.gov.bis.lite.ogel.resource;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
-
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.After;
 import org.junit.Before;
@@ -20,25 +12,29 @@ import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
-import uk.gov.bis.lite.ogel.service.SpireOgelService;
-import uk.gov.bis.lite.ogel.service.SpireOgelServiceImpl;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ApplicableOgelResourceTest {
 
-  private static final SpireOgelService spireOgelService = Mockito.mock(SpireOgelServiceImpl.class);
   private static final LocalOgelService localOgelService = Mockito.mock(LocalOgelService.class);
-  private static final ApplicableOgelService applicableOgelService = new ApplicableOgelService(spireOgelService);
+  private static final ApplicableOgelService applicableOgelService = Mockito.mock(ApplicableOgelService.class);
 
   private List<SpireOgel> ogels;
 
@@ -59,7 +55,6 @@ public class ApplicableOgelResourceTest {
 
   @After
   public void tearDown(){
-    reset(spireOgelService);
     reset(localOgelService);
   }
 
@@ -160,7 +155,7 @@ public class ApplicableOgelResourceTest {
   public void orderedByRanking() {
     List<SpireOgel> ogelsByAscendingRanking = Arrays.asList(TestUtil.ogelY(), TestUtil.ogelZ(), TestUtil.ogelX());
 
-    when(applicableOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogelsByAscendingRanking);
+    when(applicableOgelService.findOgel(anyString(), anyListOf(String.class), anyListOf(ActivityType.class))).thenReturn(ogelsByAscendingRanking);
 
     Response response = resources.client().target("/applicable-ogels")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
