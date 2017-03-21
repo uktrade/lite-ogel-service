@@ -127,7 +127,7 @@ publishing {
       }
     }
     service(MavenPublication) {
-      artifactId 'ogel-service-service'
+      artifactId 'ogel-service'
       from components.shadow
     }
   }
