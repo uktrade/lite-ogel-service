@@ -10,26 +10,25 @@ import java.util.List;
 
 public class SpireOgelServiceMock implements SpireOgelService {
 
-  private final SpireOgel ogel;
+  private SpireOgel ogel;
 
   @Inject
   public SpireOgelServiceMock() {
-    SpireOgel ogel = new SpireOgel();
-    ogel.setId("EXISTING");
-    ogel.setName("Test OGEL");
-    ogel.setLink("www.test.com/ogel");
-    this.ogel = ogel;
+    this.ogel = buildOgel("OGL1");
   }
 
   @Override
   public List<SpireOgel> getAllOgels() {
-    return Collections.singletonList(ogel);
+    if (ogel != null) {
+      return Collections.singletonList(ogel);
+    }
+    return Collections.emptyList();
   }
 
   @Override
   public SpireOgel findSpireOgelById(String id) throws OgelNotFoundException {
     //TODO not testing filtering logic!!! Abstraction should be a provider of SpireOgels (e.g. get a collection)
-    if ("EXISTING".equals(id)) {
+    if (ogel != null) {
       return ogel;
     } else {
       throw new OgelNotFoundException(id);
@@ -39,5 +38,21 @@ public class SpireOgelServiceMock implements SpireOgelService {
   @Override
   public SpireHealthStatus getHealthStatus() {
     return null;
+  }
+
+  public void setUpExistingOgel() {
+    this.ogel = buildOgel("OGL99");
+  }
+
+  public void setUpMissingOgel() {
+    this.ogel = null;
+  }
+
+  private SpireOgel buildOgel(String id) {
+    SpireOgel ogel = new SpireOgel();
+    ogel.setId(id);
+    ogel.setName("Test OGEL");
+    ogel.setLink("www.test.com/ogel");
+    return ogel;
   }
 }

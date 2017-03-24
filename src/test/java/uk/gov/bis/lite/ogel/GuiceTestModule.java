@@ -1,6 +1,7 @@
 package uk.gov.bis.lite.ogel;
 
 import com.fiestacabin.dropwizard.quartz.SchedulerConfiguration;
+import com.google.inject.Scopes;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.LocalControlCodeConditionDAO;
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.SqliteLocalControlCodeConditionDAOImpl;
@@ -17,5 +18,6 @@ public class GuiceTestModule extends GuiceModule {
     bind(LocalOgelDAO.class).to(SqliteLocalOgelDAOImpl.class);
     bind(LocalControlCodeConditionDAO.class).to(SqliteLocalControlCodeConditionDAOImpl.class);
     bind(SpireOgelService.class).to(SpireOgelServiceMock.class);
+    bind(SpireOgelServiceMock.class).in(Scopes.SINGLETON);
   }
 }
