@@ -12,6 +12,8 @@ public class SpireOgelServiceMock implements SpireOgelService {
 
   private SpireOgel ogel;
 
+  private boolean missingOgel;
+
   @Inject
   public SpireOgelServiceMock() {
     this.ogel = buildOgel("OGL1");
@@ -19,19 +21,19 @@ public class SpireOgelServiceMock implements SpireOgelService {
 
   @Override
   public List<SpireOgel> getAllOgels() {
-    if (ogel != null) {
-      return Collections.singletonList(ogel);
+    if (missingOgel) {
+      return Collections.emptyList();
     }
-    return Collections.emptyList();
+    return Collections.singletonList(ogel);
   }
 
   @Override
   public SpireOgel findSpireOgelById(String id) throws OgelNotFoundException {
     //TODO not testing filtering logic!!! Abstraction should be a provider of SpireOgels (e.g. get a collection)
-    if (ogel != null) {
-      return ogel;
-    } else {
+    if (missingOgel) {
       throw new OgelNotFoundException(id);
+    } else {
+      return ogel;
     }
   }
 
@@ -40,12 +42,8 @@ public class SpireOgelServiceMock implements SpireOgelService {
     return null;
   }
 
-  public void setUpExistingOgel() {
-    this.ogel = buildOgel("OGL99");
-  }
-
-  public void setUpMissingOgel() {
-    this.ogel = null;
+  public void setMissingOgel(boolean missingOgel) {
+    this.missingOgel = missingOgel;
   }
 
   private SpireOgel buildOgel(String id) {

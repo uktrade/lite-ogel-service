@@ -1,11 +1,9 @@
 package uk.gov.bis.lite.ogel;
 
-import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
-
 import au.com.dius.pact.provider.junit.PactRunner;
 import au.com.dius.pact.provider.junit.Provider;
 import au.com.dius.pact.provider.junit.State;
-import au.com.dius.pact.provider.junit.loader.PactFolder;
+import au.com.dius.pact.provider.junit.loader.PactBroker;
 import au.com.dius.pact.provider.junit.target.HttpTarget;
 import au.com.dius.pact.provider.junit.target.Target;
 import au.com.dius.pact.provider.junit.target.TestTarget;
@@ -16,9 +14,11 @@ import ru.vyarus.dropwizard.guice.injector.lookup.InjectorLookup;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.service.SpireOgelServiceMock;
 
+import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
+
 @RunWith(PactRunner.class)
 @Provider("lite-ogel-service")
-@PactFolder("C:\\work\\frontend\\lite-ogel-registration\\target\\pacts")
+@PactBroker(host = "pact-broker.mgmt.licensing.service.trade.gov.uk.test", port = "80")
 public class PactProvider {
 
   @ClassRule
@@ -29,13 +29,13 @@ public class PactProvider {
   public final Target target = new HttpTarget(RULE.getLocalPort()); // Out-of-the-box implementation of Target (for more information take a look at Test Target section)
 
   @State("existing ogel")
-  public void toExistingAddressState() {
-    InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(SpireOgelServiceMock.class).setUpExistingOgel();
+  public void existingOgelState() {
+    InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(SpireOgelServiceMock.class).setMissingOgel(false);
   }
 
   @State("missing ogel")
-  public void toInvalidAddressState() {
-    InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(SpireOgelServiceMock.class).setUpMissingOgel();
+  public void missingOgelState() {
+    InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(SpireOgelServiceMock.class).setMissingOgel(true);
   }
 
 }
