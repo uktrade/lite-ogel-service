@@ -12,7 +12,7 @@ import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
-import uk.gov.bis.lite.ogel.service.SpireOgelServiceImpl;
+import uk.gov.bis.lite.ogel.spire.SpireUtil;
 
 import java.util.Comparator;
 import java.util.List;
@@ -69,7 +69,7 @@ public class ApplicableOgelResource {
     List<ActivityType> activityTypes = activityTypesParam.stream().map(ActivityType::valueOf).collect(Collectors.toList());
 
     List<ApplicableOgelView> applicableOgels = applicableOgelService
-        .findOgel(controlCode, SpireOgelServiceImpl.stripCountryPrefix(destinationCountries), activityTypes)
+        .findOgel(controlCode, SpireUtil.stripCountryPrefix(destinationCountries), activityTypes)
         .stream()
         .filter(e -> !virtualEuOgelId.equals(e.getId()))
         .sorted(Comparator.comparing(SpireOgel::getId)) // Baseline order (by OGEL ID String)

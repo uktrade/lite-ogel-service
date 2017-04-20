@@ -3,7 +3,6 @@ package uk.gov.bis.lite.ogel.service;
 import com.fiestacabin.dropwizard.quartz.Scheduled;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.apache.commons.lang3.StringUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -24,29 +23,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Singleton
 public class SpireOgelServiceImpl implements SpireOgelService {
 
   private static Map<String, SpireOgel> cache = new HashMap<>();
   private SpireHealthStatus healthStatus = SpireHealthStatus.unhealthy("Service not initialised");
-  private static final String COUNTRY_PREFIX = "CTRY";
 
   private SpireOgelClient ogelClient;
 
   @Inject
   public SpireOgelServiceImpl(SpireOgelClient ogelClient) {
     this.ogelClient = ogelClient;
-  }
-
-  /**
-   * Removes 'CTRY' from any list item, returns altered list
-   */
-  public static List<String> stripCountryPrefix(List<String> countries) {
-    return countries.stream()
-        .map (c -> StringUtils.remove(c, COUNTRY_PREFIX))
-        .collect (Collectors.toList());
   }
 
   @Override
