@@ -16,10 +16,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ApplicableOgelServiceTest {
+public class ApplicableOgelServiceImplTest {
 
   private SpireOgelService mockedSpireOgelService = mock(SpireOgelService.class);
-  private ApplicableOgelService applicableOgelService;
+  private ApplicableOgelServiceImpl applicableOgelService;
 
   @Before
   public void setUp() {
