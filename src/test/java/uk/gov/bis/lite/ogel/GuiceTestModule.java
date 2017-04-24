@@ -1,23 +1,13 @@
 package uk.gov.bis.lite.ogel;
 
-import com.fiestacabin.dropwizard.quartz.SchedulerConfiguration;
-import com.google.inject.Scopes;
-import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
-import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.LocalControlCodeConditionDAO;
-import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.SqliteLocalControlCodeConditionDAOImpl;
-import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAO;
-import uk.gov.bis.lite.ogel.database.dao.ogel.SqliteLocalOgelDAOImpl;
+import com.google.inject.AbstractModule;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelServiceMock;
 
-public class GuiceTestModule extends GuiceModule {
+public class GuiceTestModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    bind(SchedulerConfiguration.class).toInstance(new SchedulerConfiguration("uk.gov.bis.lite.ogel"));
-    bind(LocalOgelDAO.class).to(SqliteLocalOgelDAOImpl.class);
-    bind(LocalControlCodeConditionDAO.class).to(SqliteLocalControlCodeConditionDAOImpl.class);
     bind(SpireOgelService.class).to(SpireOgelServiceMock.class);
-    bind(SpireOgelServiceMock.class).in(Scopes.SINGLETON);
   }
 }

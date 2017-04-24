@@ -1,6 +1,7 @@
 package uk.gov.bis.lite.ogel.service;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.job.SpireHealthStatus;
@@ -8,6 +9,7 @@ import uk.gov.bis.lite.ogel.model.job.SpireHealthStatus;
 import java.util.Collections;
 import java.util.List;
 
+@Singleton
 public class SpireOgelServiceMock implements SpireOgelService {
 
   private SpireOgel ogel;
@@ -29,7 +31,6 @@ public class SpireOgelServiceMock implements SpireOgelService {
 
   @Override
   public SpireOgel findSpireOgelById(String id) throws OgelNotFoundException {
-    //TODO not testing filtering logic!!! Abstraction should be a provider of SpireOgels (e.g. get a collection)
     if (missingOgel) {
       throw new OgelNotFoundException(id);
     } else {
