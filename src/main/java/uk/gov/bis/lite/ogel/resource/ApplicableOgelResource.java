@@ -47,8 +47,8 @@ public class ApplicableOgelResource {
   @GET
   @Timed
   @CacheControl(maxAge = 1, maxAgeUnit = TimeUnit.DAYS)
-  public Response getOgelList(@NotNull(message = "controlCode required") @QueryParam("controlCode") String controlCode,
-                              @NotNull(message = "sourceCountry required") @QueryParam("sourceCountry") String sourceCountry,
+  public Response getOgelList(@NotNull @QueryParam("controlCode") String controlCode,
+                              @NotNull @QueryParam("sourceCountry") String sourceCountry,
                               @QueryParam("destinationCountry") List<String> destinationCountries,
                               @QueryParam("activityType") List<String> activityTypesParam) {
 

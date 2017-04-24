@@ -33,9 +33,9 @@ public class VirtualEuResource {
   }
 
   @GET
-  public Response getVirtualEu(@NotNull(message = "controlCode required") @QueryParam("controlCode") String controlCode,
-                              @NotNull(message = "sourceCountry required") @QueryParam("sourceCountry") String sourceCountry,
-                              @QueryParam("destinationCountry") List<String> destinationCountries) {
+  public Response getVirtualEu(@NotNull @QueryParam("controlCode") String controlCode,
+                               @NotNull @QueryParam("sourceCountry") String sourceCountry,
+                               @QueryParam("destinationCountry") List<String> destinationCountries) {
 
     if (destinationCountries.size() == 0) {
       throw new WebApplicationException("At least one destinationCountry must be provided", 400);
