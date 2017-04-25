@@ -24,9 +24,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Singleton
 public class SpireOgelServiceImpl implements SpireOgelService {
+
+  private final Logger LOGGER = LoggerFactory.getLogger(SpireOgelServiceImpl.class);
 
   private Map<String, SpireOgel> cache = new HashMap<>();
   private SpireHealthStatus healthStatus = SpireHealthStatus.unhealthy("Service not initialised");
@@ -36,12 +39,6 @@ public class SpireOgelServiceImpl implements SpireOgelService {
   @Inject
   public SpireOgelServiceImpl(SpireOgelClient ogelClient) {
     this.ogelClient = ogelClient;
-  }
-
-  @VisibleForTesting
-  SpireOgelServiceImpl(Map<String, SpireOgel> cache) {
-    this.ogelClient = null;
-    this.cache = cache;
   }
 
   @Override
@@ -55,6 +52,27 @@ public class SpireOgelServiceImpl implements SpireOgelService {
   private List<SpireOgel> getAllOgelsFromSpire() {
     SpireRequest request = ogelClient.createRequest();
     return ogelClient.sendRequest(request);
+  }
+
+  @VisibleForTesting
+  void refreshCache() {
+    try {
+      List<SpireOgel> ogelList = getAllOgelsFromSpire();
+
+      Map<String, SpireOgel> spireOgelCacheMap = ogelList.stream().collect(Collectors.toMap(e -> e.getId(), e -> e));
+
+      if (spireOgelCacheMap.size() > 0) {
+        cache = Collections.unmodifiableMap(spireOgelCacheMap);
+        healthStatus = SpireHealthStatus.healthy();
+        LOGGER.info("Cache has been successfully updated at {}", healthStatus.getLastUpdated());
+      } else {
+        healthStatus = SpireHealthStatus.unhealthy("SPIRE returned 0 OGELs");
+        LOGGER.warn("Cache refresh job failed to retrieve new data from SPIRE.");
+      }
+    } catch (Throwable th) {
+      LOGGER.warn("An unexpected error occurred getting OGEL data from SPIRE", th);
+      healthStatus = SpireHealthStatus.unhealthy(th.getMessage());
+    }
   }
 
   @Override
@@ -77,29 +95,13 @@ public class SpireOgelServiceImpl implements SpireOgelService {
   @PersistJobDataAfterExecution
   @Scheduled(interval = 1, unit = TimeUnit.DAYS)
   private static class RefreshCacheJob implements Job {
-    private final Logger LOGGER = LoggerFactory.getLogger(RefreshCacheJob.class);
 
     @Inject
     private SpireOgelServiceImpl spireOgelService;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-      HashMap<String, SpireOgel> spireOgelCacheMap = new HashMap<>();
-      try {
-        List<SpireOgel> ogelList = spireOgelService.getAllOgelsFromSpire();
-        ogelList.forEach(o -> spireOgelCacheMap.put(o.getId(), o));
-        if (spireOgelCacheMap.size() > 0) {
-          spireOgelService.cache = Collections.unmodifiableMap(spireOgelCacheMap);
-          spireOgelService.healthStatus = SpireHealthStatus.healthy();
-          LOGGER.info("Cache has been successfully updated at {}", spireOgelService.healthStatus.getLastUpdated());
-        } else {
-          spireOgelService.healthStatus = SpireHealthStatus.unhealthy("Cache size is 0");
-          LOGGER.warn("Cache refresh job failed to retrieve new data from Spire.");
-        }
-      } catch (Exception e) {
-        LOGGER.warn("An unexpected error occurred getting the Ogel Data from Spire", e);
-        spireOgelService.healthStatus = SpireHealthStatus.unhealthy(e.getMessage());
-      }
+      spireOgelService.refreshCache();
     }
   }
 }
