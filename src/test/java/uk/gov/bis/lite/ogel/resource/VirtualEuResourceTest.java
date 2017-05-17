@@ -1,11 +1,5 @@
 package uk.gov.bis.lite.ogel.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
-
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.json.JSONException;
 import org.junit.After;
@@ -18,20 +12,25 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
+import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
-import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
+import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.ws.rs.core.Response;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VirtualEuResourceTest {
 
-  private static final SpireOgelService spireOgelService = Mockito.mock(SpireOgelService.class);
   private static final LocalOgelService localOgelService = Mockito.mock(LocalOgelService.class);
+  private static final ApplicableOgelService applicableOgelService = Mockito.mock(ApplicableOgelService.class);
 
   private List<SpireOgel> euOgels;
   private List<SpireOgel> noEuOgels;
@@ -51,17 +50,16 @@ public class VirtualEuResourceTest {
 
   @After
   public void tearDown(){
-    reset(spireOgelService);
     reset(localOgelService);
   }
 
   @ClassRule
   public static final ResourceTestRule resources = ResourceTestRule.builder()
-      .addResource(new VirtualEuResource(spireOgelService, TestUtil.OGLEU)).build();
+      .addResource(new VirtualEuResource(applicableOgelService, TestUtil.OGLEU)).build();
 
   @Test
   public void controllerReturnsVirtualEuTrue() throws JSONException {
-    when(spireOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class))).thenReturn(euOgels);
+    when(applicableOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class))).thenReturn(euOgels);
     Response response = resources.client().target("/virtual-eu")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
         .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
@@ -73,7 +71,7 @@ public class VirtualEuResourceTest {
 
   @Test
   public void controllerReturnsVirtualEuFalse() throws JSONException {
-    when(spireOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class))).thenReturn(noEuOgels);
+    when(applicableOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class))).thenReturn(noEuOgels);
     Response response = resources.client().target("/virtual-eu")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
         .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)

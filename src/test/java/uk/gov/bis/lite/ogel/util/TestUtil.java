@@ -149,10 +149,6 @@ public class TestUtil {
     return countries;
   }
 
-  public static <T> List<T> list() {
-    return new ArrayList<>();
-  }
-
   private static SpireOgel ogel(String code, List<OgelCondition> conditions, ActivityType activity, int ranking) {
     SpireOgel ogel = new SpireOgel();
     ogel.setOgelConditions(conditions);

@@ -1,0 +1,33 @@
+cacheTimeout: 1000
+login: user
+password: pass
+
+controlCodeServiceUrl: http://control-code-service.svc.licensing.service.trade.gov.uk.test
+virtualEuOgelId: OGL61
+
+spireClientUserName: spireuser
+spireClientPassword: spirepass
+spireClientUrl: http://service-mocking.svc.licensing.service.trade.gov.uk.test/spire/fox/ispire/
+
+jerseyClient:
+  timeout: 10000ms
+
+logging:
+  level: INFO
+  appenders:
+      - type: console
+        includeCallerData : true
+        logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"
+
+database:
+  driverClass: org.sqlite.JDBC
+  url: jdbc:sqlite:localOgel.db
+  properties:
+    charSet: UTF-8
+  maxWaitForConnection: 30s
+  validationQuery: "/* MyService Health Check */ SELECT 1"
+  minSize: 8
+  maxSize: 32
+  checkConnectionWhileIdle: false
+  evictionInterval: 10s
+  minIdleTime: 1 minute

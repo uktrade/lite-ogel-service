@@ -2,6 +2,7 @@ package uk.gov.bis.lite.ogel;
 
 import com.fiestacabin.dropwizard.quartz.ManagedScheduler;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import com.google.inject.Stage;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
@@ -37,9 +38,19 @@ import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
 public class OgelApplication extends Application<MainApplicationConfiguration> {
   private static final Logger LOGGER = LoggerFactory.getLogger(OgelApplication.class);
   private GuiceBundle<MainApplicationConfiguration> guiceBundle;
+  private final Module module;
 
   public static void main(String[] args) throws Exception {
-    new OgelApplication().run(args);
+    new OgelApplication(new GuiceModule()).run(args);
+  }
+
+  public GuiceBundle<MainApplicationConfiguration> getGuiceBundle() {
+    return guiceBundle;
+  }
+
+  public OgelApplication(Module module) {
+    super();
+    this.module = module;
   }
 
   @Override
@@ -78,7 +89,7 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
   @Override
   public void initialize(Bootstrap<MainApplicationConfiguration> bootstrap) {
     guiceBundle = GuiceBundle.<MainApplicationConfiguration>builder()
-        .modules(new GuiceModule())
+        .modules(module)
         .installers(ResourceInstaller.class, HealthCheckInstaller.class)
         .extensions(AdminResource.class, ApplicableOgelResource.class, OgelResource.class,
           ControlCodeConditionsResource.class, SpireHealthCheck.class, VirtualEuResource.class)
