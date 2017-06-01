@@ -1,25 +1,24 @@
 package uk.gov.bis.lite.ogel.client;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.bis.lite.controlcode.api.view.BulkControlCodes;
 import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
-import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class ControlCodeClientTest extends JerseyTest {
 
@@ -68,13 +67,10 @@ public class ControlCodeClientTest extends JerseyTest {
   public void shouldGetBulkControlCodes() throws Exception {
     LocalControlCodeCondition localControlCodeCondition = new LocalControlCodeCondition();
     localControlCodeCondition.setConditionDescriptionControlCodes(Arrays.asList("C1", "C2", "C3"));
-    Response response = controlCodeClient.bulkControlCodes(localControlCodeCondition);
-
-    assertThat(response.getStatus()).isEqualTo(200);
-    ControlCodeConditionFullView controlCodeConditionFullView = (ControlCodeConditionFullView)response.getEntity();
-    assertThat(controlCodeConditionFullView).isNotNull();
-    assertThat(controlCodeConditionFullView.getConditionDescriptionControlCodes().getControlCodes().size()).isEqualTo(2);
-    assertThat(controlCodeConditionFullView.getConditionDescriptionControlCodes().getMissingControlCodes().size()).isEqualTo(1);
+    BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(localControlCodeCondition.getConditionDescriptionControlCodes());
+    assertThat(bulkControlCodes).isNotNull();
+    assertThat(bulkControlCodes.getControlCodeFullViews().size()).isEqualTo(2);
+    assertThat(bulkControlCodes.getMissingControlCodes().size()).isEqualTo(1);
   }
 
   private static List<ControlCodeFullView> getControlCodes() {

@@ -27,16 +27,18 @@ public class ViewFactory {
   public static ControlCodeConditionFullView createControlCodeCondition(LocalControlCodeCondition localControlCodeCondition, BulkControlCodes bulkControlCodeCutDowns) {
     ControlCodeConditionFullView view = createControlCodeCondition(localControlCodeCondition);
     ControlCodeConditionFullView.ConditionDescriptionControlCodes conditionDescriptionControlCodes = new ControlCodeConditionFullView.ConditionDescriptionControlCodes();
-    List<ControlCodeConditionFullView.ControlCode> controlCodes = bulkControlCodeCutDowns.getControlCodeFullViews().stream()
-      .map(c -> {
-        ControlCodeConditionFullView.ControlCode controlCodeCutDown = new ControlCodeConditionFullView.ControlCode();
-        controlCodeCutDown.setId(c.getId());
-        controlCodeCutDown.setControlCode(c.getControlCode());
-        controlCodeCutDown.setFriendlyDescription(c.getFriendlyDescription());
-        return controlCodeCutDown;
-      })
-      .collect(Collectors.toList());
-    conditionDescriptionControlCodes.setControlCodes(controlCodes);
+    if (!bulkControlCodeCutDowns.getControlCodeFullViews().isEmpty()) {
+      List<ControlCodeConditionFullView.ControlCode> controlCodes = bulkControlCodeCutDowns.getControlCodeFullViews().stream()
+          .map(c -> {
+            ControlCodeConditionFullView.ControlCode controlCodeCutDown = new ControlCodeConditionFullView.ControlCode();
+            controlCodeCutDown.setId(c.getId());
+            controlCodeCutDown.setControlCode(c.getControlCode());
+            controlCodeCutDown.setFriendlyDescription(c.getFriendlyDescription());
+            return controlCodeCutDown;
+          })
+          .collect(Collectors.toList());
+      conditionDescriptionControlCodes.setControlCodes(controlCodes);
+    }
     conditionDescriptionControlCodes.setMissingControlCodes(bulkControlCodeCutDowns.getMissingControlCodes());
     view.setConditionDescriptionControlCodes(conditionDescriptionControlCodes);
     return view;

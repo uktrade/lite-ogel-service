@@ -22,6 +22,8 @@ import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.database.dao.ogel.SqliteLocalOgelDAOImpl;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelServiceImpl;
+import uk.gov.bis.lite.ogel.service.ControlCodeConditionsService;
+import uk.gov.bis.lite.ogel.service.ControlCodeConditionsServiceImpl;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionServiceImpl;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
@@ -70,6 +72,7 @@ public class GuiceModule extends AbstractModule {
     bind(LocalOgelService.class).to(LocalOgelServiceImpl.class);
     bind(SpireOgelService.class).to(SpireOgelServiceImpl.class);
     bind(ApplicableOgelService.class).to(ApplicableOgelServiceImpl.class);
+    bind(ControlCodeConditionsService.class).to(ControlCodeConditionsServiceImpl.class);
   }
 
   @Provides

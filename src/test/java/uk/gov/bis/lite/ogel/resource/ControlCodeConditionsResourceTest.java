@@ -1,7 +1,6 @@
 package uk.gov.bis.lite.ogel.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -17,12 +16,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.bis.lite.controlcode.api.view.BulkControlCodes;
 import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
-import uk.gov.bis.lite.ogel.client.ControlCodeClient;
+import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
+import uk.gov.bis.lite.ogel.service.ControlCodeConditionsService;
+import uk.gov.bis.lite.ogel.service.ControlCodeConditionsServiceImpl;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionServiceImpl;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
@@ -44,12 +45,12 @@ public class ControlCodeConditionsResourceTest {
 
   private final SpireOgelService spireOgelService = mock(SpireOgelService.class);
   private final LocalOgelService localOgelService = mock(LocalOgelServiceImpl.class);
-  private final LocalControlCodeConditionService controlCodeConditionService = mock(LocalControlCodeConditionServiceImpl.class);
-  private final ControlCodeClient controlCodeClient = mock(ControlCodeClient.class);
+  private final LocalControlCodeConditionService localControlCodeConditionService = mock(LocalControlCodeConditionServiceImpl.class);
+  private final ControlCodeConditionsService controlCodeConditionsService = mock(ControlCodeConditionsServiceImpl.class);
 
   @Rule
   public final ResourceTestRule resources = ResourceTestRule.builder()
-    .addResource(new ControlCodeConditionsResource(spireOgelService, localOgelService, controlCodeConditionService, controlCodeClient))
+    .addResource(new ControlCodeConditionsResource(spireOgelService, localOgelService, localControlCodeConditionService, controlCodeConditionsService))
     .addProvider(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
       .setAuthenticator(new SimpleAuthenticator("user", "password"))
       .setRealm("SUPER SECRET STUFF")
@@ -61,7 +62,7 @@ public class ControlCodeConditionsResourceTest {
   @Test
   public void getControlCodeConditions() throws Exception {
     LocalControlCodeCondition controlCodeCondition = buildControlCodeCondition();
-    when(controlCodeConditionService.getAllControlCodeConditions()).thenReturn(Arrays.asList(controlCodeCondition));
+    when(localControlCodeConditionService.getAllControlCodeConditions()).thenReturn(Arrays.asList(controlCodeCondition));
 
     Response result = resources.getJerseyTest().target("/control-code-conditions")
       .request(MediaType.APPLICATION_JSON_TYPE)
@@ -78,10 +79,9 @@ public class ControlCodeConditionsResourceTest {
   public void getControlCodeConditionById () throws Exception {
     LocalOgel localOgel = new LocalOgel();
     localOgel.setId(OGEL_ID);
-    when(localOgelService.findLocalOgelById(OGEL_ID)).thenReturn(localOgel);
     LocalControlCodeCondition controlCodeCondition = buildControlCodeCondition(new ArrayList<>());
-    when(controlCodeConditionService.getLocalControlCodeConditionsByIdAndControlCode(OGEL_ID, CONTROL_CODE))
-      .thenReturn(controlCodeCondition);
+    ControlCodeConditionFullView controlCodeConditionFullView = ViewFactory.createControlCodeCondition(controlCodeCondition);
+    when(controlCodeConditionsService.findControlCodeConditions(OGEL_ID, CONTROL_CODE)).thenReturn(controlCodeConditionFullView);
 
     Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")
       .request(MediaType.APPLICATION_JSON_TYPE)
@@ -98,9 +98,8 @@ public class ControlCodeConditionsResourceTest {
     LocalOgel localOgel = new LocalOgel();
     localOgel.setId(OGEL_ID);
     when(localOgelService.findLocalOgelById(OGEL_ID)).thenReturn(localOgel);
+
     LocalControlCodeCondition controlCodeCondition = buildControlCodeCondition(Arrays.asList("ML1a", "ML1b"));
-    when(controlCodeConditionService.getLocalControlCodeConditionsByIdAndControlCode(OGEL_ID, CONTROL_CODE))
-      .thenReturn(controlCodeCondition);
     ControlCodeFullView controlCodeFullView = new ControlCodeFullView();
     controlCodeFullView.setId("123");
     controlCodeFullView.setControlCode(CONTROL_CODE);
@@ -108,8 +107,8 @@ public class ControlCodeConditionsResourceTest {
     BulkControlCodes bulkControlCodes = new BulkControlCodes();
     bulkControlCodes.setControlCodeFullViews(Arrays.asList(controlCodeFullView));
     bulkControlCodes.setMissingControlCodes(new ArrayList<>());
-    Response response = Response.ok(ViewFactory.createControlCodeCondition(controlCodeCondition, bulkControlCodes)).build();
-    when(controlCodeClient.bulkControlCodes(any(LocalControlCodeCondition.class))).thenReturn(response);
+    ControlCodeConditionFullView controlCodeConditionFullView = ViewFactory.createControlCodeCondition(controlCodeCondition, bulkControlCodes);
+    when(controlCodeConditionsService.findControlCodeConditions(OGEL_ID, CONTROL_CODE)).thenReturn(controlCodeConditionFullView);
 
     Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")
       .request(MediaType.APPLICATION_JSON_TYPE)
@@ -138,7 +137,7 @@ public class ControlCodeConditionsResourceTest {
       .delete();
 
     assertThat(result.getStatus()).isEqualTo(204);
-    verify(controlCodeConditionService).deleteControlCodeConditions();
+    verify(localControlCodeConditionService).deleteControlCodeConditions();
   }
 
   @Test
@@ -149,7 +148,7 @@ public class ControlCodeConditionsResourceTest {
       .delete();
 
     assertThat(result.getStatus()).isEqualTo(401);
-    verify(controlCodeConditionService, never()).deleteControlCodeConditions();
+    verify(localControlCodeConditionService, never()).deleteControlCodeConditions();
   }
 
   private LocalControlCodeCondition buildControlCodeCondition() {

@@ -4,7 +4,11 @@ import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 public interface LocalControlCodeConditionService {
+
+  @Nullable
   LocalControlCodeCondition getLocalControlCodeConditionsByIdAndControlCode(String ogelID, String controlCode);
 
   void insertControlCodeConditionList(List<LocalControlCodeCondition> controlCodeConditionList);
