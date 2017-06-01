@@ -1,5 +1,11 @@
 package uk.gov.bis.lite.ogel.resource;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
+
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.json.JSONException;
 import org.junit.After;
@@ -16,15 +22,10 @@ import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
-import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
+import javax.ws.rs.core.Response;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VirtualEuResourceTest {

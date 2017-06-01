@@ -1,5 +1,13 @@
 package uk.gov.bis.lite.ogel.resource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.PrincipalImpl;
@@ -17,31 +25,24 @@ import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
+import uk.gov.bis.lite.ogel.service.LocalOgelServiceImpl;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
-import uk.gov.bis.lite.ogel.service.SpireOgelServiceImpl;
 
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 public class ControlCodeConditionsResourceTest {
 
   private static final String CONTROL_CODE = "ML1a";
   private static final String OGEL_ID = "OGL01";
 
-  private final SpireOgelService spireOgelService = mock(SpireOgelServiceImpl.class);
-  private final LocalOgelService localOgelService = mock(LocalOgelService.class);
+  private final SpireOgelService spireOgelService = mock(SpireOgelService.class);
+  private final LocalOgelService localOgelService = mock(LocalOgelServiceImpl.class);
   private final LocalControlCodeConditionService controlCodeConditionService = mock(LocalControlCodeConditionService.class);
   private final ControlCodeClient controlCodeClient = mock(ControlCodeClient.class);
 
