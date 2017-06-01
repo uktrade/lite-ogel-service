@@ -52,7 +52,7 @@ public class ApplicableOgelResource {
                               @QueryParam("destinationCountry") List<String> destinationCountries,
                               @QueryParam("activityType") List<String> activityTypesParam) {
 
-    if (destinationCountries.size() == 0) {
+    if (destinationCountries.isEmpty()) {
       throw new WebApplicationException("At least one destinationCountry must be provided", 400);
     }
 
@@ -62,7 +62,7 @@ public class ApplicableOgelResource {
       }
     }
 
-    if (activityTypesParam.size() == 0) {
+    if (activityTypesParam.isEmpty()) {
       throw new WebApplicationException("At least one activityType must be provided", 400);
     }
 
@@ -72,7 +72,6 @@ public class ApplicableOgelResource {
         .findOgel(controlCode, SpireUtil.stripCountryPrefix(destinationCountries), activityTypes)
         .stream()
         .filter(e -> !virtualEuOgelId.equals(e.getId()))
-        .sorted(Comparator.comparing(SpireOgel::getId)) // Baseline order (by OGEL ID String)
         .sorted(Comparator.comparingInt(SpireOgel::getRanking)) // Ranking order (when duplicated rank, the baseline applies)
         .map(e -> ViewFactory.createApplicableOgel(e, localOgelService.findLocalOgelById(e.getId())))
         .collect(Collectors.toList());
