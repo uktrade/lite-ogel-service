@@ -50,8 +50,8 @@ public class SpireOgelServiceMock implements SpireOgelService {
   private SpireOgel buildOgel(String id) {
     SpireOgel ogel = new SpireOgel();
     ogel.setId(id);
-    ogel.setName("Test OGEL");
-    ogel.setLink("www.test.com/ogel");
+    ogel.setName("name");
+    ogel.setLink("http://example.org");
     return ogel;
   }
 }

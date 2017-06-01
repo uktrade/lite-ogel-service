@@ -14,6 +14,7 @@ import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import ru.vyarus.dropwizard.guice.injector.lookup.InjectorLookup;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
+import uk.gov.bis.lite.ogel.service.LocalOgelServiceMock;
 import uk.gov.bis.lite.ogel.service.SpireOgelServiceMock;
 
 @RunWith(PactRunner.class)
@@ -31,11 +32,13 @@ public class PactProvider {
   @State("provided OGEL exists")
   public void existingOgelState() {
     InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(SpireOgelServiceMock.class).setMissingOgel(false);
+    InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(LocalOgelServiceMock.class).setMissingLocalOgel(false);
   }
 
   @State("provided OGEL does not exist")
   public void missingOgelState() {
     InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(SpireOgelServiceMock.class).setMissingOgel(true);
+    InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(LocalOgelServiceMock.class).setMissingLocalOgel(true);
   }
 
 }
