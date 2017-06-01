@@ -47,7 +47,6 @@ public class ViewFactoryTest {
     assertThat(fullView.getId()).isEqualTo("OGL1_SPIRE");
     assertThat(fullView.getName()).isEqualTo("Local OGEL name");
     assertThat(fullView.getLink()).isEqualTo("http://www.ogels.com/OGL1");
-    assertThat(fullView.getDescription()).isNullOrEmpty();
     assertThat(fullView.getSummary().getCanList()).containsOnly("Can 1");
     assertThat(fullView.getSummary().getCantList()).containsOnly("Cant 1");
     assertThat(fullView.getSummary().getMustList()).containsOnly("Must 1");
@@ -61,7 +60,6 @@ public class ViewFactoryTest {
     assertThat(fullView.getId()).isEqualTo("OGL1_SPIRE");
     assertThat(fullView.getName()).isEqualTo("Spire OGEL name");
     assertThat(fullView.getLink()).isEqualTo("http://www.ogels.com/OGL1");
-    assertThat(fullView.getDescription()).isNullOrEmpty();
     assertThat(fullView.getSummary().getCanList()).isEmpty();
     assertThat(fullView.getSummary().getCantList()).isEmpty();
     assertThat(fullView.getSummary().getMustList()).isEmpty();
