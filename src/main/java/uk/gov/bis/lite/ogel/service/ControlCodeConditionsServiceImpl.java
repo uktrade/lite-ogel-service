@@ -10,6 +10,8 @@ import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 @Singleton
 public class ControlCodeConditionsServiceImpl implements ControlCodeConditionsService {
   private final LocalControlCodeConditionService localControlCodeConditionService;
@@ -21,6 +23,7 @@ public class ControlCodeConditionsServiceImpl implements ControlCodeConditionsSe
     this.controlCodeClient = controlCodeClient;
   }
 
+  @Nullable
   @Override
   public ControlCodeConditionFullView findControlCodeConditions(String ogelID, String controlCode) {
     LocalControlCodeCondition localConditions = localControlCodeConditionService.getLocalControlCodeConditionsByIdAndControlCode(ogelID, controlCode);

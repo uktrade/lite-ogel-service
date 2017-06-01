@@ -9,12 +9,10 @@ import org.glassfish.jersey.message.internal.OutboundMessageContext;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.ActivityType;
-import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.spire.SpireUtil;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -52,7 +50,7 @@ public class ApplicableOgelResource {
                               @QueryParam("destinationCountry") List<String> destinationCountries,
                               @QueryParam("activityType") List<String> activityTypesParam) {
 
-    if (destinationCountries.isEmpty()) {
+    if (destinationCountries.size() == 0) {
       throw new WebApplicationException("At least one destinationCountry must be provided", 400);
     }
 
@@ -62,7 +60,7 @@ public class ApplicableOgelResource {
       }
     }
 
-    if (activityTypesParam.isEmpty()) {
+    if (activityTypesParam.size() == 0) {
       throw new WebApplicationException("At least one activityType must be provided", 400);
     }
 
@@ -72,7 +70,16 @@ public class ApplicableOgelResource {
         .findOgel(controlCode, SpireUtil.stripCountryPrefix(destinationCountries), activityTypes)
         .stream()
         .filter(e -> !virtualEuOgelId.equals(e.getId()))
-        .sorted(Comparator.comparingInt(SpireOgel::getRanking)) // Ranking order (when duplicated rank, the baseline applies)
+        .sorted((o1, o2) -> {
+          // Ranking order (when duplicated rank, order by ID)
+          int rankingCompare = Integer.compare(o1.getRanking(), o2.getRanking());
+          if (rankingCompare != 0) {
+            return rankingCompare;
+          }
+          else {
+            return o1.getId().compareTo(o2.getId());
+          }
+        })
         .map(e -> ViewFactory.createApplicableOgel(e, localOgelService.findLocalOgelById(e.getId())))
         .collect(Collectors.toList());
 

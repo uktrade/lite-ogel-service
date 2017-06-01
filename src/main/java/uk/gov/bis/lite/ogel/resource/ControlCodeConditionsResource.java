@@ -77,7 +77,9 @@ public class ControlCodeConditionsResource {
     else {
       Status status;
 
-      if (codeConditionFullView.getConditionDescriptionControlCodes() != null && !codeConditionFullView.getConditionDescriptionControlCodes().getMissingControlCodes().isEmpty()) {
+      if (codeConditionFullView.getConditionDescriptionControlCodes() != null &&
+          codeConditionFullView.getConditionDescriptionControlCodes().getMissingControlCodes() != null &&
+          !codeConditionFullView.getConditionDescriptionControlCodes().getMissingControlCodes().isEmpty()) {
         status = Status.PARTIAL_CONTENT;
       }
       else {
