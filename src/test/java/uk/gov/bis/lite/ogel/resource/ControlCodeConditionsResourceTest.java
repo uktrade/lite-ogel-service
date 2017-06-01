@@ -24,6 +24,7 @@ import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
+import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionServiceImpl;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.LocalOgelServiceImpl;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
@@ -43,7 +44,7 @@ public class ControlCodeConditionsResourceTest {
 
   private final SpireOgelService spireOgelService = mock(SpireOgelService.class);
   private final LocalOgelService localOgelService = mock(LocalOgelServiceImpl.class);
-  private final LocalControlCodeConditionService controlCodeConditionService = mock(LocalControlCodeConditionService.class);
+  private final LocalControlCodeConditionService controlCodeConditionService = mock(LocalControlCodeConditionServiceImpl.class);
   private final ControlCodeClient controlCodeClient = mock(ControlCodeClient.class);
 
   @Rule
