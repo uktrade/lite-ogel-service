@@ -32,8 +32,11 @@ public class PactProvider {
   public final Target target = new HttpTarget(RULE.getLocalPort()); // Out-of-the-box implementation of Target (for more information take a look at Test Target section)
 
   private void resetMockState(){
-    getLocalOgelServiceMock().setMissingLocalOgel(false);
-    getSpireOgelServiceMock().setMissingOgel(false);
+    getLocalOgelServiceMock()
+        .setMissingLocalOgel(false);
+    getSpireOgelServiceMock()
+        .setMissingOgel(false)
+        .setVirtualEu(false);
     getApplicableOgelServiceMock()
         .setOgelFound(true)
         .setValidActivityType(true);
@@ -115,5 +118,17 @@ public class PactProvider {
   public void conditionsDoNotExistForOgelAndControlCode() {
     resetMockState();
     getControlCodeConditionsServiceMock().setConditionsFound(false);
+  }
+
+  @State("parameters match virtual EU ogel")
+  public void virtualEuOgelExists() {
+    resetMockState();
+    getSpireOgelServiceMock().setVirtualEu(true);
+  }
+
+  @State("parameters do not match virtual EU ogel")
+  public void virtualEuOgelDoesNotExists() {
+    resetMockState();
+    getSpireOgelServiceMock().setVirtualEu(false);
   }
 }

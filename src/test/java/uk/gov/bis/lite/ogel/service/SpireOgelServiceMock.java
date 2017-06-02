@@ -2,6 +2,7 @@ package uk.gov.bis.lite.ogel.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.job.SpireHealthStatus;
@@ -12,13 +13,13 @@ import java.util.List;
 @Singleton
 public class SpireOgelServiceMock implements SpireOgelService {
 
-  private SpireOgel ogel;
-
+  private final String virtualEuOgelId;
   private boolean missingOgel;
+  private boolean isVirtualEu;
 
   @Inject
-  public SpireOgelServiceMock() {
-    this.ogel = buildOgel("OGL1");
+  public SpireOgelServiceMock(@Named("virtualEuOgelId") String virtualEuOgelId) {
+    this.virtualEuOgelId = virtualEuOgelId;
   }
 
   @Override
@@ -26,7 +27,7 @@ public class SpireOgelServiceMock implements SpireOgelService {
     if (missingOgel) {
       return Collections.emptyList();
     }
-    return Collections.singletonList(ogel);
+    return Collections.singletonList(buildOgel());
   }
 
   @Override
@@ -34,7 +35,7 @@ public class SpireOgelServiceMock implements SpireOgelService {
     if (missingOgel) {
       throw new OgelNotFoundException(id);
     } else {
-      return ogel;
+      return buildOgel();
     }
   }
 
@@ -43,13 +44,24 @@ public class SpireOgelServiceMock implements SpireOgelService {
     return null;
   }
 
-  public void setMissingOgel(boolean missingOgel) {
+  public SpireOgelServiceMock setMissingOgel(boolean missingOgel) {
     this.missingOgel = missingOgel;
+    return this;
   }
 
-  private SpireOgel buildOgel(String id) {
+  public SpireOgelServiceMock setVirtualEu(boolean virtualEu) {
+    isVirtualEu = virtualEu;
+    return this;
+  }
+
+  private SpireOgel buildOgel() {
     SpireOgel ogel = new SpireOgel();
-    ogel.setId(id);
+    if (isVirtualEu) {
+      ogel.setId(virtualEuOgelId);
+    }
+    else {
+      ogel.setId("OGL1");
+    }
     ogel.setName("name");
     ogel.setLink("http://example.org");
     return ogel;
