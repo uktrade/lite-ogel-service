@@ -75,8 +75,7 @@ public class ApplicableOgelResource {
           int rankingCompare = Integer.compare(o1.getRanking(), o2.getRanking());
           if (rankingCompare != 0) {
             return rankingCompare;
-          }
-          else {
+          } else {
             return o1.getId().compareTo(o2.getId());
           }
         })

@@ -29,12 +29,10 @@ public class ApplicableOgelServiceMock implements ApplicableOgelService {
       if (ogelFound) {
         // Using SpireOgelServiceMock to generate the OGEL
         return Collections.singletonList(spireOgelService.findSpireOgelById("OGl1"));
-      }
-      else {
+      } else {
         return Collections.emptyList();
       }
-    }
-    else {
+    } else {
       throw new WebApplicationException("Invalid activityType: INVALID", 400);
     }
   }

@@ -44,8 +44,7 @@ public class ControlCodeConditionsServiceMock implements ControlCodeConditionsSe
       if (controlCodeDescriptionsMissingControlCodes) {
         descriptionControlCodes.setControlCodes(Collections.emptyList());
         descriptionControlCodes.setMissingControlCodes(Collections.singletonList("ML1a"));
-      }
-      else {
+      } else {
         ControlCode controlCode = new ControlCode();
         controlCode.setId("ML1a");
         controlCode.setFriendlyDescription("Rifles and combination guns, handguns, machine, sub-machine and volley guns");

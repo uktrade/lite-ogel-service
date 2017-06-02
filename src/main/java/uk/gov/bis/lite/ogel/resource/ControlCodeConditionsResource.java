@@ -73,16 +73,14 @@ public class ControlCodeConditionsResource {
 
     if (codeConditionFullView == null) {
       return Response.status(Status.NO_CONTENT).build();
-    }
-    else {
+    } else {
       Status status;
 
       if (codeConditionFullView.getConditionDescriptionControlCodes() != null &&
           codeConditionFullView.getConditionDescriptionControlCodes().getMissingControlCodes() != null &&
           !codeConditionFullView.getConditionDescriptionControlCodes().getMissingControlCodes().isEmpty()) {
         status = Status.PARTIAL_CONTENT;
-      }
-      else {
+      } else {
         status = Status.OK;
       }
       return Response.status(status).entity(codeConditionFullView).build();

@@ -30,8 +30,7 @@ public class LocalOgelServiceMock implements LocalOgelService {
   public LocalOgel findLocalOgelById(String id) {
     if (missingLocalOgel) {
       return null;
-    }
-    else {
+    } else {
       return localOgel;
     }
   }
@@ -50,8 +49,7 @@ public class LocalOgelServiceMock implements LocalOgelService {
   public List<LocalOgel> getAllLocalOgels() {
     if (missingLocalOgel) {
       return Collections.emptyList();
-    }
-    else {
+    } else {
       return Collections.singletonList(localOgel);
     }
   }

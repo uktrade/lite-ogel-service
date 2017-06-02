@@ -29,14 +29,12 @@ public class ControlCodeConditionsServiceImpl implements ControlCodeConditionsSe
     LocalControlCodeCondition localConditions = localControlCodeConditionService.getLocalControlCodeConditionsByIdAndControlCode(ogelID, controlCode);
     if (localConditions == null) {
       return null;
-    }
-    else {
+    } else {
       List<String> controlCodes = localConditions.getConditionDescriptionControlCodes();
       if (!controlCodes.isEmpty()) {
         BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(controlCodes);
         return ViewFactory.createControlCodeCondition(localConditions, bulkControlCodes);
-      }
-      else {
+      } else {
         return ViewFactory.createControlCodeCondition(localConditions);
       }
     }
