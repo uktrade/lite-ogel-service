@@ -23,16 +23,14 @@ import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
 import uk.gov.bis.lite.ogel.service.ControlCodeConditionsService;
-import uk.gov.bis.lite.ogel.service.ControlCodeConditionsServiceImpl;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
-import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionServiceImpl;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
-import uk.gov.bis.lite.ogel.service.LocalOgelServiceImpl;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -44,9 +42,9 @@ public class ControlCodeConditionsResourceTest {
   private static final String OGEL_ID = "OGL01";
 
   private final SpireOgelService spireOgelService = mock(SpireOgelService.class);
-  private final LocalOgelService localOgelService = mock(LocalOgelServiceImpl.class);
-  private final LocalControlCodeConditionService localControlCodeConditionService = mock(LocalControlCodeConditionServiceImpl.class);
-  private final ControlCodeConditionsService controlCodeConditionsService = mock(ControlCodeConditionsServiceImpl.class);
+  private final LocalOgelService localOgelService = mock(LocalOgelService.class);
+  private final LocalControlCodeConditionService localControlCodeConditionService = mock(LocalControlCodeConditionService.class);
+  private final ControlCodeConditionsService controlCodeConditionsService = mock(ControlCodeConditionsService.class);
 
   @Rule
   public final ResourceTestRule resources = ResourceTestRule.builder()
@@ -81,7 +79,8 @@ public class ControlCodeConditionsResourceTest {
     localOgel.setId(OGEL_ID);
     LocalControlCodeCondition controlCodeCondition = buildControlCodeCondition(new ArrayList<>());
     ControlCodeConditionFullView controlCodeConditionFullView = ViewFactory.createControlCodeCondition(controlCodeCondition);
-    when(controlCodeConditionsService.findControlCodeConditions(OGEL_ID, CONTROL_CODE)).thenReturn(controlCodeConditionFullView);
+    when(controlCodeConditionsService.findControlCodeConditions(OGEL_ID, CONTROL_CODE))
+        .thenReturn(Optional.of(controlCodeConditionFullView));
 
     Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")
       .request(MediaType.APPLICATION_JSON_TYPE)
@@ -108,7 +107,8 @@ public class ControlCodeConditionsResourceTest {
     bulkControlCodes.setControlCodeFullViews(Arrays.asList(controlCodeFullView));
     bulkControlCodes.setMissingControlCodes(new ArrayList<>());
     ControlCodeConditionFullView controlCodeConditionFullView = ViewFactory.createControlCodeCondition(controlCodeCondition, bulkControlCodes);
-    when(controlCodeConditionsService.findControlCodeConditions(OGEL_ID, CONTROL_CODE)).thenReturn(controlCodeConditionFullView);
+    when(controlCodeConditionsService.findControlCodeConditions(OGEL_ID, CONTROL_CODE))
+        .thenReturn(Optional.of(controlCodeConditionFullView));
 
     Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")
       .request(MediaType.APPLICATION_JSON_TYPE)
@@ -122,6 +122,8 @@ public class ControlCodeConditionsResourceTest {
 
   @Test
   public void controlCodeConditionByIdReturnsNoContent() throws Exception {
+    when(controlCodeConditionsService.findControlCodeConditions(OGEL_ID, CONTROL_CODE))
+        .thenReturn(Optional.empty());
     Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")
       .request(MediaType.APPLICATION_JSON_TYPE)
       .get();

@@ -4,12 +4,14 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.bis.lite.controlcode.api.view.BulkControlCodes;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
+import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView.ConditionDescriptionControlCodes;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +28,8 @@ public class ViewFactory {
 
   public static ControlCodeConditionFullView createControlCodeCondition(LocalControlCodeCondition localControlCodeCondition, BulkControlCodes bulkControlCodeCutDowns) {
     ControlCodeConditionFullView view = createControlCodeCondition(localControlCodeCondition);
-    ControlCodeConditionFullView.ConditionDescriptionControlCodes conditionDescriptionControlCodes = new ControlCodeConditionFullView.ConditionDescriptionControlCodes();
+    ConditionDescriptionControlCodes conditionDescriptionControlCodes = new ConditionDescriptionControlCodes();
+
     if (!bulkControlCodeCutDowns.getControlCodeFullViews().isEmpty()) {
       List<ControlCodeConditionFullView.ControlCode> controlCodes = bulkControlCodeCutDowns.getControlCodeFullViews().stream()
           .map(c -> {
@@ -38,8 +41,16 @@ public class ViewFactory {
           })
           .collect(Collectors.toList());
       conditionDescriptionControlCodes.setControlCodes(controlCodes);
+    } else {
+      conditionDescriptionControlCodes.setControlCodes(Collections.emptyList());
     }
-    conditionDescriptionControlCodes.setMissingControlCodes(bulkControlCodeCutDowns.getMissingControlCodes());
+
+    if (!bulkControlCodeCutDowns.getMissingControlCodes().isEmpty()) {
+      conditionDescriptionControlCodes.setMissingControlCodes(bulkControlCodeCutDowns.getMissingControlCodes());
+    } else {
+      conditionDescriptionControlCodes.setMissingControlCodes(Collections.emptyList());
+    }
+
     view.setConditionDescriptionControlCodes(conditionDescriptionControlCodes);
     return view;
   }

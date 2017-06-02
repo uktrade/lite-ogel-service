@@ -9,6 +9,7 @@ import io.dropwizard.jersey.errors.ErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
+import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView.ConditionDescriptionControlCodes;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
@@ -19,6 +20,7 @@ import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import uk.gov.bis.lite.ogel.validator.CheckLocalControlCodeConditionList;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
@@ -69,21 +71,20 @@ public class ControlCodeConditionsResource {
       LOGGER.warn("Local OGEL Not Found for OGEL ID: {}", ogelID);
     }
 
-    ControlCodeConditionFullView codeConditionFullView = controlCodeConditionsService.findControlCodeConditions(ogelID, controlCode);
+    Optional<ControlCodeConditionFullView> codeConditionFullViewOpt = controlCodeConditionsService.findControlCodeConditions(ogelID, controlCode);
 
-    if (codeConditionFullView == null) {
-      return Response.status(Status.NO_CONTENT).build();
-    } else {
+    if (codeConditionFullViewOpt.isPresent()) {
       Status status;
-
-      if (codeConditionFullView.getConditionDescriptionControlCodes() != null &&
-          codeConditionFullView.getConditionDescriptionControlCodes().getMissingControlCodes() != null &&
-          !codeConditionFullView.getConditionDescriptionControlCodes().getMissingControlCodes().isEmpty()) {
+      ConditionDescriptionControlCodes conditionDescriptionControlCodes = codeConditionFullViewOpt.get().getConditionDescriptionControlCodes();
+      if (conditionDescriptionControlCodes != null && !conditionDescriptionControlCodes.getMissingControlCodes().isEmpty()) {
+        // If missing control codes, then return partial content status
         status = Status.PARTIAL_CONTENT;
       } else {
         status = Status.OK;
       }
-      return Response.status(status).entity(codeConditionFullView).build();
+      return Response.status(status).entity(codeConditionFullViewOpt.get()).build();
+    } else {
+      return Response.status(Status.NO_CONTENT).build();
     }
   }
 

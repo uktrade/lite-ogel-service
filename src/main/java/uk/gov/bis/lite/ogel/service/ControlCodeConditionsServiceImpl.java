@@ -9,8 +9,7 @@ import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 
 import java.util.List;
-
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 @Singleton
 public class ControlCodeConditionsServiceImpl implements ControlCodeConditionsService {
@@ -23,19 +22,18 @@ public class ControlCodeConditionsServiceImpl implements ControlCodeConditionsSe
     this.controlCodeClient = controlCodeClient;
   }
 
-  @Nullable
   @Override
-  public ControlCodeConditionFullView findControlCodeConditions(String ogelID, String controlCode) {
+  public Optional<ControlCodeConditionFullView> findControlCodeConditions(String ogelID, String controlCode) {
     LocalControlCodeCondition localConditions = localControlCodeConditionService.getLocalControlCodeConditionsByIdAndControlCode(ogelID, controlCode);
     if (localConditions == null) {
-      return null;
+      return Optional.empty();
     } else {
       List<String> controlCodes = localConditions.getConditionDescriptionControlCodes();
       if (!controlCodes.isEmpty()) {
         BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(controlCodes);
-        return ViewFactory.createControlCodeCondition(localConditions, bulkControlCodes);
+        return Optional.of(ViewFactory.createControlCodeCondition(localConditions, bulkControlCodes));
       } else {
-        return ViewFactory.createControlCodeCondition(localConditions);
+        return Optional.of(ViewFactory.createControlCodeCondition(localConditions));
       }
     }
   }

@@ -2,20 +2,17 @@ package uk.gov.bis.lite.ogel.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import uk.gov.bis.lite.controlcode.api.view.BulkControlCodes;
+import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
-import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView.ConditionDescriptionControlCodes;
-import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView.ControlCode;
+import uk.gov.bis.lite.ogel.factory.ViewFactory;
+import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 
 import java.util.Collections;
-
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 @Singleton
 public class ControlCodeConditionsServiceMock implements ControlCodeConditionsService {
-
-  private final Logger LOGGER = LoggerFactory.getLogger(ControlCodeConditionsServiceMock.class);
 
   private boolean conditionsFound;
   private boolean controlCodeDescriptionsFound;
@@ -26,35 +23,38 @@ public class ControlCodeConditionsServiceMock implements ControlCodeConditionsSe
     conditionsFound = true;
   }
 
-  @Nullable
   @Override
-  public ControlCodeConditionFullView findControlCodeConditions(String ogelID, String controlCode) {
-    LOGGER.debug("" + conditionsFound);
-    return conditionsFound ? buildControlCodeConditionFullView() : null;
+  public Optional<ControlCodeConditionFullView> findControlCodeConditions(String ogelID, String controlCode) {
+    if (conditionsFound) {
+      return Optional.of(buildControlCodeConditionFullView());
+    } else {
+      return Optional.empty();
+    }
   }
 
   private ControlCodeConditionFullView buildControlCodeConditionFullView() {
-    ControlCodeConditionFullView view = new ControlCodeConditionFullView();
-    view.setOgelId("OGL1");
-    view.setControlCode("ML1a");
-    view.setItemsAllowed(false);
-    view.setConditionDescription("<p>Fully automatic weapons</p>");
+    LocalControlCodeCondition condition = new LocalControlCodeCondition();
+    condition.setOgelID("OGL1");
+    condition.setControlCode("ML1a");
+    condition.setItemsAllowed(false);
+    condition.setConditionDescription("<p>Fully automatic weapons</p>");
     if (controlCodeDescriptionsFound) {
-      ConditionDescriptionControlCodes descriptionControlCodes = new ConditionDescriptionControlCodes();
+      BulkControlCodes bulkControlCodes = new BulkControlCodes();
       if (controlCodeDescriptionsMissingControlCodes) {
-        descriptionControlCodes.setControlCodes(Collections.emptyList());
-        descriptionControlCodes.setMissingControlCodes(Collections.singletonList("ML1a"));
+        bulkControlCodes.setMissingControlCodes(Collections.singletonList("ML1a"));
+        bulkControlCodes.setControlCodeFullViews(Collections.emptyList());
       } else {
-        ControlCode controlCode = new ControlCode();
+        ControlCodeFullView controlCode = new ControlCodeFullView();
         controlCode.setId("ML1a");
         controlCode.setFriendlyDescription("Rifles and combination guns, handguns, machine, sub-machine and volley guns");
         controlCode.setControlCode("ML1a");
-        descriptionControlCodes.setControlCodes(Collections.singletonList(controlCode));
-        descriptionControlCodes.setMissingControlCodes(Collections.emptyList());
+        bulkControlCodes.setControlCodeFullViews(Collections.singletonList(controlCode));
+        bulkControlCodes.setMissingControlCodes(Collections.emptyList());
       }
-      view.setConditionDescriptionControlCodes(descriptionControlCodes);
+      return ViewFactory.createControlCodeCondition(condition, bulkControlCodes);
+    } else {
+      return ViewFactory.createControlCodeCondition(condition);
     }
-    return view;
   }
 
   public ControlCodeConditionsServiceMock setConditionsFound(boolean conditionsFound) {

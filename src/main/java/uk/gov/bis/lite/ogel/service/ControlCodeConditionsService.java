@@ -2,9 +2,8 @@ package uk.gov.bis.lite.ogel.service;
 
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 public interface ControlCodeConditionsService {
-  @Nullable
-  ControlCodeConditionFullView findControlCodeConditions(String ogelID, String controlCode);
+  Optional<ControlCodeConditionFullView> findControlCodeConditions(String ogelID, String controlCode);
 }
