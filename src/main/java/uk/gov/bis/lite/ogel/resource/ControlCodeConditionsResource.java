@@ -1,5 +1,7 @@
 package uk.gov.bis.lite.ogel.resource;
 
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+
 import com.google.inject.Inject;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.auth.PrincipalImpl;
@@ -7,15 +9,19 @@ import io.dropwizard.jersey.errors.ErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
-import uk.gov.bis.lite.ogel.client.ControlCodeClient;
+import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView.ConditionDescriptionControlCodes;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
-import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
+import uk.gov.bis.lite.ogel.service.ControlCodeConditionsService;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import uk.gov.bis.lite.ogel.validator.CheckLocalControlCodeConditionList;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
@@ -27,10 +33,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import javax.ws.rs.core.Response.Status;
 
 @Path("/control-code-conditions")
 @Produces(MediaType.APPLICATION_JSON)
@@ -40,16 +43,16 @@ public class ControlCodeConditionsResource {
   private final SpireOgelService ogelService;
   private final LocalOgelService localOgelService;
   private final LocalControlCodeConditionService localControlCodeConditionService;
-  private final ControlCodeClient controlCodeClient;
+  private final ControlCodeConditionsService controlCodeConditionsService;
 
   @Inject
   public ControlCodeConditionsResource(SpireOgelService ogelService, LocalOgelService localOgelService,
                                        LocalControlCodeConditionService localControlCodeConditionService,
-                                       ControlCodeClient controlCodeClient) {
+                                       ControlCodeConditionsService controlCodeConditionsService) {
     this.ogelService = ogelService;
     this.localOgelService = localOgelService;
     this.localControlCodeConditionService = localControlCodeConditionService;
-    this.controlCodeClient = controlCodeClient;
+    this.controlCodeConditionsService = controlCodeConditionsService;
   }
 
   @GET
@@ -68,20 +71,20 @@ public class ControlCodeConditionsResource {
       LOGGER.warn("Local OGEL Not Found for OGEL ID: {}", ogelID);
     }
 
-    LocalControlCodeCondition localControlCodeConditions = localControlCodeConditionService.getLocalControlCodeConditionsByIdAndControlCode(ogelID, controlCode);
+    Optional<ControlCodeConditionFullView> codeConditionFullViewOpt = controlCodeConditionsService.findControlCodeConditions(ogelID, controlCode);
 
-    // When no control code condition found return a 204
-    if (localControlCodeConditions == null) {
-      return Response.status(Response.Status.NO_CONTENT)
-          .build();
-    }
-
-    if (localControlCodeConditions.getConditionDescriptionControlCodes().size() > 0) {
-      return controlCodeClient.bulkControlCodes(localControlCodeConditions);
-    }
-    else {
-      ControlCodeConditionFullView controlCodeConditionFullView = ViewFactory.createControlCodeCondition(localControlCodeConditions);
-      return Response.ok(controlCodeConditionFullView).build();
+    if (codeConditionFullViewOpt.isPresent()) {
+      Status status;
+      ConditionDescriptionControlCodes conditionDescriptionControlCodes = codeConditionFullViewOpt.get().getConditionDescriptionControlCodes();
+      if (conditionDescriptionControlCodes != null && !conditionDescriptionControlCodes.getMissingControlCodes().isEmpty()) {
+        // If missing control codes, then return partial content status
+        status = Status.PARTIAL_CONTENT;
+      } else {
+        status = Status.OK;
+      }
+      return Response.status(status).entity(codeConditionFullViewOpt.get()).build();
+    } else {
+      return Response.status(Status.NO_CONTENT).build();
     }
   }
 
@@ -99,7 +102,7 @@ public class ControlCodeConditionsResource {
     localControlCodeConditionService.insertControlCodeConditionList(ogelConditionsList);
 
     List<String> insertedOgelIDs = ogelConditionsList.stream().map(LocalControlCodeCondition::getOgelID).collect(Collectors.toList());
-    return Response.status(Response.Status.CREATED).entity(
+    return Response.status(Status.CREATED).entity(
         getAllControlCodeConditions().stream().filter(ccc -> insertedOgelIDs.contains(ccc.getOgelID())).collect(Collectors.toList()))
         .type(MediaType.APPLICATION_JSON).build();
   }

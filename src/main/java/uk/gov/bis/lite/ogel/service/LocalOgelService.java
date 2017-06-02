@@ -1,47 +1,22 @@
 package uk.gov.bis.lite.ogel.service;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.validator.CheckLocalOgel;
 
 import java.util.List;
 
-@Singleton
-public class LocalOgelService {
+public interface LocalOgelService {
+  LocalOgel updateSpireOgelCondition(String ogelID, List<String> newConditionList, String conditionField);
 
-  @Inject
-  private LocalOgelDAO localOgelDAO;
+  LocalOgel findLocalOgelById(String id);
 
-  public LocalOgel updateSpireOgelCondition(String ogelID, List<String> newConditionList, String conditionField) {
-    return localOgelDAO.updateSingleOgelConditionList(ogelID, newConditionList, conditionField);
-  }
+  LocalOgel insertOrUpdateOgel(@CheckLocalOgel LocalOgel ogel);
 
-  public LocalOgel findLocalOgelById(String id) {
-    return localOgelDAO.getOgelById(id);
-  }
+  void insertOgelList(List<LocalOgel> ogelList);
 
-  public LocalOgel insertOrUpdateOgel(@CheckLocalOgel LocalOgel ogel) {
-    return localOgelDAO.insertOrUpdate(ogel);
-  }
+  List<LocalOgel> getAllLocalOgels();
 
-  public void insertOgelList(List<LocalOgel> ogelList) {
-    for(LocalOgel lo : ogelList){
-      localOgelDAO.insertOrUpdate(lo);
-    }
-  }
+  void deleteAllOgels();
 
-  public List<LocalOgel> getAllLocalOgels() {
-    return localOgelDAO.getAllOgels();
-  }
-
-  public void deleteAllOgels() {
-    localOgelDAO.deleteAllOgels();
-  }
-
-  public void deleteOgelById(String ogelId) {
-    localOgelDAO.deleteOgelById(ogelId);
-  }
-
+  void deleteOgelById(String ogelId);
 }

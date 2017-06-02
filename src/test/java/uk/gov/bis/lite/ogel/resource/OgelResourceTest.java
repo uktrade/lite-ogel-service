@@ -28,8 +28,8 @@ import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
+import uk.gov.bis.lite.ogel.service.LocalOgelServiceImpl;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
-import uk.gov.bis.lite.ogel.service.SpireOgelServiceImpl;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
 import java.io.IOException;
@@ -46,8 +46,8 @@ import javax.xml.soap.SOAPException;
 import javax.xml.xpath.XPathExpressionException;
 
 public class OgelResourceTest {
-  private SpireOgelService spireService = Mockito.mock(SpireOgelServiceImpl.class);
-  private LocalOgelService localService = Mockito.mock(LocalOgelService.class);
+  private SpireOgelService spireService = Mockito.mock(SpireOgelService.class);
+  private LocalOgelService localService = Mockito.mock(LocalOgelServiceImpl.class);
 
   private LocalOgel logel;
   private SpireOgel ogel;

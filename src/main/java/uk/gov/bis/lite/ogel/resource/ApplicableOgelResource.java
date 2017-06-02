@@ -72,8 +72,7 @@ public class ApplicableOgelResource {
         .findOgel(controlCode, SpireUtil.stripCountryPrefix(destinationCountries), activityTypes)
         .stream()
         .filter(e -> !virtualEuOgelId.equals(e.getId()))
-        .sorted(Comparator.comparing(SpireOgel::getId)) // Baseline order (by OGEL ID String)
-        .sorted(Comparator.comparingInt(SpireOgel::getRanking)) // Ranking order (when duplicated rank, the baseline applies)
+        .sorted(Comparator.comparing(SpireOgel::getRanking).thenComparing(SpireOgel::getId))
         .map(e -> ViewFactory.createApplicableOgel(e, localOgelService.findLocalOgelById(e.getId())))
         .collect(Collectors.toList());
 

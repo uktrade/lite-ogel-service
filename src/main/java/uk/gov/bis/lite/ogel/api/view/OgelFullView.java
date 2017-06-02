@@ -10,7 +10,6 @@ public class OgelFullView {
   private String id;
   private String name;
   private OgelConditionSummary summary;
-  private String description;
   private String link;
 
   public void setId(String id) {
@@ -23,10 +22,6 @@ public class OgelFullView {
 
   public void setSummary(OgelConditionSummary summary) {
     this.summary = summary;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
   }
 
   public void setLink(String link) {
@@ -43,10 +38,6 @@ public class OgelFullView {
 
   public OgelConditionSummary getSummary() {
     return summary;
-  }
-
-  public String getDescription() {
-    return description;
   }
 
   public String getLink() {

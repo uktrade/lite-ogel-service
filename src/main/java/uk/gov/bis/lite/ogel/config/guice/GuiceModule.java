@@ -22,6 +22,12 @@ import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.database.dao.ogel.SqliteLocalOgelDAOImpl;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelServiceImpl;
+import uk.gov.bis.lite.ogel.service.ControlCodeConditionsService;
+import uk.gov.bis.lite.ogel.service.ControlCodeConditionsServiceImpl;
+import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
+import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionServiceImpl;
+import uk.gov.bis.lite.ogel.service.LocalOgelService;
+import uk.gov.bis.lite.ogel.service.LocalOgelServiceImpl;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelServiceImpl;
 import uk.gov.bis.lite.ogel.spire.SpireOgelClient;
@@ -62,8 +68,11 @@ public class GuiceModule extends AbstractModule {
     bind(SchedulerConfiguration.class).toInstance(new SchedulerConfiguration("uk.gov.bis.lite.ogel"));
     bind(LocalOgelDAO.class).to(SqliteLocalOgelDAOImpl.class);
     bind(LocalControlCodeConditionDAO.class).to(SqliteLocalControlCodeConditionDAOImpl.class);
+    bind(LocalControlCodeConditionService.class).to(LocalControlCodeConditionServiceImpl.class);
+    bind(LocalOgelService.class).to(LocalOgelServiceImpl.class);
     bind(SpireOgelService.class).to(SpireOgelServiceImpl.class);
     bind(ApplicableOgelService.class).to(ApplicableOgelServiceImpl.class);
+    bind(ControlCodeConditionsService.class).to(ControlCodeConditionsServiceImpl.class);
   }
 
   @Provides
