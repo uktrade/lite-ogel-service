@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.bis.lite.controlcode.api.view.BulkControlCodes;
 import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,12 +64,10 @@ public class ControlCodeClientTest extends JerseyTest {
 
   @Test
   public void shouldGetBulkControlCodes() throws Exception {
-    LocalControlCodeCondition localControlCodeCondition = new LocalControlCodeCondition();
-    localControlCodeCondition.setConditionDescriptionControlCodes(Arrays.asList("C1", "C2", "C3"));
-    BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(localControlCodeCondition.getConditionDescriptionControlCodes());
+    BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(Arrays.asList("C1", "C2", "C3"));
     assertThat(bulkControlCodes).isNotNull();
-    assertThat(bulkControlCodes.getControlCodeFullViews().size()).isEqualTo(2);
-    assertThat(bulkControlCodes.getMissingControlCodes().size()).isEqualTo(1);
+    assertThat(bulkControlCodes.getControlCodeFullViews()).extracting(e -> e.getControlCode()).containsOnly("C1", "C2");
+    assertThat(bulkControlCodes.getMissingControlCodes().get(0)).isEqualTo("C3");
   }
 
   private static List<ControlCodeFullView> getControlCodes() {
@@ -88,11 +85,11 @@ public class ControlCodeClientTest extends JerseyTest {
     ControlCodeFullView controlCodeFullView = new ControlCodeFullView();
     controlCodeFullView.setControlCode("C1");
     ControlCodeFullView controlCodeFullView2 = new ControlCodeFullView();
-    controlCodeFullView.setControlCode("C2");
+    controlCodeFullView2.setControlCode("C2");
 
     BulkControlCodes bulkControlCodes = new BulkControlCodes();
     bulkControlCodes.setControlCodeFullViews(Arrays.asList(controlCodeFullView, controlCodeFullView2));
-    bulkControlCodes.setMissingControlCodes(Arrays.asList("111"));
+    bulkControlCodes.setMissingControlCodes(Arrays.asList("C3"));
     return bulkControlCodes;
   }
 
