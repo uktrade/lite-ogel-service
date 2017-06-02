@@ -1,14 +1,13 @@
 package uk.gov.bis.lite.ogel.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import uk.gov.bis.lite.controlcode.api.view.BulkControlCodes;
 import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 
-import java.io.IOException;
 import java.util.List;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -48,10 +47,9 @@ public class ControlCodeClient {
     }
     try {
       Response response = controlCodeServiceTarget.request().get();
-      String controlCodeServiceResponse = response.readEntity(String.class);
-      return new ObjectMapper().readValue(controlCodeServiceResponse, BulkControlCodes.class);
+      return response.readEntity(BulkControlCodes.class);
     }
-    catch (IOException e) {
+    catch (ProcessingException e) {
       throw new WebApplicationException("Unable to get control code details from the control code service", e, Response.Status.INTERNAL_SERVER_ERROR);
     }
   }
