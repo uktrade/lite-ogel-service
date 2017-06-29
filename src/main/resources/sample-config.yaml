@@ -5,13 +5,13 @@ password: pass
 jerseyClient:
   timeout: 10000ms
 
-controlCodeServiceUrl: http://control-code-service.svc.licensing.service.trade.gov.uk.test
+controlCodeServiceUrl: http://control-code-service.svc.dev.licensing.service.trade.gov.uk.test
 
 virtualEuOgelId: OGL61
 
 spireClientUserName: spireuser
 spireClientPassword: spirepass
-spireClientUrl: http://service-mocking.svc.licensing.service.trade.gov.uk.test/spire/fox/ispire/
+spireClientUrl: http://service-mocking.svc.dev.licensing.service.trade.gov.uk.test/spire/fox/ispire/
 
 logging:
   level: INFO
