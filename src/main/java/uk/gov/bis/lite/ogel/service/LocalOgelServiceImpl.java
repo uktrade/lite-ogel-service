@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
-import uk.gov.bis.lite.ogel.validator.CheckLocalOgel;
 
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class LocalOgelServiceImpl implements LocalOgelService {
   }
 
   @Override
-  public LocalOgel insertOrUpdateOgel(@CheckLocalOgel LocalOgel ogel) {
+  public LocalOgel insertOrUpdateOgel(LocalOgel ogel) {
     return localOgelDAO.insertOrUpdate(ogel);
   }
 
