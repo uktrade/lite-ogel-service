@@ -32,7 +32,7 @@ public class ControlCodePactTest {
   private static final String PROVIDER = "lite-control-code-service";
   private static final String CONSUMER = "lite-ogel-service";
 
-  private static final List<String> CONTROL_CODES = Arrays.asList("C1", "C2");
+  private static final List<String> CONTROL_CODES = Arrays.asList("C1");
 
   @Rule
   public PactProviderRule mockProvider = new PactProviderRule(PROVIDER, this);
@@ -62,10 +62,10 @@ public class ControlCodePactTest {
         .uponReceiving("request to get bulk control codes - all match")
         .path("/bulk-control-codes")
         .method("GET")
-        .query("controlCode=C1&controlCode=C2")
+        .query("controlCode=C1")
         .willRespondWith()
-        .status(200)
-        .body(bulkControlCodeAllMatchResponsePactDsl())
+          .status(200)
+          .body(bulkControlCodeAllMatchResponsePactDsl())
         .toFragment();
   }
 
@@ -76,7 +76,7 @@ public class ControlCodePactTest {
         .uponReceiving("request to get bulk control codes - match and no match")
         .path("/bulk-control-codes")
         .method("GET")
-        .query("controlCode=C1&controlCode=C2")
+        .query("controlCode=C1")
         .willRespondWith()
           .status(200)
           .body(bulkCCMatchAndNoMatchResponsePactDsl())
@@ -90,7 +90,7 @@ public class ControlCodePactTest {
         .uponReceiving("request to get bulk control codes - none match")
         .path("/bulk-control-codes")
         .method("GET")
-        .query("controlCode=C1&controlCode=C2")
+        .query("controlCode=C1")
         .willRespondWith()
         .status(206)
         .body(getBulkCCNoneMatchResponsePactDsl())
@@ -102,7 +102,11 @@ public class ControlCodePactTest {
   public void shouldGetAllControlCodes() throws Exception {
     List<ControlCodeFullView> result = controlCodeClient.getAllControlCodes();
     assertThat(controlCodeClient.getAllControlCodes()).isNotEmpty();
-    assertThat(result.get(0).getControlCode().equals("C1"));
+    assertThat(result.get(0).getControlCode()).isEqualTo("C1");
+    assertThat(result.get(0).getId()).isEqualTo("1");
+    assertThat(result.get(0).getLegalDescription()).isEqualTo("Control Code test");
+    assertThat(result.get(0).getCategory()).isEqualTo("RATING");
+    assertThat(result.get(0).isSelectable()).isEqualTo(true);
   }
 
   @Test
@@ -110,7 +114,7 @@ public class ControlCodePactTest {
   public void shouldGetBulkCCAllMatch() throws Exception {
     BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(CONTROL_CODES);
     assertThat(bulkControlCodes).isNotNull();
-    assertThat(bulkControlCodes.getControlCodeFullViews()).extracting(e -> e.getControlCode()).contains("C1");
+    assertThat(bulkControlCodes.getControlCodeFullViews().get(0).getControlCode()).isEqualTo("C1");
     assertThat(bulkControlCodes.getMissingControlCodes().isEmpty());
   }
 
@@ -128,33 +132,34 @@ public class ControlCodePactTest {
   public void shouldGetBulkCCNoneMatch() throws Exception {
     BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(CONTROL_CODES);
     assertThat(bulkControlCodes).isNotNull();
-    assertThat(bulkControlCodes.getMissingControlCodes().get(0)).isEqualTo("C1\",\"C2");
+    assertThat(bulkControlCodes.getControlCodeFullViews()).extracting(e -> e.getControlCode()).isEmpty();
+    assertThat(bulkControlCodes.getMissingControlCodes().get(0)).isEqualTo("C1");
   }
 
   private DslPart controlCodeFullViewPactDsl() {
       return PactDslJsonArray.arrayMinLike(1)
           .stringType("id","1")
-          .stringType("parentId","11")
+          .stringType("parentId")
           .stringType("controlCode","C1")
           .stringType("title")
           .stringType("technicalNotes")
           .stringType("alias")
           .stringType("category", "RATING")
-          .stringType("friendlyDescription", "Control Code test")
+          .stringType("friendlyDescription")
           .stringType("legalDescription", "Control Code test")
-          .minArrayLike("decontrols", 0)
+          .minArrayLike("decontrols", 0).closeObject().closeArray()
           .object("additionalSpecifications")
             .stringType("clauseText")
             .minArrayLike("specificationText", 0, PactDslJsonRootValue.stringType())
             .minArrayLike("specificationControlCodes", 0, PactDslJsonRootValue.stringType())
           .closeObject().asBody()
           .booleanType("selectable", true)
-          .booleanType("showInHierarchy", true)
+          .booleanType("showInHierarchy")
           .stringType("revisionDate")
-          .stringType("lastModifiedInRevision", "1")
+          .stringType("lastModifiedInRevision")
           .stringType("beforeLegalDefinitionText")
           .stringType("afterLegalDefinitionText")
-          .stringType("displayOrder", "1")
+          .stringType("displayOrder")
           .stringType("reasonForControl")
           .stringType("definitionOfTerms")
         .closeObject();
@@ -199,7 +204,7 @@ public class ControlCodePactTest {
           .closeObject()
           .closeArray()
         .asBody()
-        .minArrayLike("missingControlCodes", 0, PactDslJsonRootValue.stringType("C1\",\"C2"),1)
+        .minArrayLike("missingControlCodes", 0, PactDslJsonRootValue.stringType("C1"),1)
         .asBody();
   }
 
@@ -239,9 +244,4 @@ public class ControlCodePactTest {
         .asBody();
   }
 
-  //  Map<String, String> headers() {
-//    Map<String, String> headers = new HashMap<>();
-//    headers.put("Content-Type", "application/json");
-//    return headers;
-//  }
 }
