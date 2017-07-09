@@ -1,0 +1,478 @@
+{
+    "provider": {
+        "name": "lite-control-code-service"
+    },
+    "consumer": {
+        "name": "lite-ogel-service"
+    },
+    "interactions": [
+        {
+            "description": "request to get all control codes",
+            "request": {
+                "method": "GET",
+                "path": "/control-codes"
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json; charset=UTF-8"
+                },
+                "body": [
+                    {
+                        "additionalSpecifications": {
+                            "clauseText": "tACiDvZYqfEmCgrizjqx",
+                            "specificationControlCodes": [
+                                "aWHmhgtnqgqeuLVFwRlL",
+                                "aWHmhgtnqgqeuLVFwRlL"
+                            ],
+                            "specificationText": [
+                                "kFeloExLgJVPojAKBiSo",
+                                "kFeloExLgJVPojAKBiSo"
+                            ]
+                        },
+                        "afterLegalDefinitionText": "JKMELcRZfgGDtvSyjytm",
+                        "alias": "cLuBpkzYOZTLIfelQsAd",
+                        "beforeLegalDefinitionText": "OTdkGPksuWdqZRpGYhbC",
+                        "category": "RATING",
+                        "controlCode": "C1",
+                        "decontrols": [
+                            "AkUfjHaqtDfKTSvPMDrN",
+                            "AkUfjHaqtDfKTSvPMDrN"
+                        ],
+                        "definitionOfTerms": "nCeMzdQCqBVjNSPQrkHC",
+                        "displayOrder": "ibgftZJQgjDgywsxwxys",
+                        "friendlyDescription": "qmwlmcDaiNNSkGACbbou",
+                        "id": "1",
+                        "lastModifiedInRevision": "MCYrxXfTMqlSVIRThehx",
+                        "legalDescription": "Control Code test",
+                        "parentId": "WzkXBejHHIKIVGfOoZlA",
+                        "reasonForControl": "jAwwfDbKOrRTwsBuJzfi",
+                        "revisionDate": "tXsHiNoWZvCHQsZBPfYj",
+                        "selectable": true,
+                        "showInHierarchy": true,
+                        "technicalNotes": "PGPGmETrdxpaZhAanHNE",
+                        "title": "raSSNKqZWtODhqzxwlbg"
+                    }
+                ],
+                "matchingRules": {
+                    "$.body": {
+                        "min": 1,
+                        "match": "type"
+                    },
+                    "$.body[*].showInHierarchy": {
+                        "match": "type"
+                    },
+                    "$.body[*].reasonForControl": {
+                        "match": "type"
+                    },
+                    "$.body[*].id": {
+                        "match": "type"
+                    },
+                    "$.body[*].additionalSpecifications.clauseText": {
+                        "match": "type"
+                    },
+                    "$.body[*].decontrols[*]": {
+                        "match": "type"
+                    },
+                    "$.body[*].beforeLegalDefinitionText": {
+                        "match": "type"
+                    },
+                    "$.body[*].definitionOfTerms": {
+                        "match": "type"
+                    },
+                    "$.body[*].controlCode": {
+                        "match": "type"
+                    },
+                    "$.body[*].additionalSpecifications.specificationControlCodes": {
+                        "min": 0,
+                        "match": "type"
+                    },
+                    "$.body[*].title": {
+                        "match": "type"
+                    },
+                    "$.body[*].afterLegalDefinitionText": {
+                        "match": "type"
+                    },
+                    "$.body[*].additionalSpecifications.specificationText[*]": {
+                        "match": "type"
+                    },
+                    "$.body[*].technicalNotes": {
+                        "match": "type"
+                    },
+                    "$.body[*].legalDescription": {
+                        "match": "type"
+                    },
+                    "$.body[*].alias": {
+                        "match": "type"
+                    },
+                    "$.body[*].decontrols": {
+                        "min": 0,
+                        "match": "type"
+                    },
+                    "$.body[*].additionalSpecifications.specificationText": {
+                        "min": 0,
+                        "match": "type"
+                    },
+                    "$.body[*].parentId": {
+                        "match": "type"
+                    },
+                    "$.body[*].category": {
+                        "match": "type"
+                    },
+                    "$.body[*].displayOrder": {
+                        "match": "type"
+                    },
+                    "$.body[*].additionalSpecifications.specificationControlCodes[*]": {
+                        "match": "type"
+                    },
+                    "$.body[*].lastModifiedInRevision": {
+                        "match": "type"
+                    },
+                    "$.body[*].selectable": {
+                        "match": "type"
+                    },
+                    "$.body[*].friendlyDescription": {
+                        "match": "type"
+                    },
+                    "$.body[*].revisionDate": {
+                        "match": "type"
+                    }
+                }
+            }
+        },
+        {
+            "description": "request to get bulk control codes - all match",
+            "request": {
+                "method": "GET",
+                "path": "/bulk-control-codes",
+                "query": "controlCode=C1"
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json; charset=UTF-8"
+                },
+                "body": {
+                    "controlCodeFullViews": [
+                        {
+                            "additionalSpecifications": {
+                                "clauseText": "hSwUJcjrkxJvqgoHRwiG",
+                                "specificationControlCodes": [
+                                    "CCFcheiAlCMRnEApHOpC",
+                                    "CCFcheiAlCMRnEApHOpC"
+                                ],
+                                "specificationText": [
+                                    "omuTWvsLPVFyRYwvKTmm",
+                                    "omuTWvsLPVFyRYwvKTmm"
+                                ]
+                            },
+                            "afterLegalDefinitionText": "AicRBXLMToOsxNCQtXie",
+                            "alias": "GxgkgnDoqIkovVuxDAMN",
+                            "beforeLegalDefinitionText": "ySDcssNNLaUYLhTSIAtX",
+                            "category": "kkzWmewmdxomsBRalNBY",
+                            "controlCode": "C1",
+                            "decontrols": [
+                                "duwpjwBXwciFSKtRaWLp",
+                                "duwpjwBXwciFSKtRaWLp"
+                            ],
+                            "definitionOfTerms": "UnIxYdaDMaBclhdTRfkz",
+                            "displayOrder": "qWkIFxQVCufAXypslAXU",
+                            "friendlyDescription": "kRFOQJGJJyyllLrQuuZy",
+                            "id": "lVKjQMOlJGGCxOAhbBTo",
+                            "lastModifiedInRevision": "aohufxbBDaLCKjmQQPBV",
+                            "legalDescription": "NFpHckMdpozVjRKMNmfx",
+                            "parentId": "rQeIIPBfNzLnqyMlxXcF",
+                            "reasonForControl": "kMrxhkUrjDSopfjeDQgW",
+                            "revisionDate": "MeHvIYFqnDOYPeQQRDQE",
+                            "selectable": true,
+                            "showInHierarchy": true,
+                            "technicalNotes": "lHLGVmITuJGDrceqIbSJ",
+                            "title": "heKuFjHpPkSnhXGfzPIQ"
+                        }
+                    ],
+                    "missingControlCodes": [
+                        
+                    ]
+                },
+                "matchingRules": {
+                    "$.body.controlCodeFullViews[*].additionalSpecifications.specificationControlCodes": {
+                        "min": 0,
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews": {
+                        "min": 1,
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].additionalSpecifications.specificationControlCodes[*]": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].reasonForControl": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].beforeLegalDefinitionText": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].category": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].technicalNotes": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].showInHierarchy": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].definitionOfTerms": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].afterLegalDefinitionText": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].additionalSpecifications.clauseText": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].controlCode": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].decontrols": {
+                        "min": 0,
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].decontrols[*]": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].parentId": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].alias": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].title": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].id": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].selectable": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].displayOrder": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].lastModifiedInRevision": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].revisionDate": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].additionalSpecifications.specificationText[*]": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].additionalSpecifications.specificationText": {
+                        "min": 0,
+                        "match": "type"
+                    },
+                    "$.body.missingControlCodes": {
+                        "min": 0,
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].legalDescription": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].friendlyDescription": {
+                        "match": "type"
+                    }
+                }
+            }
+        },
+        {
+            "description": "request to get bulk control codes - match and no match",
+            "request": {
+                "method": "GET",
+                "path": "/bulk-control-codes",
+                "query": "controlCode=C1&controlCode=C2"
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json; charset=UTF-8"
+                },
+                "body": {
+                    "controlCodeFullViews": [
+                        {
+                            "additionalSpecifications": {
+                                "clauseText": "IgjWnvTUeEorXsBBObXn",
+                                "specificationControlCodes": [
+                                    "MkuoCuUBAMdxiIHzrHqT",
+                                    "MkuoCuUBAMdxiIHzrHqT"
+                                ],
+                                "specificationText": [
+                                    "NWBNGLdgeOnbGaRXqFKq",
+                                    "NWBNGLdgeOnbGaRXqFKq"
+                                ]
+                            },
+                            "afterLegalDefinitionText": "WYEnQtEdLpzBuAlXqRNE",
+                            "alias": "SkPSrNJSVQgZZWEEVJMR",
+                            "beforeLegalDefinitionText": "RDigluuXHbrFZZvVdOJo",
+                            "category": "nMduOfKyrRuKwNqSbDQR",
+                            "controlCode": "C1",
+                            "decontrols": [
+                                "IkIVzmoPEpLtzTKYyIgw",
+                                "IkIVzmoPEpLtzTKYyIgw"
+                            ],
+                            "definitionOfTerms": "oegALhpsLHDWalyAkUsL",
+                            "displayOrder": "eEDxyZCUssUFGrwyLwpq",
+                            "friendlyDescription": "TasyYUdQEGUsqbVMraQp",
+                            "id": "zvHxpgAUEuKWWSelwlFe",
+                            "lastModifiedInRevision": "wIoQGQiAhktJqUwQoXiK",
+                            "legalDescription": "OzzuRnROTZUWbmKkJaYe",
+                            "parentId": "VWInDealLCsJGYQPonjd",
+                            "reasonForControl": "OzTNjWbXayfHFkbeUDrW",
+                            "revisionDate": "FYiaXVgbDNLYQBVULIJc",
+                            "selectable": true,
+                            "showInHierarchy": true,
+                            "technicalNotes": "KudVtXavVMaOBUQsEsLK",
+                            "title": "FQJuDBIKBbsCBxlIjpUM"
+                        }
+                    ],
+                    "missingControlCodes": [
+                        "C2"
+                    ]
+                },
+                "matchingRules": {
+                    "$.body.controlCodeFullViews[*].additionalSpecifications.specificationControlCodes": {
+                        "min": 0,
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews": {
+                        "min": 1,
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].additionalSpecifications.specificationControlCodes[*]": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].reasonForControl": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].beforeLegalDefinitionText": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].category": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].technicalNotes": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].showInHierarchy": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].definitionOfTerms": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].afterLegalDefinitionText": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].additionalSpecifications.clauseText": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].controlCode": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].decontrols": {
+                        "min": 0,
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].decontrols[*]": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].parentId": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].alias": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].title": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].id": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].selectable": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].displayOrder": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].lastModifiedInRevision": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].revisionDate": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].additionalSpecifications.specificationText[*]": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].additionalSpecifications.specificationText": {
+                        "min": 0,
+                        "match": "type"
+                    },
+                    "$.body.missingControlCodes": {
+                        "min": 1,
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].legalDescription": {
+                        "match": "type"
+                    },
+                    "$.body.controlCodeFullViews[*].friendlyDescription": {
+                        "match": "type"
+                    },
+                    "$.body.missingControlCodes[*]": {
+                        "match": "type"
+                    }
+                }
+            }
+        },
+        {
+            "description": "request to get bulk control codes - none match",
+            "request": {
+                "method": "GET",
+                "path": "/bulk-control-codes",
+                "query": "controlCode=C1"
+            },
+            "response": {
+                "status": 206,
+                "headers": {
+                    "Content-Type": "application/json; charset=UTF-8"
+                },
+                "body": {
+                    "controlCodeFullViews": [
+                        
+                    ],
+                    "missingControlCodes": [
+                        "C1"
+                    ]
+                },
+                "matchingRules": {
+                    "$.body.controlCodeFullViews": {
+                        "min": 0,
+                        "match": "type"
+                    },
+                    "$.body.missingControlCodes": {
+                        "min": 0,
+                        "match": "type"
+                    },
+                    "$.body.missingControlCodes[*]": {
+                        "match": "type"
+                    }
+                }
+            }
+        }
+    ],
+    "metadata": {
+        "pact-specification": {
+            "version": "2.0.0"
+        },
+        "pact-jvm": {
+            "version": "3.3.10"
+        }
+    }
+}
