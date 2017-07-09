@@ -74,7 +74,7 @@ public class ControlCodePactTest {
         .uponReceiving("request to get bulk control codes - match and no match")
         .path("/bulk-control-codes")
         .method("GET")
-        .query("controlCode=C1")
+        .query("controlCode=C1&controlCode=C2")
         .willRespondWith()
           .status(200)
           .body(bulkCCMatchAndNoMatchResponsePactDsl())
@@ -119,7 +119,7 @@ public class ControlCodePactTest {
   @Test
   @PactVerification(value = PROVIDER, fragment = "getBulkCCMatchAndNoMatchSuccess")
   public void shouldGetBulkCCMatchAndNoMatch() throws Exception {
-    BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(CONTROL_CODES);
+    BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(Arrays.asList("C1", "C2"));
     assertThat(bulkControlCodes).isNotNull();
     assertThat(bulkControlCodes.getControlCodeFullViews()).extracting(e -> e.getControlCode()).containsOnly("C1");
     assertThat(bulkControlCodes.getMissingControlCodes().get(0)).isEqualTo("C2");
@@ -196,8 +196,6 @@ public class ControlCodePactTest {
           .closeArray()
           .asBody()
           .minArrayLike("missingControlCodes", 0)
-        .closeObject()
-        .closeArray()
         .asBody();
   }
 
