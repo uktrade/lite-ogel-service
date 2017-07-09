@@ -23,7 +23,6 @@ import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
-import uk.gov.bis.lite.ogel.service.SpireOgelServiceImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +36,7 @@ import javax.ws.rs.core.Response;
 public class AdminResourceTest {
 
   private final LocalOgelService localOgelService = mock(LocalOgelService.class);
-  private final SpireOgelService spireOgelService = mock(SpireOgelServiceImpl.class);
+  private final SpireOgelService spireOgelService = mock(SpireOgelService.class);
   private final LocalControlCodeConditionService controlCodeConditionService = mock(LocalControlCodeConditionService.class);
   private final ControlCodeClient controlCodeClient = mock(ControlCodeClient.class);
 

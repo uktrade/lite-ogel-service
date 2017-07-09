@@ -1,7 +1,6 @@
 package uk.gov.bis.lite.ogel.service;
 
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
-import uk.gov.bis.lite.ogel.validator.CheckLocalOgel;
 
 import java.util.List;
 
@@ -10,7 +9,7 @@ public interface LocalOgelService {
 
   LocalOgel findLocalOgelById(String id);
 
-  LocalOgel insertOrUpdateOgel(@CheckLocalOgel LocalOgel ogel);
+  LocalOgel insertOrUpdateOgel(LocalOgel ogel);
 
   void insertOgelList(List<LocalOgel> ogelList);
 
