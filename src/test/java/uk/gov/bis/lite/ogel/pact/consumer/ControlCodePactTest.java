@@ -30,7 +30,7 @@ public class ControlCodePactTest {
   private static final String PROVIDER = "lite-control-code-service";
   private static final String CONSUMER = "lite-ogel-service";
 
-  private static final List<String> CONTROL_CODES = Arrays.asList("C1");
+  private static final List<String> CONTROL_CODES = Arrays.asList("C1","C2");
 
   @Rule
   public PactProviderRule mockProvider = new PactProviderRule(PROVIDER, this);
@@ -60,7 +60,7 @@ public class ControlCodePactTest {
         .uponReceiving("request to get bulk control codes - all match")
         .path("/bulk-control-codes")
         .method("GET")
-        .query("controlCode=C1")
+        .query("controlCode=C1&controlCode=C2")
         .willRespondWith()
           .status(200)
           .body(bulkControlCodeAllMatchResponsePactDsl())
@@ -88,7 +88,7 @@ public class ControlCodePactTest {
         .uponReceiving("request to get bulk control codes - none match")
         .path("/bulk-control-codes")
         .method("GET")
-        .query("controlCode=C1")
+        .query("controlCode=C1&controlCode=C2")
         .willRespondWith()
           .status(206)
           .body(getBulkCCNoneMatchResponsePactDsl())
@@ -119,7 +119,7 @@ public class ControlCodePactTest {
   @Test
   @PactVerification(value = PROVIDER, fragment = "getBulkCCMatchAndNoMatchSuccess")
   public void shouldGetBulkCCMatchAndNoMatch() throws Exception {
-    BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(Arrays.asList("C1", "C2"));
+    BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(CONTROL_CODES);
     assertThat(bulkControlCodes).isNotNull();
     assertThat(bulkControlCodes.getControlCodeFullViews()).extracting(e -> e.getControlCode()).containsOnly("C1");
     assertThat(bulkControlCodes.getMissingControlCodes().get(0)).isEqualTo("C2");
