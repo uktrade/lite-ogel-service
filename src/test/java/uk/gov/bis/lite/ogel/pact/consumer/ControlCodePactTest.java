@@ -101,10 +101,6 @@ public class ControlCodePactTest {
     List<ControlCodeFullView> result = controlCodeClient.getAllControlCodes();
     assertThat(controlCodeClient.getAllControlCodes()).isNotEmpty();
     assertThat(result.get(0).getControlCode()).isEqualTo("C1");
-    assertThat(result.get(0).getId()).isEqualTo("1");
-    assertThat(result.get(0).getLegalDescription()).isEqualTo("Control Code test");
-    assertThat(result.get(0).getCategory()).isEqualTo("RATING");
-    assertThat(result.get(0).isSelectable()).isEqualTo(true);
   }
 
   @Test
@@ -113,6 +109,8 @@ public class ControlCodePactTest {
     BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(CONTROL_CODES);
     assertThat(bulkControlCodes).isNotNull();
     assertThat(bulkControlCodes.getControlCodeFullViews().get(0).getControlCode()).isEqualTo("C1");
+    assertThat(bulkControlCodes.getControlCodeFullViews().get(0).getId()).isEqualTo("1");
+    assertThat(bulkControlCodes.getControlCodeFullViews().get(0).getFriendlyDescription()).isEqualTo("Friendly Description");
     assertThat(bulkControlCodes.getMissingControlCodes().isEmpty());
   }
 
@@ -122,6 +120,8 @@ public class ControlCodePactTest {
     BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(CONTROL_CODES);
     assertThat(bulkControlCodes).isNotNull();
     assertThat(bulkControlCodes.getControlCodeFullViews()).extracting(e -> e.getControlCode()).containsOnly("C1");
+    assertThat(bulkControlCodes.getControlCodeFullViews().get(0).getId()).isEqualTo("1");
+    assertThat(bulkControlCodes.getControlCodeFullViews().get(0).getFriendlyDescription()).isEqualTo("Friendly Description");
     assertThat(bulkControlCodes.getMissingControlCodes().get(0)).isEqualTo("C2");
   }
 
@@ -135,102 +135,34 @@ public class ControlCodePactTest {
   }
 
   private DslPart controlCodeFullViewPactDsl() {
-      return PactDslJsonArray.arrayMinLike(1)
-          .stringType("id","1")
-          .stringType("parentId")
-          .stringType("controlCode","C1")
-          .stringType("title")
-          .stringType("technicalNotes")
-          .stringType("alias")
-          .stringType("category", "RATING")
-          .stringType("friendlyDescription")
-          .stringType("legalDescription", "Control Code test")
-          .minArrayLike("decontrols", 0, PactDslJsonRootValue.stringType())
-          .object("additionalSpecifications")
-            .stringType("clauseText")
-            .minArrayLike("specificationText", 0, PactDslJsonRootValue.stringType())
-            .minArrayLike("specificationControlCodes", 0, PactDslJsonRootValue.stringType())
-          .closeObject()
-          .asBody()
-          .booleanType("selectable", true)
-          .booleanType("showInHierarchy")
-          .stringType("revisionDate")
-          .stringType("lastModifiedInRevision")
-          .stringType("beforeLegalDefinitionText")
-          .stringType("afterLegalDefinitionText")
-          .stringType("displayOrder")
-          .stringType("reasonForControl")
-          .stringType("definitionOfTerms")
+    return PactDslJsonArray.arrayMinLike(1)
+        .stringType("controlCode","C1")
         .closeObject();
   }
 
   private DslPart bulkControlCodeAllMatchResponsePactDsl() {
     return new PactDslJsonBody()
         .minArrayLike("controlCodeFullViews", 1)
-          .stringType("id")
-          .stringType("parentId")
+          .stringType("id","1")
           .stringType("controlCode","C1")
-          .stringType("title")
-          .stringType("technicalNotes")
-          .stringType("alias")
-          .stringType("category")
-          .stringType("friendlyDescription")
-          .stringType("legalDescription")
-          .minArrayLike("decontrols", 0, PactDslJsonRootValue.stringType())
-          .object("additionalSpecifications")
-            .stringType("clauseText")
-            .minArrayLike("specificationText", 0, PactDslJsonRootValue.stringType())
-            .minArrayLike("specificationControlCodes", 0, PactDslJsonRootValue.stringType())
-          .closeObject()
-          .asBody()
-          .booleanType("selectable")
-          .booleanType("showInHierarchy")
-          .stringType("revisionDate")
-          .stringType("lastModifiedInRevision")
-          .stringType("beforeLegalDefinitionText")
-          .stringType("afterLegalDefinitionText")
-          .stringType("displayOrder")
-          .stringType("reasonForControl")
-          .stringType("definitionOfTerms")
-          .closeObject()
-          .closeArray()
-          .asBody()
-          .minArrayLike("missingControlCodes", 0)
+          .stringType("friendlyDescription","Friendly Description")
+        .closeObject()
+        .closeArray()
+        .asBody()
+        .minArrayLike("missingControlCodes", 0)
         .asBody();
   }
 
   private DslPart bulkCCMatchAndNoMatchResponsePactDsl() {
     return new PactDslJsonBody()
         .minArrayLike("controlCodeFullViews", 1)
-          .stringType("id")
-          .stringType("parentId")
+          .stringType("id","1")
           .stringType("controlCode","C1")
-          .stringType("title")
-          .stringType("technicalNotes")
-          .stringType("alias")
-          .stringType("category")
-          .stringType("friendlyDescription")
-          .stringType("legalDescription")
-          .minArrayLike("decontrols", 0, PactDslJsonRootValue.stringType())
-          .object("additionalSpecifications")
-            .stringType("clauseText")
-            .minArrayLike("specificationText", 0, PactDslJsonRootValue.stringType())
-            .minArrayLike("specificationControlCodes", 0, PactDslJsonRootValue.stringType())
-          .closeObject()
-          .asBody()
-          .booleanType("selectable")
-          .booleanType("showInHierarchy")
-          .stringType("revisionDate")
-          .stringType("lastModifiedInRevision")
-          .stringType("beforeLegalDefinitionText")
-          .stringType("afterLegalDefinitionText")
-          .stringType("displayOrder")
-          .stringType("reasonForControl")
-          .stringType("definitionOfTerms")
-          .closeObject()
-          .closeArray()
-          .asBody()
-        .minArrayLike("missingControlCodes", 1, PactDslJsonRootValue.stringType("C2"), 1)
+          .stringType("friendlyDescription","Friendly Description")
+        .closeObject()
+        .closeArray()
+        .asBody()
+        .minArrayLike("missingControlCodes", 1, PactDslJsonRootValue.stringType("C2"))
         .asBody();
   }
 
@@ -240,8 +172,7 @@ public class ControlCodePactTest {
           .closeObject()
           .closeArray()
         .asBody()
-        .minArrayLike("missingControlCodes", 0, PactDslJsonRootValue.stringType("C1"),1)
+        .minArrayLike("missingControlCodes", 0, PactDslJsonRootValue.stringType("C1"))
         .asBody();
   }
-
 }
