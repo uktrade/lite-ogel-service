@@ -46,6 +46,7 @@ public class ControlCodePactTest {
   public PactFragment getAllControlCodesSuccess(PactDslWithProvider builder) {
 
     return builder
+        .given("control codes exist")
         .uponReceiving("request to get all control codes")
         .path("/control-codes")
         .method("GET")
@@ -60,6 +61,7 @@ public class ControlCodePactTest {
   public PactFragment getBulkCCAllMatch(PactDslWithProvider builder) {
 
     return builder
+        .given("control codes exist")
         .uponReceiving("request to get bulk control codes - all match")
         .path("/bulk-control-codes")
         .method("GET")
@@ -75,6 +77,7 @@ public class ControlCodePactTest {
   public PactFragment getBulkCCMatchAndNoMatchSuccess(PactDslWithProvider builder) {
 
     return builder
+        .given("control codes exist")
         .uponReceiving("request to get bulk control codes - match and no match")
         .path("/bulk-control-codes")
         .method("GET")
@@ -90,6 +93,7 @@ public class ControlCodePactTest {
   public PactFragment getBulkCCNoneMatch(PactDslWithProvider builder) {
 
     return builder
+        .given("control codes do not exist")
         .uponReceiving("request to get bulk control codes - none match")
         .path("/bulk-control-codes")
         .method("GET")
@@ -178,7 +182,7 @@ public class ControlCodePactTest {
           .closeObject()
           .closeArray()
         .asBody()
-        .minArrayLike("missingControlCodes", 0, PactDslJsonRootValue.stringType("C1"))
+        .minArrayLike("missingControlCodes", 1, PactDslJsonRootValue.stringType("C1"))
         .asBody();
   }
 
