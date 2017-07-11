@@ -62,7 +62,7 @@ public class ControlCodePactTest {
 
     return builder
         .given("control codes exist")
-        .uponReceiving("request to get bulk control codes - all match")
+        .uponReceiving("request to get bulk control codes")
         .path("/bulk-control-codes")
         .method("GET")
         .query("controlCode=C1&controlCode=C2")
@@ -77,13 +77,13 @@ public class ControlCodePactTest {
   public PactFragment getBulkCCMatchAndNoMatchSuccess(PactDslWithProvider builder) {
 
     return builder
-        .given("control codes exist")
-        .uponReceiving("request to get bulk control codes - match and no match")
+        .given("some control codes exist")
+        .uponReceiving("request to get bulk control codes")
         .path("/bulk-control-codes")
         .method("GET")
         .query("controlCode=C1&controlCode=C2")
         .willRespondWith()
-          .status(200)
+          .status(206)
           .headers(headers())
           .body(bulkCCMatchAndNoMatchResponsePactDsl())
         .toFragment();
@@ -94,7 +94,7 @@ public class ControlCodePactTest {
 
     return builder
         .given("control codes do not exist")
-        .uponReceiving("request to get bulk control codes - none match")
+        .uponReceiving("request to get bulk control codes")
         .path("/bulk-control-codes")
         .method("GET")
         .query("controlCode=C1&controlCode=C2")
@@ -172,7 +172,7 @@ public class ControlCodePactTest {
         .closeObject()
         .closeArray()
         .asBody()
-        .minArrayLike("missingControlCodes", 1, PactDslJsonRootValue.stringType("C2"))
+        .minArrayLike("missingControlCodes", 1, PactDslJsonRootValue.stringType("C2"), 1)
         .asBody();
   }
 
@@ -182,7 +182,7 @@ public class ControlCodePactTest {
           .closeObject()
           .closeArray()
         .asBody()
-        .minArrayLike("missingControlCodes", 1, PactDslJsonRootValue.stringType("C1"))
+        .minArrayLike("missingControlCodes", 1, PactDslJsonRootValue.stringType("C1"), 1)
         .asBody();
   }
 
