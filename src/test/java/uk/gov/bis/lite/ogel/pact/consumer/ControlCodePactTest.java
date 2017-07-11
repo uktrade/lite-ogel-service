@@ -19,7 +19,9 @@ import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.client.ControlCodeClient;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.client.ClientBuilder;
 
@@ -49,6 +51,7 @@ public class ControlCodePactTest {
         .method("GET")
         .willRespondWith()
           .status(200)
+          .headers(headers())
           .body(controlCodeFullViewPactDsl())
         .toFragment();
   }
@@ -63,6 +66,7 @@ public class ControlCodePactTest {
         .query("controlCode=C1&controlCode=C2")
         .willRespondWith()
           .status(200)
+          .headers(headers())
           .body(bulkControlCodeAllMatchResponsePactDsl())
         .toFragment();
   }
@@ -77,6 +81,7 @@ public class ControlCodePactTest {
         .query("controlCode=C1&controlCode=C2")
         .willRespondWith()
           .status(200)
+          .headers(headers())
           .body(bulkCCMatchAndNoMatchResponsePactDsl())
         .toFragment();
   }
@@ -91,6 +96,7 @@ public class ControlCodePactTest {
         .query("controlCode=C1&controlCode=C2")
         .willRespondWith()
           .status(206)
+          .headers(headers())
           .body(getBulkCCNoneMatchResponsePactDsl())
         .toFragment();
   }
@@ -174,5 +180,11 @@ public class ControlCodePactTest {
         .asBody()
         .minArrayLike("missingControlCodes", 0, PactDslJsonRootValue.stringType("C1"))
         .asBody();
+  }
+
+  Map<String, String> headers() {
+    Map<String, String> headers = new HashMap<>();
+    headers.put("Content-Type", "application/json");
+    return headers;
   }
 }
