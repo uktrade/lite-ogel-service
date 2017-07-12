@@ -152,7 +152,7 @@ public class ControlCodePactTest {
 
   private DslPart bulkControlCodeAllMatchResponsePactDsl() {
     return new PactDslJsonBody()
-        .minArrayLike("controlCodeFullViews", 1)
+        .minArrayLike("controlCodeFullViews", 1,2)
           .stringType("id","1")
           .stringType("controlCode","C1")
           .stringType("friendlyDescription","Friendly Description")
@@ -182,7 +182,7 @@ public class ControlCodePactTest {
           .closeObject()
           .closeArray()
         .asBody()
-        .minArrayLike("missingControlCodes", 1, PactDslJsonRootValue.stringType("C1"), 1)
+        .minArrayLike("missingControlCodes", 1, PactDslJsonRootValue.stringType("C1"), 2)
         .asBody();
   }
 
