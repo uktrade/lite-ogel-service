@@ -186,7 +186,7 @@ public class ControlCodePactTest {
         .asBody();
   }
 
-  Map<String, String> headers() {
+  private Map<String, String> headers() {
     Map<String, String> headers = new HashMap<>();
     headers.put("Content-Type", "application/json");
     return headers;
