@@ -81,7 +81,7 @@ public class ControlCodePactTest {
         .uponReceiving("request to get bulk control codes")
         .path("/bulk-control-codes")
         .method("GET")
-        .query("controlCode=C1&controlCode=C2")
+        .query("controlCode=EXISTING_CODE&controlCode=MISSING_CODE")
         .willRespondWith()
           .status(206)
           .headers(headers())
@@ -127,12 +127,12 @@ public class ControlCodePactTest {
   @Test
   @PactVerification(value = PROVIDER, fragment = "getBulkCCMatchAndNoMatchSuccess")
   public void shouldGetBulkCCMatchAndNoMatch() throws Exception {
-    BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(CONTROL_CODES);
+    BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(Arrays.asList("EXISTING_CODE","MISSING_CODE"));
     assertThat(bulkControlCodes).isNotNull();
-    assertThat(bulkControlCodes.getControlCodeFullViews()).extracting(e -> e.getControlCode()).containsOnly("C1");
+    assertThat(bulkControlCodes.getControlCodeFullViews()).extracting(e -> e.getControlCode()).containsOnly("EXISTING_CODE");
     assertThat(bulkControlCodes.getControlCodeFullViews().get(0).getId()).isEqualTo("1");
     assertThat(bulkControlCodes.getControlCodeFullViews().get(0).getFriendlyDescription()).isEqualTo("Friendly Description");
-    assertThat(bulkControlCodes.getMissingControlCodes().get(0)).isEqualTo("C2");
+    assertThat(bulkControlCodes.getMissingControlCodes().get(0)).isEqualTo("MISSING_CODE");
   }
 
   @Test
@@ -167,12 +167,12 @@ public class ControlCodePactTest {
     return new PactDslJsonBody()
         .minArrayLike("controlCodeFullViews", 1)
           .stringType("id","1")
-          .stringType("controlCode","C1")
+          .stringType("controlCode","EXISTING_CODE")
           .stringType("friendlyDescription","Friendly Description")
         .closeObject()
         .closeArray()
         .asBody()
-        .minArrayLike("missingControlCodes", 1, PactDslJsonRootValue.stringType("C2"), 1)
+        .minArrayLike("missingControlCodes", 1, PactDslJsonRootValue.stringType("MISSING_CODE"), 1)
         .asBody();
   }
 
