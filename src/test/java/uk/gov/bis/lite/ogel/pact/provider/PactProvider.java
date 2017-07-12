@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.ogel;
+package uk.gov.bis.lite.ogel.pact.provider;
 
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 
@@ -13,6 +13,7 @@ import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import ru.vyarus.dropwizard.guice.injector.lookup.InjectorLookup;
+import uk.gov.bis.lite.ogel.TestOgelApplication;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelServiceMock;
 import uk.gov.bis.lite.ogel.service.ControlCodeConditionsServiceMock;
