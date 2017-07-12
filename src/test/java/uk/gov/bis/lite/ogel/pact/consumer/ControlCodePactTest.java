@@ -42,7 +42,7 @@ public class ControlCodePactTest {
     controlCodeClient = new ControlCodeClient(ClientBuilder.newClient(), mockProvider.getConfig().url());
   }
 
-  @Pact(provider = PROVIDER, consumer=CONSUMER)
+  @Pact(provider = PROVIDER, consumer = CONSUMER)
   public PactFragment getAllControlCodesSuccess(PactDslWithProvider builder) {
 
     return builder
@@ -57,7 +57,7 @@ public class ControlCodePactTest {
         .toFragment();
   }
 
-  @Pact(provider = PROVIDER, consumer=CONSUMER)
+  @Pact(provider = PROVIDER, consumer = CONSUMER)
   public PactFragment getBulkCCAllMatch(PactDslWithProvider builder) {
 
     return builder
@@ -73,7 +73,7 @@ public class ControlCodePactTest {
         .toFragment();
   }
 
-  @Pact(provider = PROVIDER, consumer=CONSUMER)
+  @Pact(provider = PROVIDER, consumer = CONSUMER)
   public PactFragment getBulkCCMatchAndNoMatchSuccess(PactDslWithProvider builder) {
 
     return builder
@@ -89,7 +89,7 @@ public class ControlCodePactTest {
         .toFragment();
   }
 
-  @Pact(provider = PROVIDER, consumer=CONSUMER)
+  @Pact(provider = PROVIDER, consumer = CONSUMER)
   public PactFragment getBulkCCNoneMatch(PactDslWithProvider builder) {
 
     return builder
