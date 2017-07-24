@@ -33,6 +33,7 @@ import uk.gov.bis.lite.ogel.util.TestUtil;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +104,7 @@ public class OgelResourceTest {
 
   @Test
   public void putOgelNotFoundException() {
-    when(spireService.findSpireOgelById(TestUtil.OGL_NF)).thenThrow(new OgelNotFoundException(TestUtil.OGL_));
+    when(spireService.findSpireOgelById(TestUtil.OGL_NF)).thenThrow(new OgelNotFoundException(TestUtil.OGL_NF));
 
     Response response = resources.client().register(feature).target("/ogels")
         .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.getOgelsNotFound(), MediaType.APPLICATION_JSON));
@@ -158,6 +159,29 @@ public class OgelResourceTest {
     Response response = resources.client().target("/ogels/" + TestUtil.OGL_).request().get();
 
     assertEquals(200, response.getStatus());
+  }
+
+  @Test
+  public void updateOgelConditionOgelNotFound() {
+    when(spireService.findSpireOgelById(TestUtil.OGL_NF)).thenThrow(new OgelNotFoundException(TestUtil.OGL_NF));
+    when(localService.findLocalOgelById((TestUtil.OGL_NF))).thenReturn(null);
+
+    Response response = resources.client().register(feature).target("/ogels/" + TestUtil.OGL_NF + "/summary/canList")
+        .request(MediaType.APPLICATION_JSON).put(Entity.json(Arrays.asList("update canList with some text")));
+
+    assertEquals(404, response.getStatus());
+  }
+
+  @Test
+  public void updateOgelConditionSuccess() {
+    when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
+    when(spireService.findSpireOgelById(anyString())).thenReturn(ogel);
+    when(localService.findLocalOgelById(anyString())).thenReturn(logel);
+
+    Response response = resources.client().register(feature).target("/ogels/" + TestUtil.OGLX + "/summary/canList")
+        .request(MediaType.APPLICATION_JSON).put(Entity.json(Arrays.asList("update canList with some text")));
+
+    assertEquals(202, response.getStatus());
   }
 
   @Test
