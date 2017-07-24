@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -76,14 +77,11 @@ public class SpireOgelServiceImpl implements SpireOgelService {
   }
 
   @Override
-  public SpireOgel findSpireOgelById(String id) throws OgelNotFoundException {
+  public Optional<SpireOgel> findSpireOgelById(String id) {
     if (cache.isEmpty()) {
       throw new CacheNotPopulatedException("Communication with Spire failed. Spire Ogel list is not populated");
     }
-    if (cache.containsKey(id)) {
-      return cache.get(id);
-    }
-    throw new OgelNotFoundException(id);
+    return Optional.ofNullable(cache.get(id));
   }
 
   @Override

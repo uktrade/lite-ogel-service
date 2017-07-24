@@ -28,7 +28,7 @@ public class ApplicableOgelServiceMock implements ApplicableOgelService {
     if (validActivityType){
       if (ogelFound) {
         // Using SpireOgelServiceMock to generate the OGEL
-        return Collections.singletonList(spireOgelService.findSpireOgelById("OGl1"));
+        return Collections.singletonList(spireOgelService.findSpireOgelById("OGl1").get());
       } else {
         return Collections.emptyList();
       }

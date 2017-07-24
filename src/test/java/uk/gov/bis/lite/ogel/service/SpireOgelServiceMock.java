@@ -3,12 +3,12 @@ package uk.gov.bis.lite.ogel.service;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.job.SpireHealthStatus;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Singleton
 public class SpireOgelServiceMock implements SpireOgelService {
@@ -31,11 +31,11 @@ public class SpireOgelServiceMock implements SpireOgelService {
   }
 
   @Override
-  public SpireOgel findSpireOgelById(String id) throws OgelNotFoundException {
+  public Optional<SpireOgel> findSpireOgelById(String id) {
     if (missingOgel) {
-      throw new OgelNotFoundException(id);
+      return Optional.empty();
     } else {
-      return buildOgel();
+      return Optional.of(buildOgel());
     }
   }
 

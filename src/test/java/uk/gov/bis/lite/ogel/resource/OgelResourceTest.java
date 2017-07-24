@@ -75,6 +75,8 @@ public class OgelResourceTest {
 
   @Test
   public void putOgelsSuccess() {
+    when(spireService.findSpireOgelById(anyString())).thenReturn(Optional.of(ogel));
+
     Response response = resources.client().register(feature).target("/ogels")
         .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.getLocalOgels(), MediaType.APPLICATION_JSON));
     assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
@@ -104,7 +106,7 @@ public class OgelResourceTest {
 
   @Test
   public void putOgelNotFoundException() {
-    when(spireService.findSpireOgelById(TestUtil.OGL_NF)).thenThrow(new OgelNotFoundException(TestUtil.OGL_NF));
+    when(spireService.findSpireOgelById(anyString())).thenReturn(Optional.empty());
 
     Response response = resources.client().register(feature).target("/ogels")
         .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.getOgelsNotFound(), MediaType.APPLICATION_JSON));
@@ -128,7 +130,7 @@ public class OgelResourceTest {
   @Test
   public void expectedSpireOgel() throws SOAPException, XPathExpressionException, IOException {
     when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
-    when(spireService.findSpireOgelById(anyString())).thenReturn(ogel);
+    when(spireService.findSpireOgelById(anyString())).thenReturn(Optional.of(ogel));
     when(localService.findLocalOgelById(anyString())).thenReturn(logel);
 
     final Response response = resources.client().target("/ogels/" + TestUtil.OGLX).request().get();
@@ -153,7 +155,7 @@ public class OgelResourceTest {
 
   @Test
   public void localOgelNotFound() {
-    when(spireService.findSpireOgelById(anyString())).thenReturn(TestUtil.ogelX());
+    when(spireService.findSpireOgelById(anyString())).thenReturn(Optional.of(TestUtil.ogelX()));
     when(localService.findLocalOgelById((anyString()))).thenReturn(null);
 
     Response response = resources.client().target("/ogels/" + TestUtil.OGL_).request().get();
@@ -163,7 +165,7 @@ public class OgelResourceTest {
 
   @Test
   public void updateOgelConditionOgelNotFound() {
-    when(spireService.findSpireOgelById(TestUtil.OGL_NF)).thenThrow(new OgelNotFoundException(TestUtil.OGL_NF));
+    when(spireService.findSpireOgelById(TestUtil.OGL_NF)).thenReturn(Optional.empty());
     when(localService.findLocalOgelById((TestUtil.OGL_NF))).thenReturn(null);
 
     Response response = resources.client().register(feature).target("/ogels/" + TestUtil.OGL_NF + "/summary/canList")
@@ -175,7 +177,7 @@ public class OgelResourceTest {
   @Test
   public void updateOgelConditionSuccess() {
     when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
-    when(spireService.findSpireOgelById(anyString())).thenReturn(ogel);
+    when(spireService.findSpireOgelById(anyString())).thenReturn(Optional.of(ogel));
     when(localService.findLocalOgelById(anyString())).thenReturn(logel);
 
     Response response = resources.client().register(feature).target("/ogels/" + TestUtil.OGLX + "/summary/canList")
@@ -243,7 +245,7 @@ public class OgelResourceTest {
   @Test
   public void insertOrUpdateRequestIsHandledCorrectly() throws SQLException {
     when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
-    when(spireService.findSpireOgelById(anyString())).thenReturn(TestUtil.ogelX());
+    when(spireService.findSpireOgelById(anyString())).thenReturn(Optional.of(TestUtil.ogelX()));
     when(localService.insertOrUpdateOgel(any(LocalOgel.class))).thenReturn(logel);
 
     Response response = resources.client().register(feature).target("/ogels/" + TestUtil.OGLX)

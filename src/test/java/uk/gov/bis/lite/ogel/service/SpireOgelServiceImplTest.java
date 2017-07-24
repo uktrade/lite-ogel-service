@@ -10,13 +10,13 @@ import static org.mockito.Mockito.when;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
-import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.spire.SpireOgelClient;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class SpireOgelServiceImplTest {
 
@@ -64,13 +64,13 @@ public class SpireOgelServiceImplTest {
 
   @Test
   public void testGetById() {
-    SpireOgel ogl1 = spireOgelService.findSpireOgelById("OGL1");
-    assertThat(ogl1.getId()).isEqualTo("OGL1");
+    Optional<SpireOgel> ogl1 = spireOgelService.findSpireOgelById("OGL1");
+    assertThat(ogl1.get().getId()).isEqualTo("OGL1");
   }
 
   @Test
   public void testGetById_MissingOgel() {
-    assertThatThrownBy(() -> spireOgelService.findSpireOgelById("MISSING_OGEL")).isInstanceOf(OgelNotFoundException.class);
+    assertThat(spireOgelService.findSpireOgelById("MISSING_OGEL").isPresent()).isEqualTo(false);
   }
 
   @Test
