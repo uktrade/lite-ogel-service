@@ -25,6 +25,7 @@ public class TestUtil {
   public static String OGLEU = "OGL61"; // Virtual EU ogel
   public static String OGL_ = "OGL_"; // This Ogel does not exist
   public static String OGLTEMP = "OGLTEMP";
+  public static String OGL_NF = "OGL_NF";
 
   public static String RAT1 = "rat1";
   public static String RAT2 = "rat2";
@@ -108,6 +109,15 @@ public class TestUtil {
     ogel.setId(OGLY);
     locals.add(localOgel);
     locals.add(ogel);
+    return locals;
+  }
+
+  public static List<LocalOgel> getOgelsNotFound() {
+    List<LocalOgel> locals = new ArrayList<>();
+    LocalOgel localOgel = getLocal(OGLX);
+    LocalOgel ogelNotFound = getLocal(OGL_NF);
+    locals.add(localOgel);
+    locals.add(ogelNotFound);
     return locals;
   }
 

@@ -102,6 +102,16 @@ public class OgelResourceTest {
   }
 
   @Test
+  public void putOgelNotFoundException() {
+    when(spireService.findSpireOgelById(TestUtil.OGL_NF)).thenThrow(new OgelNotFoundException(TestUtil.OGL_));
+
+    Response response = resources.client().register(feature).target("/ogels")
+        .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.getOgelsNotFound(), MediaType.APPLICATION_JSON));
+
+    assertEquals(404, response.getStatus());
+  }
+
+  @Test
   public void allOgels() {
     when(localService.getAllLocalOgels()).thenReturn(Collections.singletonList(logel));
     when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
