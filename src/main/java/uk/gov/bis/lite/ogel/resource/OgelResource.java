@@ -56,7 +56,7 @@ public class OgelResource {
   public List<OgelFullView> getAllOgels() throws OgelNotFoundException {
     List<SpireOgel> allSpireOgels = spireOgelService.getAllOgels();
     return allSpireOgels
-        .stream().map(so -> ViewFactory.createOgel(so, localOgelService.findLocalOgelById(so.getId())))
+        .stream().map(so -> ViewFactory.createOgel(so, localOgelService.findLocalOgelById(so.getId()).orElse(null)))
         .collect(Collectors.toList());
   }
 
@@ -68,11 +68,11 @@ public class OgelResource {
     if(!foundSpireOgelOptional.isPresent()) {
       throw new OgelNotFoundException(ogelId);
     }
-    LocalOgel localOgelFound = localOgelService.findLocalOgelById(ogelId);
-    if (localOgelFound == null) {
+    Optional<LocalOgel> localOgelFound = localOgelService.findLocalOgelById(ogelId);
+    if (!localOgelFound.isPresent()) {
       LOGGER.warn("Local Ogel Not Found for ogel ID: {}", ogelId);
     }
-    return ViewFactory.createOgel(foundSpireOgelOptional.get(), localOgelFound);
+    return ViewFactory.createOgel(foundSpireOgelOptional.get(), localOgelFound.orElse(null));
   }
 
   @PUT

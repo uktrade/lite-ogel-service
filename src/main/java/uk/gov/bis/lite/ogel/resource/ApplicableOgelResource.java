@@ -73,7 +73,7 @@ public class ApplicableOgelResource {
         .stream()
         .filter(e -> !virtualEuOgelId.equals(e.getId()))
         .sorted(Comparator.comparing(SpireOgel::getRanking).thenComparing(SpireOgel::getId))
-        .map(e -> ViewFactory.createApplicableOgel(e, localOgelService.findLocalOgelById(e.getId())))
+        .map(e -> ViewFactory.createApplicableOgel(e, localOgelService.findLocalOgelById(e.getId()).orElse(null)))
         .collect(Collectors.toList());
 
     OutboundMessageContext messageContext = new OutboundMessageContext();

@@ -7,6 +7,7 @@ import uk.gov.bis.lite.ogel.model.localOgel.LocalOgelConditionSummary;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Singleton
 public class LocalOgelServiceMock implements LocalOgelService {
@@ -27,11 +28,11 @@ public class LocalOgelServiceMock implements LocalOgelService {
   }
 
   @Override
-  public LocalOgel findLocalOgelById(String id) {
+  public Optional<LocalOgel> findLocalOgelById(String id) {
     if (missingLocalOgel) {
-      return null;
+      return Optional.empty();
     } else {
-      return localOgel;
+      return Optional.of(localOgel);
     }
   }
 

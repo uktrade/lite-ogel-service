@@ -56,7 +56,6 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
   public void run(MainApplicationConfiguration configuration, Environment environment) {
     final Injector injector = guiceBundle.getInjector();
 
-    environment.jersey().register(OgelNotFoundException.OgelNotFoundExceptionHandler.class);
     environment.jersey().register(SpireClientException.ServiceExceptionMapper.class);
 
     //Authorization and authentication handlers

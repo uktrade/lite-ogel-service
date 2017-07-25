@@ -66,8 +66,8 @@ public class ControlCodeConditionsResource {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getControlCodeConditionById(@NotNull @PathParam("ogelID") String ogelID,
                                               @NotNull @PathParam("controlCode") String controlCode) {
-    LocalOgel localOgelFound = localOgelService.findLocalOgelById(ogelID);
-    if (localOgelFound == null) {
+    Optional<LocalOgel> localOgelFound = localOgelService.findLocalOgelById(ogelID);
+    if (!localOgelFound.isPresent()) {
       LOGGER.warn("Local OGEL Not Found for OGEL ID: {}", ogelID);
     }
 
@@ -97,7 +97,11 @@ public class ControlCodeConditionsResource {
     }
 
     // Check OGEL IDs exist on SPIRE too or throw OgelNotFoundException
-    ogelConditionsList.forEach(o -> ogelService.findSpireOgelById(o.getOgelID()));
+    ogelConditionsList.forEach(o -> {
+      if(!ogelService.findSpireOgelById(o.getOgelID()).isPresent()) {
+        throw new OgelNotFoundException(o.getOgelID());
+      }
+    });
 
     localControlCodeConditionService.insertControlCodeConditionList(ogelConditionsList);
 
