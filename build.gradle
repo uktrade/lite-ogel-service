@@ -67,6 +67,8 @@ dependencies {
       'org.mockito:mockito-all:1.9.5',
       "io.dropwizard:dropwizard-testing:$dropwizardVersion",
       'org.skyscreamer:jsonassert:1.3.0'
+  testCompile 'com.github.tomakehurst:wiremock:2.6.0'
+  testCompile 'org.awaitility:awaitility-groovy:3.0.0'
 
   //Pact
   testCompile 'au.com.dius:pact-jvm-provider-junit_2.11:3.3.10'
