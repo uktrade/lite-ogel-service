@@ -1,3 +1,5 @@
+spireOgelsCacheJobCron: 0 0 0 * * ?
+
 cacheTimeout: 1000
 login: user
 password: pass

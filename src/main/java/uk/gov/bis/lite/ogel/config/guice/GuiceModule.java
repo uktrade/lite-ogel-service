@@ -1,5 +1,7 @@
 package uk.gov.bis.lite.ogel.config.guice;
 
+import static uk.gov.bis.lite.ogel.OgelApplication.SPIRE_OGEL_CACHE;
+
 import com.fiestacabin.dropwizard.quartz.SchedulerConfiguration;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -15,6 +17,7 @@ import org.skife.jdbi.v2.DBI;
 import uk.gov.bis.lite.common.jersey.filter.ClientCorrelationIdFilter;
 import uk.gov.bis.lite.common.spire.client.SpireClientConfig;
 import uk.gov.bis.lite.common.spire.client.SpireRequestConfig;
+import uk.gov.bis.lite.ogel.cache.SpireOgelCache;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.LocalControlCodeConditionDAO;
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.SqliteLocalControlCodeConditionDAOImpl;
@@ -85,9 +88,10 @@ public class GuiceModule extends AbstractModule {
 
   @Provides
   @Singleton
-  Scheduler provideScheduler() throws SchedulerException {
-    Scheduler defaultScheduler = StdSchedulerFactory.getDefaultScheduler();
-    return defaultScheduler;
+  Scheduler provideScheduler(SpireOgelCache spireOgelCache) throws SchedulerException {
+    Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+    scheduler.getContext().put(SPIRE_OGEL_CACHE, spireOgelCache);
+    return scheduler;
   }
 
   @Provides

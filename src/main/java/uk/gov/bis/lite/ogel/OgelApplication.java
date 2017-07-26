@@ -1,6 +1,5 @@
 package uk.gov.bis.lite.ogel;
 
-import com.fiestacabin.dropwizard.quartz.ManagedScheduler;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
@@ -13,19 +12,18 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.flywaydb.core.Flyway;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
+import ru.vyarus.dropwizard.guice.module.installer.feature.ManagedInstaller;
 import ru.vyarus.dropwizard.guice.module.installer.feature.health.HealthCheckInstaller;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
 import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
 import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
+import uk.gov.bis.lite.ogel.cache.SpireOgelCache;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.exception.CheckLocalOgelExceptionMapper;
 import uk.gov.bis.lite.ogel.exception.CustomJsonProcessingExceptionMapper;
-import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.healthcheck.SpireHealthCheck;
 import uk.gov.bis.lite.ogel.resource.AdminResource;
 import uk.gov.bis.lite.ogel.resource.ApplicableOgelResource;
@@ -33,18 +31,24 @@ import uk.gov.bis.lite.ogel.resource.ControlCodeConditionsResource;
 import uk.gov.bis.lite.ogel.resource.OgelResource;
 import uk.gov.bis.lite.ogel.resource.VirtualEuResource;
 import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
+import uk.gov.bis.lite.ogel.schedular.SpireOgelsCacheSchedular;
 
 public class OgelApplication extends Application<MainApplicationConfiguration> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(OgelApplication.class);
+
+  public static final String SPIRE_OGEL_CACHE = "spireOgelCache";
   private GuiceBundle<MainApplicationConfiguration> guiceBundle;
   private final Module module;
 
   public static void main(String[] args) throws Exception {
-    new OgelApplication(new GuiceModule()).run(args);
+    new OgelApplication().run(args);
   }
 
   public GuiceBundle<MainApplicationConfiguration> getGuiceBundle() {
     return guiceBundle;
+  }
+
+  public OgelApplication() {
+    this(new GuiceModule());
   }
 
   public OgelApplication(Module module) {
@@ -75,21 +79,18 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());
     flyway.migrate();
 
-    try {
-      ManagedScheduler managedScheduler = injector.getInstance(ManagedScheduler.class);
-      managedScheduler.start();
-    } catch (Exception e) {
-      LOGGER.error("An error occurred wiring the guice managed quartz scheduler", e);
-    }
+    SpireOgelCache spireOgelCache = injector.getInstance(SpireOgelCache.class);
+    spireOgelCache.load();
+
   }
 
   @Override
   public void initialize(Bootstrap<MainApplicationConfiguration> bootstrap) {
     guiceBundle = GuiceBundle.<MainApplicationConfiguration>builder()
         .modules(module)
-        .installers(ResourceInstaller.class, HealthCheckInstaller.class)
+        .installers(ResourceInstaller.class, HealthCheckInstaller.class, ManagedInstaller.class)
         .extensions(AdminResource.class, ApplicableOgelResource.class, OgelResource.class,
-          ControlCodeConditionsResource.class, SpireHealthCheck.class, VirtualEuResource.class)
+          ControlCodeConditionsResource.class, SpireHealthCheck.class, VirtualEuResource.class, SpireOgelsCacheSchedular.class)
         .build(Stage.PRODUCTION);
 
     bootstrap.addBundle(guiceBundle);

@@ -48,6 +48,9 @@ public class MainApplicationConfiguration extends Configuration {
   @JsonProperty
   private String spireClientUrl;
 
+  @NotEmpty
+  @JsonProperty
+  private String spireOgelsCacheJobCron;
 
   public String getSpireClientUserName() {
     return spireClientUserName;
@@ -94,5 +97,9 @@ public class MainApplicationConfiguration extends Configuration {
 
   public String getVirtualEuOgelId() {
     return virtualEuOgelId;
+  }
+
+  public String getSpireOgelsCacheJobCron() {
+    return spireOgelsCacheJobCron;
   }
 }
