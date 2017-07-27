@@ -2,9 +2,11 @@ package uk.gov.bis.lite.ogel.integration;
 
 import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
@@ -52,6 +54,8 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
         .get();
 
     assertThat(response.getStatus()).isEqualTo(404);
+    String expectedJson = "{\"code\":404,\"message\":\"No Ogel Found With Given Ogel ID: OGL_\"}";
+    JSONAssert.assertEquals(expectedJson, response.readEntity(String.class), false);
   }
 
   @Test
@@ -76,6 +80,8 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
         .put(Entity.entity(fixture("fixture/integration/updateOgelConditionRequest.json"), MediaType.APPLICATION_JSON_TYPE));
 
     assertThat(response.getStatus()).isEqualTo(404);
+    String expectedJson = "{\"code\":404,\"message\":\"No Ogel Found With Given Ogel ID: OGL_\"}";
+    JSONAssert.assertEquals(expectedJson, response.readEntity(String.class), false);
   }
 
   @Test
@@ -103,6 +109,8 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
         .put(Entity.entity((TestUtil.localX()), MediaType.APPLICATION_JSON));
 
     assertThat(response.getStatus()).isEqualTo(404);
+    String expectedJson = "{\"code\":404,\"message\":\"No Ogel Found With Given Ogel ID: OGL_\"}";
+    JSONAssert.assertEquals(expectedJson, response.readEntity(String.class), false);
   }
 
   @Test
