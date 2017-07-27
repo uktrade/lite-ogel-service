@@ -3075,12 +3075,16 @@
           <CONDITIONS_LIST>
             <CONDITION>
               <RATINGS_LIST>
+                <RATING>
+                  <RATING_NAME>ML22a</RATING_NAME>
+                  <CONDITIONAL_RATING>true</CONDITIONAL_RATING>
+                </RATING>
               </RATINGS_LIST>
               <SECONDARY_RATINGS_LIST/>
               <EXCLUDED_RATINGS_LIST/>
               <DEST_COUNTRY_INCLUDE_LIST>
                 <COUNTRY>
-                  <COUNTRY_ID>39</COUNTRY_ID>
+                  <COUNTRY_ID>4499</COUNTRY_ID>
                   <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
                   <COUNTRY_NAME>TestCountry</COUNTRY_NAME>
                   <DISPLAY_COL1/>
@@ -3118,7 +3122,67 @@
               <ACTIONS/>
             </RATING_CONDITION>
           </RATING_CONDITIONS>
-          <OGL_ACTIVITY>MIL_ANY</OGL_ACTIVITY>
+          <OGL_ACTIVITY>DU_ANY</OGL_ACTIVITY>
+          <LINK_TO_OGL>https://www.gov.uk/government/publications/open-general-export-licence-historic-military-goods</LINK_TO_OGL>
+          <OGL_RANKING>41</OGL_RANKING>
+        </OGL_TYPE>
+        <OGL_TYPE>
+          <OGEL_TYPE_REF>OGL61</OGEL_TYPE_REF>
+          <NAME>Historic Military Goods</NAME>
+          <DESCRIPTION>
+            <p align="justify">Open General Export Licences (OGELs) allow the export of specified controlled items by any exporter, removing the need for them to apply for an individual licence, provided the shipment and destinations are eligible and the conditions are met. Each OGEL contains conditions about the type and destinations of goods that may be exported and exporters should check these on each licence before using it. This OGEL allows, subject to certain conditions, the export of historic military goods from the UK or any other EU member state where the exporter is established in the UK, providing the goods are worth less than 35,000 and were manufactured before 1897. This OGEL also covers reproductions of muzzle-loaded weapons based on originals manufactured before 1897. Exporters must register with the Export Control Organisation before they make use of most OGELs. All Open General Licences remain in force until they are revoked.</p>
+          </DESCRIPTION>
+          <CONDITIONS_LIST>
+            <CONDITION>
+              <RATINGS_LIST>
+                <RATING>
+                  <RATING_NAME>ML22a</RATING_NAME>
+                  <CONDITIONAL_RATING>true</CONDITIONAL_RATING>
+                </RATING>
+              </RATINGS_LIST>
+              <SECONDARY_RATINGS_LIST/>
+              <EXCLUDED_RATINGS_LIST/>
+              <DEST_COUNTRY_INCLUDE_LIST>
+                <COUNTRY>
+                  <COUNTRY_ID>3399</COUNTRY_ID>
+                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
+                  <COUNTRY_NAME>TestCountry</COUNTRY_NAME>
+                  <DISPLAY_COL1/>
+                </COUNTRY>
+              </DEST_COUNTRY_INCLUDE_LIST>
+              <DEST_COUNTRY_EXCLUDE_LIST>
+              </DEST_COUNTRY_EXCLUDE_LIST>
+              <END_USER_TYPE_LIST>
+              </END_USER_TYPE_LIST>
+              <CONDITION_NO>1</CONDITION_NO>
+              <SELECTED>true</SELECTED>
+            </CONDITION>
+          </CONDITIONS_LIST>
+          <RATING_CONDITIONS>
+            <RATING_CONDITION>
+              <RATING_CONDITION_ID>22</RATING_CONDITION_ID>
+              <RATING>ML22a</RATING>
+              <RESTRICTION_NUMBER_LIST>
+                <RESTRICTION_NUMBER>1</RESTRICTION_NUMBER>
+              </RESTRICTION_NUMBER_LIST>
+              <CONDITION_QUESTION>Are your goods listed above?</CONDITION_QUESTION>
+              <CONDITION_HINT/>
+              <RATING_CONDITION_ANSWER_LIST>
+                <ANSWER>
+                  <ANSWER_RESPONSE>Yes</ANSWER_RESPONSE>
+                  <MEETS_CONDITION>N</MEETS_CONDITION>
+                  <ACTIONS/>
+                </ANSWER>
+                <ANSWER>
+                  <ANSWER_RESPONSE>No</ANSWER_RESPONSE>
+                  <MEETS_CONDITION>Y</MEETS_CONDITION>
+                  <ACTIONS/>
+                </ANSWER>
+              </RATING_CONDITION_ANSWER_LIST>
+              <ACTIONS/>
+            </RATING_CONDITION>
+          </RATING_CONDITIONS>
+          <OGL_ACTIVITY>DU_ANY</OGL_ACTIVITY>
           <LINK_TO_OGL>https://www.gov.uk/government/publications/open-general-export-licence-historic-military-goods</LINK_TO_OGL>
           <OGL_RANKING>41</OGL_RANKING>
         </OGL_TYPE>
