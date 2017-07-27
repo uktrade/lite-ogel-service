@@ -5,7 +5,7 @@
     <ns:getOgelTypesResponse>
       <OGEL_TYPES_LIST>
         <OGL_TYPE>
-          <OGEL_TYPE_REF>OGL0</OGEL_TYPE_REF>
+          <OGEL_TYPE_REF>OGLX</OGEL_TYPE_REF>
           <NAME>Access Overseas to Software and Technology for Military Goods: Individual Use Only</NAME>
           <DESCRIPTION>
             <p align="justify">Open General Export Licences (OGELs) allow the export of specified controlled items by any exporter, removing the need for them to apply for an individual licence, provided the shipment and destinations are eligible and the conditions are met. Each OGEL contains conditions about the type and destinations of goods that may be exported and exporters should check these on each licence before using it. This OGEL allows , subject to certain conditions, people who would normally be based in the UK, but who are temporarily based abroad, and authorised by their employer, to access their company's technology and IT systems in the UK, via laptops if appropriate, in connection with their company's business. Exporters must register with the Export Control Organisation before they make use of most OGELs. All Open General Licences remain in force until they are revoked.</p>
@@ -47,96 +47,6 @@
                   <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
                   <COUNTRY_NAME>Eritrea</COUNTRY_NAME>
                   <DISPLAY_COL2/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>364</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Guinea, Republic of</COUNTRY_NAME>
-                  <DISPLAY_COL3/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>1952</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Iran</COUNTRY_NAME>
-                  <DISPLAY_COL3/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>1963</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Iraq</COUNTRY_NAME>
-                  <DISPLAY_COL3/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>1973</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Ivory Coast</COUNTRY_NAME>
-                  <DISPLAY_COL3/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>144</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Kingman Reef</COUNTRY_NAME>
-                  <DISPLAY_COL3/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>383</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Korea, North</COUNTRY_NAME>
-                  <DISPLAY_COL3/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>1063</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Lebanon</COUNTRY_NAME>
-                  <DISPLAY_COL3/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>1982</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Liberia</COUNTRY_NAME>
-                  <DISPLAY_COL3/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>561</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Libya</COUNTRY_NAME>
-                  <DISPLAY_COL4/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>220</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Russia</COUNTRY_NAME>
-                  <DISPLAY_COL4/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>1995</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Rwanda</COUNTRY_NAME>
-                  <DISPLAY_COL4/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>2004</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Somalia</COUNTRY_NAME>
-                  <DISPLAY_COL4/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>2007</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Sudan</COUNTRY_NAME>
-                  <DISPLAY_COL4/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>2317</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Sudan, South</COUNTRY_NAME>
-                  <DISPLAY_COL4/>
-                </COUNTRY>
-                <COUNTRY>
-                  <COUNTRY_ID>617</COUNTRY_ID>
-                  <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
-                  <COUNTRY_NAME>Syria</COUNTRY_NAME>
-                  <DISPLAY_COL4/>
                 </COUNTRY>
                 <COUNTRY>
                   <COUNTRY_ID>1981</COUNTRY_ID>
@@ -1129,7 +1039,7 @@
           <OGL_RANKING>4</OGL_RANKING>
         </OGL_TYPE>
         <OGL_TYPE>
-          <OGEL_TYPE_REF>OGL1</OGEL_TYPE_REF>
+          <OGEL_TYPE_REF>OGLY</OGEL_TYPE_REF>
           <NAME>Military Goods, Software and Technology: Government or NATO End-Use</NAME>
           <DESCRIPTION>
             <p align="justify">Open General Export Licences (OGELs) allow the export of specified controlled items by any exporter, removing the need for them to apply for an individual licence, provided the shipment and destinations are eligible and the conditions are met. Each OGEL contains conditions about the type and destinations of goods that may be exported and exporters should check these on each licence before using it. This OGEL allows, subject to certain conditions, the export or transfer goods, software or technology from the United Kingdom to any of the destinations or countries listed in this licence to a government or a NATO organisation. This includes re-exporting goods, software or technology to and from permitted destinations, even if they have been incorporated into other products. This OGEL will mainly be used by exporters who supply military goods, software and technology to a government or a NATO organisation in the listed destinations. Exporters must register with the Export Control Organisation before they make use of most OGELs. All Open General Licences remain in force until they are revoked.</p>
@@ -4185,7 +4095,7 @@
           <OGL_RANKING>5</OGL_RANKING>
         </OGL_TYPE>
         <OGL_TYPE>
-          <OGEL_TYPE_REF>OGL2</OGEL_TYPE_REF>
+          <OGEL_TYPE_REF>OGLZ</OGEL_TYPE_REF>
           <NAME>Historic Military Goods</NAME>
           <DESCRIPTION>
             <p align="justify">Open General Export Licences (OGELs) allow the export of specified controlled items by any exporter, removing the need for them to apply for an individual licence, provided the shipment and destinations are eligible and the conditions are met. Each OGEL contains conditions about the type and destinations of goods that may be exported and exporters should check these on each licence before using it. This OGEL allows, subject to certain conditions, the export of historic military goods from the UK or any other EU member state where the exporter is established in the UK, providing the goods are worth less than 35,000 and were manufactured before 1897. This OGEL also covers reproductions of muzzle-loaded weapons based on originals manufactured before 1897. Exporters must register with the Export Control Organisation before they make use of most OGELs. All Open General Licences remain in force until they are revoked.</p>
