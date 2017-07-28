@@ -30,8 +30,8 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     assertThat(response.getStatus()).isEqualTo(200);
     List<OgelFullView> actualResponse = response.readEntity(new GenericType<List<OgelFullView>>() {
     });
-    assertThat(actualResponse.size()).isEqualTo(3);
-    assertThat(actualResponse).extracting(ogel -> ogel.getId()).containsOnly("OGLX", "OGLY", "OGLZ");
+    assertThat(actualResponse.size()).isEqualTo(4);
+    assertThat(actualResponse).extracting(ogel -> ogel.getId()).containsOnly("OGLX", "OGLY", "OGLZ", "OGL61");
   }
 
   @Test

@@ -1007,13 +1007,6 @@
                   <LICENCE_CONDITION_NUMBER>1</LICENCE_CONDITION_NUMBER>
                   <CONDITION_SUMMARY>Items for use of Govt or NATO HQ, &amp; export or transfer by/via contractor provided the items are for permitted use OR Export or transfer to armed forces outside that country unless under ML7g or ML21 &amp; ML22 relating to ML7g</CONDITION_SUMMARY>
                   <CONDITION_TEXT>
-                    <p align="justify">
-                      <b>You must only export or transfer goods, software or technology for:</b>
-                    </p>
-                    <p align="justify">(1) the end use of a <b>government</b> of the countries or destinations you selected;<b> or</b></p>
-                    <p align="justify">(2) the end use of a <b>NATO organisation</b> as long as they are in one of the countries or destinations you selected;<b> or</b></p>
-                    <p align="justify">(3) <b>a contractor</b> in a destination you selected, as long as you have documents from that contractor (for example, copy of a purchase order, an excerpt of a contract, a written undertaking by the contractor) that confirm that the items are required for <b>use by</b> a <b>government</b> or <b>NATO organisation</b> as referred to in (1) (2) above; <b>or</b></p>
-                    <p align="justify">(4) the armed forces of a destination you selected that are <b>deployed outside that destination</b>, as long as those items are for <b>use only by those armed forces</b> and <b>do not fall</b> within entry ML7.g. in Schedule 2 to the Export Control Order 2008 or within entries ML21 or ML22 as they relate to entry ML7.g.</p>
                   </CONDITION_TEXT>
                   <CONDITION_QUESTION>Can you comply with this Condition?</CONDITION_QUESTION>
                   <QUESTION_HINT/>
@@ -1068,18 +1061,6 @@
                   </LICENCE_CONDITION_ANSWER_LIST>
                   <KEY_TERM_DEFINITION_LINK>Section 3 of the licence and Definitions</KEY_TERM_DEFINITION_LINK>
                   <KEY_TERMS>
-                    <p align="justify">
-                      <u>Section 3. Countries or destinations allowed under this licence</u> Australia, Austria<br/> Belgium, Bulgaria<br/> Canada, Cyprus, Czech Republic <br/> Denmark<br/> Estonia<br/> Finland, France<br/> Germany, Greece<br/> Hungary<br/> Iceland, Ireland (Republic of), Italy<br/> Japan<br/> Latvia, Lithuania, Luxembourg<br/> Malta<br/> Netherlands, New Zealand, Norway<br/> Poland, Portugal<br/> Romania<br/> Slovakia, Slovenia, Spain, Sweden, Switzerland (including Liechtenstein)<br/> United Kingdom, USA<br/><u>Note:</u> The UK is included as a destination for goods, software or technology which have been initially exported from the UK to one of the destinations listed above and are then re-exported to the United Kingdom after being incorporated into other products.</p>
-                    <p align="justify">
-                      <u>Definitions:</u><br/><b>'You'</b> means someone who has registered as a user with SPIRE, the electronic licensing system of the Export Control Organisation (ECO), a part of the Department for Business, Innovation and Skills.</p>
-                    <p align="justify">
-                      <b>'Transferring software or technology electronically'</b> means, in relation to this licence, sending software or technology by fax, phone, email or other electronic media. (Sending software or technology by phone is included only where the technology is contained in a document and the relevant part of the document is read out over the phone, or is described over the phone in such a way as to achieve substantially the same result as if it had been read).</p>
-                    <p align="justify">
-                      <b>'Re-export'</b> means to export goods, software or technology listed in section 2, from a permitted destination, listed in section 3, back to the UK or to another destination allowed under this licence.</p>
-                    <p align="justify">
-                      <b>'Transferring software or technology electronically'</b> means, in relation to this licence, sending software or technology by fax, phone, email or other electronic media. (Sending software or technology by phone is included only where the technology is contained in a document and the relevant part of the document is read out over the phone, or is described over the phone in such a way as to achieve substantially the same result as if it had been read).</p>
-                    <p align="justify">
-                      <b>'Project security instructions'</b> are the specific security instructions for a particular project. They are generated either after the signature of a project memorandum of understanding (MoU) involving more than one country or as part of a contractual arrangement. They bring together the security regulations of everyone involved in the project and often provide extra security instructions on classification, marking, release and other security arrangements for that project. A MoU is a document describing an agreement between more than one individual or organisation. It sets out the intended common line of action but does not imply a legal commitment.</p>
                   </KEY_TERMS>
                   <REFERENCED_CONDITION_LIST/>
                   <ACTIONS>
@@ -1191,23 +1172,6 @@
                   <LICENCE_CONDITION_ID>20</LICENCE_CONDITION_ID>
                   <CONDITION_SUMMARY>Security Transportation Plan for Confidential &amp; Secret Goods</CONDITION_SUMMARY>
                   <CONDITION_TEXT>
-                    <p align="justify">For goods, software and technology classified CONFIDENTIAL, for material classified by the UK prior to 2<sup>nd</sup> April 2014 or internationally security classified <b>CONFIDENTIAL</b>- equivalent material, or <b>SECRET</b> or above, you will need a current written approval for a <b>Security Transportation Plan</b>. A Security Transportation Plan approval can be obtained from MOD Defence Equipment and Support (DE&amp;S) Principal Security Advisor. More information is available from the Principal Security Advisor (please see below for their contact details).</p>
-                    <p align="justify">
-                      <b>Note</b>
-                      <b>: </b>
-                    </p>
-                    <p align="justify">To apply for Security Transportation Plan approval, or F1686 approval for material classified CONFIDENTIAL by the UK prior to 2nd April 2014 or internationally security classified CONFIDENTIAL-equivalent material, or SECRET or above, please contact:</p>
-                    <p style="margin-left:2em;" align="justify">Defence Equipment &amp; Support (DE&amp;S)</p>
-                    <p style="margin-left:2em;" align="justify">Principal Security Advisor</p>
-                    <p style="margin-left:2em;" align="justify">Security Advice Centre</p>
-                    <p style="margin-left:2em;" align="justify">Poplar - 1</p>
-                    <p style="margin-left:2em;" align="justify">MOD Abbey Wood</p>
-                    <p style="margin-left:2em;" align="justify">Bristol,</p>
-                    <p style="margin-left:2em;" align="justify">BS34 8JH</p>
-                    <p style="margin-left:2em;" align="justify">Tel: 030 67934378</p>
-                    <p style="margin-left:2em;" align="justify">Fax: 030 67934925</p>
-                    <p style="margin-left:2em;" align="justify">e-mail: desinfra-securityadvicecentre@mod.uk</p>
-                    <p align="justify">To apply for F1686 approval for material classified OFFICIAL-SENSITIVE (including UK material classified RESTRICTED, graded prior to 2nd April 2014, and internationally security classified material) please contact your Ministry of Defence Contracting Authority using the details on the applicable Security Aspects Letter for the work.</p>
                   </CONDITION_TEXT>
                   <CONDITION_QUESTION>Can you comply with this Condition?</CONDITION_QUESTION>
                   <QUESTION_HINT/>
@@ -1417,19 +1381,6 @@
                   <LICENCE_CONDITION_ID>9</LICENCE_CONDITION_ID>
                   <CONDITION_SUMMARY>Original Undertaking and Documentary Evidence</CONDITION_SUMMARY>
                   <CONDITION_TEXT>
-                    <p align="justify">You must:</p>
-                    <p align="justify">a. have an <b>o</b><b>riginal undertaking </b>from the person or entity (known as a consignee undertaking) receiving the goods, software or technology which confirms the export is for a <b>p</b><b>ermitted use </b>(this undertaking must remain in force for the period of the contract); <b>or</b></p>
-                    <p align="justify">b. provide a document as evidence (for example, a purchase order, excerpt of contract) from the person or entity (consignee) receiving the goods, software or technology which <b>states </b>the export is for a <b>p</b><b>ermitted use </b>. The document <b>must also include </b>the contract number and the name of the items which can be checked against the control list classification of the goods, software or technology being exported; <b>or</b></p>
-                    <p align="justify">c. <b>on</b><b>l</b><b>y </b>in the case of contracts directly from a <b>g</b><b>o</b><b>v</b><b>ernment in a destination </b>listed in section 3, or <b>N</b><b>A</b><b>T</b><b>O organisations, </b>provide documents as evidence (for example, a purchase order, excerpt of contract) that include the contract number and the name of the goods, software or technology, that can be checked against the control list classification of the goods, software or technology being exported.</p>
-                    <p align="justify">
-                      <b>Not</b><b>e: </b>The undertaking is only valid as long as the circumstances under which the undertaking was given have not changed or modified over that period, including:</p>
-                    <ul>
-                      <li>the details of the person or entity (consignee) receiving the goods, software or technology;</li>
-                      <li>the terms of the OGEL under which it was given;</li>
-                      <li>the destination of the goods, software or technology is not an embargoed destination; or</li>
-                      <li>for any reason which the ECO considers should result in that undertaking no longer being valid. </li>
-                    </ul>
-                    <p align="justify">The ECO considers it best practice that end-user undertakings are renewed every 12 months.</p>
                   </CONDITION_TEXT>
                   <CONDITION_QUESTION>Can you provide the documentary evidence referred to above?</CONDITION_QUESTION>
                   <QUESTION_HINT/>
@@ -1447,18 +1398,6 @@
                   </LICENCE_CONDITION_ANSWER_LIST>
                   <KEY_TERM_DEFINITION_LINK>Definitions</KEY_TERM_DEFINITION_LINK>
                   <KEY_TERMS>
-                    <p align="justify">
-                      <u>Definitions:</u><br/><b>'You'</b> means someone who has registered as a user with SPIRE, the electronic licensing system of the Export Control Organisation (ECO), a part of the Department for Business, Innovation and Skills.</p>
-                    <p align="justify">
-                      <b>'Transferring software or technology electronically'</b> means, in relation to this licence, sending software or technology by fax, phone, email or other electronic media. (Sending software or technology by phone is included only where the technology is contained in a document and the relevant part of the document is read out over the phone, or is described over the phone in such a way as to achieve substantially the same result as if it had been read).</p>
-                    <p align="justify">
-                      <b>An 'original undertaking'</b> means one that has a person's original signature and has not been copied, faxed or converted into an electronic format. For an end user undertaking template, please visit: www.bis.gov.uk/assets/biscore/eco/docs/forms/military-goods-ogel-undertaking.doc</p>
-                    <p align="justify">
-                      <b>A 'consignee'</b> may be an individual, a company, a government or NATO.</p>
-                    <p align="justify">
-                      <b>'Government'</b> as it relates to a contract includes direct contracts with governments, armed forces of a government, government agencies and companies working on behalf of government (and there is evidence of them doing so).</p>
-                    <p align="justify">
-                      <b>'Permitted use'</b> means use of the items, by an individual or an organisation (for example, company or partnership) in a destination specified in section 3 of the licence and which meets the conditions set out in sections 4, 5, and 9 (2) and other relevant conditions, restrictions or requirements set out in the licence.</p>
                   </KEY_TERMS>
                   <REFERENCED_CONDITION_LIST/>
                   <ACTIONS>
@@ -1573,14 +1512,6 @@
                   <LICENCE_CONDITION_ID>13</LICENCE_CONDITION_ID>
                   <CONDITION_SUMMARY>Record Maintenance</CONDITION_SUMMARY>
                   <CONDITION_TEXT>
-                    <p align="justify">You must keep the following records relating to exporting or transferring goods and software under this licence for <b>four years</b> and you must make them available for any person authorised by the Secretary of State to inspect. The detailed requirements are set out in article 29 of the Export Control Order 2008. In summary, you must keep a record of the following:</p>
-                    <p align="justify">a. The date and destination of export or transfer.</p>
-                    <p align="justify">b. The name and address of the person or entity (the consignee) you are exporting or transferring the goods, software or technology to.</p>
-                    <p align="justify">c. A description of the goods, software or technology.</p>
-                    <p align="justify">d. The <b>original undertaking</b> from the person or entity (consignee) receiving the goods, software or technology, <b>or</b> documents described in /Condition 9\ (for example a purchase order, an excerpt of the contract).</p>
-                    <p align="justify">e. The classification in Schedule 2 of the Export Control Order.</p>
-                    <p align="justify">f. Documents referred to in /Condition 15\ that include either of the declarations described in /Condition 15 a or b\</p>
-                    <p align="justify">g. The written approval from the Ministry of Defence, if this is needed to meet the requirements of /Condition 3\ and /Condition 4\</p>
                   </CONDITION_TEXT>
                   <CONDITION_QUESTION>Will you maintain these records?</CONDITION_QUESTION>
                   <QUESTION_HINT/>
@@ -1737,14 +1668,6 @@
                       <LICENCE_CONDITION_ID>13</LICENCE_CONDITION_ID>
                       <REFERENCED_PART>f or g</REFERENCED_PART>
                       <REFERENCED_TEXT>
-                        <p align="justify">You must keep the following records relating to exporting or transferring goods and software under this licence for four years and you must make them available for any person authorised by the Secretary of State to inspect. The detailed requirements are set out in article 29 of the Export Control Order 2008. In summary, you must keep a record of the following.</p>
-                        <ul>a. .......</ul>
-                        <p align="justify">b. .......</p>
-                        <p align="justify">c. .......</p>
-                        <p align="justify">d. .......</p>
-                        <p align="justify">e. .......</p>
-                        <p align="justify">f. Documents referred to in /Condition 15\ that include either of the declarations described in /Condition 15 a or b\</p>
-                        <p align="justify">g. The written approval from the Ministry of Defence, if this is needed to meet the requirements of /Condition 3\ and /Condition 4\</p>
                       </REFERENCED_TEXT>
                       <ACTIONS/>
                     </REFERENCED_CONDITION>
