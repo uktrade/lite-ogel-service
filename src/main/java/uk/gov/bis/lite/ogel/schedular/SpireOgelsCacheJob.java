@@ -18,14 +18,12 @@ public class SpireOgelsCacheJob implements Job {
 
   @Override
   public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-    LOGGER.info("Starting loading of spire ogels cache...");
-
+    LOGGER.info("Start loading of spire ogels cache...");
     Scheduler scheduler = jobExecutionContext.getScheduler();
+
     try {
       spireOgelCache = (SpireOgelCache) scheduler.getContext().get(SPIRE_OGEL_CACHE);
       spireOgelCache.load();
-
-      LOGGER.info("Spire ogels cache loaded.");
     } catch (SchedulerException e) {
       LOGGER.error("Failed to load spire ogel cache.", e);
     }
