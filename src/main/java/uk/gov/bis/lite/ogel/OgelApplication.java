@@ -17,6 +17,7 @@ import ru.vyarus.dropwizard.guice.module.installer.feature.ManagedInstaller;
 import ru.vyarus.dropwizard.guice.module.installer.feature.health.HealthCheckInstaller;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
 import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
+import uk.gov.bis.lite.common.metrics.readiness.ReadinessServlet;
 import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 import uk.gov.bis.lite.ogel.cache.SpireOgelCache;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
@@ -59,6 +60,9 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
   @Override
   public void run(MainApplicationConfiguration configuration, Environment environment) {
     final Injector injector = guiceBundle.getInjector();
+
+    ReadinessServlet readinessServlet = injector.getInstance(ReadinessServlet.class);
+    environment.admin().addServlet("ready", readinessServlet).addMapping("/ready");
 
     environment.jersey().register(SpireClientException.ServiceExceptionMapper.class);
 
