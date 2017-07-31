@@ -26,6 +26,7 @@ import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.exception.CheckLocalOgelExceptionMapper;
 import uk.gov.bis.lite.ogel.exception.CustomJsonProcessingExceptionMapper;
 import uk.gov.bis.lite.ogel.healthcheck.SpireHealthCheck;
+import uk.gov.bis.lite.ogel.healthcheck.SpireLivenessCheck;
 import uk.gov.bis.lite.ogel.resource.AdminResource;
 import uk.gov.bis.lite.ogel.resource.ApplicableOgelResource;
 import uk.gov.bis.lite.ogel.resource.ControlCodeConditionsResource;
@@ -83,8 +84,8 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());
     flyway.migrate();
 
-    SpireOgelCache spireOgelCache = injector.getInstance(SpireOgelCache.class);
-    spireOgelCache.load();
+//    SpireOgelCache spireOgelCache = injector.getInstance(SpireOgelCache.class);
+//    spireOgelCache.load();
 
   }
 
@@ -94,7 +95,8 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
         .modules(module)
         .installers(ResourceInstaller.class, HealthCheckInstaller.class, ManagedInstaller.class)
         .extensions(AdminResource.class, ApplicableOgelResource.class, OgelResource.class,
-          ControlCodeConditionsResource.class, SpireHealthCheck.class, VirtualEuResource.class, SpireOgelsCacheSchedular.class)
+          ControlCodeConditionsResource.class, SpireHealthCheck.class, VirtualEuResource.class,
+            SpireOgelsCacheSchedular.class, SpireLivenessCheck.class)
         .build(Stage.PRODUCTION);
 
     bootstrap.addBundle(guiceBundle);
