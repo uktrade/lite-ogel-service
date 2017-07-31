@@ -33,7 +33,7 @@ public class BaseIntegrationTest {
         .willReturn(aResponse()
             .withStatus(200)
             .withHeader("Content-Type", "text/xml")
-            .withBody(fixture("fixture/integration/spireResponse/getAllOgelsResponse.xml"))));
+            .withBody(fixture("fixture/integration/spire/getAllOgelsResponse.xml"))));
   }
 
   @Before
