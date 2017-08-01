@@ -37,9 +37,9 @@ public class AdminResourceIntegrationTest extends BaseIntegrationTest {
 
     assertThat(response.getStatus()).isEqualTo(200);
     ValidateView actualResponse = response.readEntity(ValidateView.class);
-    assertThat(actualResponse.getUnmatchedControlCodes().isEmpty()).isTrue();
-    assertThat(actualResponse.getUnmatchedLocalOgelIds().isEmpty()).isTrue();
-    assertThat(actualResponse.getUnmatchedSpireOgelIds().isEmpty()).isTrue();
+    assertThat(actualResponse.getUnmatchedControlCodes()).isEmpty();
+    assertThat(actualResponse.getUnmatchedLocalOgelIds()).isEmpty();
+    assertThat(actualResponse.getUnmatchedSpireOgelIds()).isEmpty();
   }
 
   @Test

@@ -23,18 +23,18 @@ public class SpireOgelServiceImpl implements SpireOgelService {
 
   @Override
   public List<SpireOgel> getAllOgels() {
-      if (!spireOgelCache.getCache().isPresent()) {
+      if (spireOgelCache.getCache().isEmpty()) {
         throw new CacheNotPopulatedException("Communication with Spire failed. Spire Ogel list is not populated");
       }
-    return new ArrayList<>(spireOgelCache.getCache().get().values());
+    return new ArrayList<>(spireOgelCache.getCache().values());
   }
 
   @Override
   public Optional<SpireOgel> findSpireOgelById(String id) {
-    if (!spireOgelCache.getCache().isPresent()) {
+    if (spireOgelCache.getCache().isEmpty()) {
       throw new CacheNotPopulatedException("Communication with Spire failed. Spire Ogel list is not populated");
     }
-    return Optional.ofNullable(spireOgelCache.getCache().get().get(id));
+    return Optional.ofNullable(spireOgelCache.getCache().get(id));
   }
 
   @Override

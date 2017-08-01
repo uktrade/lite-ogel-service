@@ -11,9 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.cache.SpireOgelCache;
 
-public class SpireOgelsCacheJob implements Job {
+public class SpireOgelCacheJob implements Job {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SpireOgelsCacheJob.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SpireOgelCacheJob.class);
   private SpireOgelCache spireOgelCache;
 
   @Override

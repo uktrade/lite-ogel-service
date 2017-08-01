@@ -14,14 +14,14 @@ import org.quartz.TriggerKey;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.service.SpireOgelServiceImpl;
 
-public class SpireOgelsCacheSchedular implements Managed {
+public class SpireOgelCacheScheduler implements Managed {
 
   private final org.quartz.Scheduler scheduler;
   private final MainApplicationConfiguration config;
   private final SpireOgelServiceImpl spireOgelService;
 
   @Inject
-  public SpireOgelsCacheSchedular(Scheduler scheduler, MainApplicationConfiguration config, SpireOgelServiceImpl spireOgelService) {
+  public SpireOgelCacheScheduler(Scheduler scheduler, MainApplicationConfiguration config, SpireOgelServiceImpl spireOgelService) {
     this.scheduler = scheduler;
     this.config = config;
     this.spireOgelService = spireOgelService;
@@ -30,7 +30,7 @@ public class SpireOgelsCacheSchedular implements Managed {
   @Override
   public void start() throws Exception {
     JobKey key = JobKey.jobKey("spireOgelsCacheJobCron");
-    JobDetail jobDetail = newJob(SpireOgelsCacheJob.class)
+    JobDetail jobDetail = newJob(SpireOgelCacheJob.class)
         .withIdentity(key)
         .build();
 

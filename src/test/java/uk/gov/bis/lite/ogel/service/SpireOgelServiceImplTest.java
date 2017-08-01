@@ -14,6 +14,7 @@ import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.job.SpireHealthStatus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,7 +27,7 @@ public class SpireOgelServiceImplTest {
   @Mock
   private SpireOgelCache spireOgelCache;
 
-  private Optional<Map<String, SpireOgel>> initialSpireCacheOgels() {
+  private Map<String, SpireOgel> initialSpireCacheOgels() {
     List<SpireOgel> ogels = new ArrayList<>();
 
     SpireOgel ogel1 = new SpireOgel();
@@ -38,7 +39,7 @@ public class SpireOgelServiceImplTest {
     ogels.add(ogel2);
 
     Map<String, SpireOgel> spireOgelCacheMap = ogels.stream().collect(Collectors.toMap(e -> e.getId(), e -> e));
-    return Optional.of(spireOgelCacheMap);
+    return spireOgelCacheMap;
   }
 
   @Before
@@ -68,7 +69,7 @@ public class SpireOgelServiceImplTest {
 
   @Test
   public void testUninitialisedServiceThrowsException() {
-    when(spireOgelCache.getCache()).thenReturn(Optional.empty());
+    when(spireOgelCache.getCache()).thenReturn(new HashMap<>());
     when(spireOgelCache.getHealthStatus()).thenReturn(SpireHealthStatus.unhealthy("Cache not initialised"));
     //empty cache
     SpireOgelService emptySpireOgelService = new SpireOgelServiceImpl(spireOgelCache);
