@@ -30,21 +30,6 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
   private static final String CONTROL_CODE = "33";
 
   @Test
-  public void getAllControlCodeConditionSuccess() {
-    Response response = JerseyClientBuilder.createClient()
-        .target(CONTROL_CODE_CONDITIONS_URL)
-        .request()
-        .get();
-
-    assertEquals(200, response.getStatus());
-
-    List<LocalControlCodeCondition> actualResponse = response.readEntity(new GenericType<List<LocalControlCodeCondition>>() {});
-    assertThat(actualResponse.size()).isEqualTo(3);
-    assertThat(actualResponse).extracting(controlCodeCondition -> controlCodeCondition.getOgelID()).containsOnly("OGLX", "OGLY", "OGLZ");
-    assertThat(actualResponse).extracting(controlCodeCondition -> controlCodeCondition.getControlCode()).containsOnly("11", "22", "33");
-  }
-
-  @Test
   public void getControlCodeConditionByIdSuccess() {
     Response response = JerseyClientBuilder.createClient()
         .target(CONTROL_CODE_CONDITIONS_URL + "OGLY" + "/22")
