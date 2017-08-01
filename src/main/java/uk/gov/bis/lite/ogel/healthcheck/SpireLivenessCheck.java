@@ -12,7 +12,7 @@ public class SpireLivenessCheck extends NamedHealthCheck {
   @Override
   protected Result check() throws Exception {
     if(!SpireOgelCache.isSpireReady()) {
-      LOGGER.info("Loading SpireOgelCache...");
+
       return Result.healthy("Loading SpireOgelCache...");
     }
     return null;
