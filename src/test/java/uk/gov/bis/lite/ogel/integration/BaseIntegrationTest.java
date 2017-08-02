@@ -6,11 +6,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.flywaydb.core.Flyway;
+import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -34,6 +37,15 @@ public class BaseIntegrationTest {
             .withStatus(200)
             .withHeader("Content-Type", "text/xml")
             .withBody(fixture("fixture/integration/spire/getAllOgelsResponse.xml"))));
+  }
+
+  @Before
+  public void awaitSpireOgelCacheLoad() {
+    await().with().pollInterval(1, SECONDS).atMost(10, SECONDS).until(() -> JerseyClientBuilder.createClient()
+        .target("http://localhost:"+RULE.getAdminPort()+"/ready")
+        .request()
+        .get()
+        .getStatus() == 200);
   }
 
   @Before

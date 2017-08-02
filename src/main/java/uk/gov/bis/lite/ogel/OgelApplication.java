@@ -26,7 +26,6 @@ import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.exception.CheckLocalOgelExceptionMapper;
 import uk.gov.bis.lite.ogel.exception.CustomJsonProcessingExceptionMapper;
 import uk.gov.bis.lite.ogel.healthcheck.SpireHealthCheck;
-import uk.gov.bis.lite.ogel.healthcheck.SpireLivenessCheck;
 import uk.gov.bis.lite.ogel.resource.AdminResource;
 import uk.gov.bis.lite.ogel.resource.ApplicableOgelResource;
 import uk.gov.bis.lite.ogel.resource.ControlCodeConditionsResource;
@@ -83,10 +82,6 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     Flyway flyway = new Flyway();
     flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());
     flyway.migrate();
-
-    SpireOgelCache spireOgelCache = injector.getInstance(SpireOgelCache.class);
-    spireOgelCache.load();
-
   }
 
   @Override

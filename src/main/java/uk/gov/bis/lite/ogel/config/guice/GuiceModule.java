@@ -24,7 +24,7 @@ import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.LocalControlCodeCo
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.SqliteLocalControlCodeConditionDAOImpl;
 import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.database.dao.ogel.SqliteLocalOgelDAOImpl;
-import uk.gov.bis.lite.ogel.healthcheck.SpireReadinessService;
+import uk.gov.bis.lite.ogel.healthcheck.SpireOgelReadinessService;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelServiceImpl;
 import uk.gov.bis.lite.ogel.service.ControlCodeConditionsService;
@@ -78,6 +78,7 @@ public class GuiceModule extends AbstractModule {
     bind(SpireOgelService.class).to(SpireOgelServiceImpl.class);
     bind(ApplicableOgelService.class).to(ApplicableOgelServiceImpl.class);
     bind(ControlCodeConditionsService.class).to(ControlCodeConditionsServiceImpl.class);
+    bind(ReadinessService.class).to(SpireOgelReadinessService.class);
   }
 
   @Provides
@@ -105,8 +106,4 @@ public class GuiceModule extends AbstractModule {
     return client;
   }
 
-  @Provides
-  public ReadinessService provideReadinessService() {
-    return new SpireReadinessService();
-  }
 }
