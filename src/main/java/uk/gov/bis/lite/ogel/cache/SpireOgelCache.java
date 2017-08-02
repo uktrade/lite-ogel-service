@@ -1,6 +1,5 @@
 package uk.gov.bis.lite.ogel.cache;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.slf4j.Logger;

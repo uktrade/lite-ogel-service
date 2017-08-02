@@ -105,5 +105,4 @@ public class GuiceModule extends AbstractModule {
     client.register(ClientCorrelationIdFilter.class);
     return client;
   }
-
 }
