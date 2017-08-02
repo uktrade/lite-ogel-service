@@ -6,13 +6,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
-import com.google.common.collect.ImmutableMap;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.bis.lite.ogel.api.view.ValidateView;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import javax.ws.rs.core.Response;
 
@@ -59,7 +60,7 @@ public class AdminResourceIntegrationTest extends BaseIntegrationTest {
 
     assertThat(response.getStatus()).isEqualTo(500);
     ValidateView actualResponse = response.readEntity(ValidateView.class);
-    assertThat(actualResponse.getUnmatchedControlCodes()).isEqualTo(ImmutableMap.of("OGLZ", Arrays.asList("33")));
+    assertThat(actualResponse.getUnmatchedControlCodes()).containsExactly(entry("OGLZ", Collections.singletonList("33")));
   }
 
   @Test
@@ -87,7 +88,8 @@ public class AdminResourceIntegrationTest extends BaseIntegrationTest {
         .get();
 
     assertThat(response.getStatus()).isEqualTo(500);
-    assertThat(response.readEntity(String.class)).isEqualTo("{\"code\":500,\"message\":\"Unable to get control code details from the control code service\"}");
+    String expectedErrorString = "{\"code\":500,\"message\":\"Unable to get control code details from the control code service\"}";
+    JSONAssert.assertEquals(expectedErrorString, response.readEntity(String.class), false);
   }
 
 }

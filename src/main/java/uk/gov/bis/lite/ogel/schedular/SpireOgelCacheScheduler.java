@@ -29,14 +29,14 @@ public class SpireOgelCacheScheduler implements Managed {
 
   @Override
   public void start() throws Exception {
-    JobKey key = JobKey.jobKey("spireOgelsCacheJobCron");
+    JobKey key = JobKey.jobKey("spireOgelCacheJobCron");
     JobDetail jobDetail = newJob(SpireOgelCacheJob.class)
         .withIdentity(key)
         .build();
 
     CronTrigger trigger = newTrigger()
-        .withIdentity(TriggerKey.triggerKey("spireOgelsCacheJobCron"))
-        .withSchedule(cronSchedule(config.getSpireOgelsCacheJobCron()))
+        .withIdentity(TriggerKey.triggerKey("spireOgelCacheJobCron"))
+        .withSchedule(cronSchedule(config.getSpireOgelCacheJobCron()))
         .build();
 
     scheduler.scheduleJob(jobDetail, trigger);
