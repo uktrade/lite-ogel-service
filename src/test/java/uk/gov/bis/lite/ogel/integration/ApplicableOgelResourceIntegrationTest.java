@@ -35,7 +35,7 @@ public class ApplicableOgelResourceIntegrationTest extends BaseIntegrationTest {
     assertEquals(1, actualResponse.size());
     assertThat(actualResponse).extracting(ogel -> ogel.getId()).containsOnly("OGLX");
     assertThat(actualResponse).extracting(ogel -> ogel.getName()).containsOnly("NameOGLX");;
-    assertThat(actualResponse).extracting(ogel -> ogel.getUsageSummary()).containsOnly(Arrays.asList("CanList for OGLX"));
+    assertThat(actualResponse).flatExtracting(ogel -> ogel.getUsageSummary()).containsOnly("CanList for OGLX");
   }
 
   @Test

@@ -31,13 +31,8 @@ public class SpireOgelCache {
     this.ogelClient = ogelClient;
   }
 
-  public void load() {
-    refreshCache();
-    spireReady = true;
-  }
-
   @VisibleForTesting
-  public void refreshCache() {
+  public void load() {
     try {
       List<SpireOgel> ogelList = getAllOgelsFromSpire();
       Map<String, SpireOgel> spireOgelCacheMap = ogelList.stream().collect(Collectors.toMap(e -> e.getId(), e -> e));
@@ -56,12 +51,8 @@ public class SpireOgelCache {
     }
   }
 
-  public Optional<Map<String, SpireOgel>> getCache() {
-    if (cache.isEmpty()) {
-      return Optional.empty();
-    } else {
-      return Optional.of(cache);
-    }
+  public Map<String, SpireOgel> getCache() {
+    return cache;
   }
 
   public SpireHealthStatus getHealthStatus() {

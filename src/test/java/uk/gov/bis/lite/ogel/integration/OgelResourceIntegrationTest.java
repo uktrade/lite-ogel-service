@@ -4,6 +4,7 @@ import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.glassfish.jersey.client.JerseyClientBuilder;
+import org.glassfish.jersey.client.JerseyInvocation;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
@@ -33,12 +34,9 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     List<OgelFullView> actualResponse = response.readEntity(new GenericType<List<OgelFullView>>() {
     });
     assertThat(actualResponse.size()).isEqualTo(4);
-    assertThat(actualResponse).extracting(ogel -> ogel.getId())
-        .containsOnly("OGLX", "OGLY", "OGLZ", "OGL61");
-    assertThat(actualResponse).extracting(ogel -> ogel.getName())
-        .containsOnly("NameOGLX", "NameOGLY", "NameOGLZ", "VirtualEuSpireNameOGL61");
-    assertThat(actualResponse).extracting(ogel -> ogel.getSummary().getCanList())
-        .containsOnly(Arrays.asList("CanList for OGLX"),Arrays.asList("CanList for OGLY"),Arrays.asList("CanList for OGLZ"),Arrays.asList());
+    assertThat(actualResponse).extracting(ogel -> ogel.getId()).containsOnly("OGLX", "OGLY", "OGLZ", "OGL61");
+    assertThat(actualResponse).extracting(ogel -> ogel.getName()).containsOnly("NameOGLX", "NameOGLY", "NameOGLZ", "VirtualEuSpireNameOGL61");
+    assertThat(actualResponse).flatExtracting(ogel -> ogel.getSummary().getCanList()).containsOnly("CanList for OGLX", "CanList for OGLY", "CanList for OGLZ");
   }
 
   @Test
@@ -52,10 +50,10 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     OgelFullView actualResponse = response.readEntity(OgelFullView.class);
     assertThat(actualResponse.getId()).isEqualTo("OGLX");
     assertThat(actualResponse.getName()).isEqualTo("NameOGLX");
-    assertThat(actualResponse.getSummary().getCanList()).isEqualTo(Arrays.asList("CanList for OGLX"));
-    assertThat(actualResponse.getSummary().getCantList()).isEqualTo(Arrays.asList("CantList for OGLX"));
-    assertThat(actualResponse.getSummary().getHowToUseList()).isEqualTo(null);
-    assertThat(actualResponse.getSummary().getMustList()).isEqualTo(null);
+    assertThat(actualResponse.getSummary().getCanList()).containsOnly("CanList for OGLX");
+    assertThat(actualResponse.getSummary().getCantList()).containsOnly("CantList for OGLX");
+    assertThat(actualResponse.getSummary().getHowToUseList()).isNull();
+    assertThat(actualResponse.getSummary().getMustList()).isNull();
   }
 
   @Test
@@ -82,7 +80,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     OgelFullView actual = response.readEntity(OgelFullView.class);
     assertThat(actual.getId()).isEqualTo("OGLX");
     assertThat(actual.getName()).isEqualTo("NameOGLX");
-    assertThat(actual.getSummary().getCanList()).isEqualTo(Arrays.asList("update canList with some text"));
+    assertThat(actual.getSummary().getCanList()).containsOnly("update canList with some text");
   }
 
   @Test
@@ -100,6 +98,20 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
 
   @Test
   public void insertOrUpdateOgelSuccess() {
+    JerseyInvocation.Builder getOgelByIdRequest= JerseyClientBuilder.createClient()
+        .target(OGEL_URL+"OGLX")
+        .request();
+
+    Response responseBefore = getOgelByIdRequest.get();
+
+    OgelFullView actualResponseBefore = responseBefore.readEntity(OgelFullView.class);
+    assertThat(actualResponseBefore.getId()).isEqualTo("OGLX");
+    assertThat(actualResponseBefore.getName()).isEqualTo("NameOGLX");
+    assertThat(actualResponseBefore.getSummary().getCanList()).containsOnly("CanList for OGLX");
+    assertThat(actualResponseBefore.getSummary().getCantList()).containsOnly("CantList for OGLX");
+    assertThat(actualResponseBefore.getSummary().getHowToUseList()).isNull();
+    assertThat(actualResponseBefore.getSummary().getMustList()).isNull();
+
     Response response = JerseyClientBuilder.createClient()
         .target(OGEL_URL+"OGLX")
         .request()
@@ -110,10 +122,20 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     OgelFullView actual = response.readEntity(OgelFullView.class);
     assertThat(actual.getId()).isEqualTo("OGLX");
     assertThat(actual.getName()).isEqualTo("NameOGLX");
-    assertThat(actual.getSummary().getCanList()).isEqualTo(Arrays.asList("can1", "can2", "can3"));
-    assertThat(actual.getSummary().getCantList()).isEqualTo(Arrays.asList("cannot1", "cannot2"));
-    assertThat(actual.getSummary().getMustList()).isEqualTo(Arrays.asList("must1", "must2"));
-    assertThat(actual.getSummary().getHowToUseList()).isEqualTo(Arrays.asList("how1", "how2"));
+    assertThat(actual.getSummary().getCanList()).containsOnly("can1", "can2", "can3");
+    assertThat(actual.getSummary().getCantList()).containsOnly("cannot1", "cannot2");
+    assertThat(actual.getSummary().getMustList()).containsOnly("must1", "must2");
+    assertThat(actual.getSummary().getHowToUseList()).containsOnly("how1", "how2");
+
+    Response responseAfter = getOgelByIdRequest.get();
+
+    OgelFullView actualResponseAfter = responseAfter.readEntity(OgelFullView.class);
+    assertThat(actualResponseAfter.getId()).isEqualTo("OGLX");
+    assertThat(actualResponseAfter.getName()).isEqualTo("NameOGLX");
+    assertThat(actualResponseAfter.getSummary().getCanList()).containsOnly("can1", "can2", "can3");
+    assertThat(actualResponseAfter.getSummary().getCantList()).containsOnly("cannot1", "cannot2");
+    assertThat(actualResponseAfter.getSummary().getMustList()).containsOnly("must1", "must2");
+    assertThat(actualResponseAfter.getSummary().getHowToUseList()).containsOnly("how1", "how2");
   }
 
   @Test
@@ -131,6 +153,18 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
 
   @Test
   public void insertOgelArraySuccess() {
+    Response responseBefore = JerseyClientBuilder.createClient()
+        .target(OGEL_URL)
+        .request()
+        .get();
+
+    List<OgelFullView> actualResponseBefore = responseBefore.readEntity(new GenericType<List<OgelFullView>>() {});
+    assertThat(actualResponseBefore.size()).isEqualTo(4);
+    assertThat(actualResponseBefore).extracting(ogel -> ogel.getId())
+        .containsOnly("OGLX", "OGLY", "OGLZ", "OGL61");
+    assertThat(actualResponseBefore).flatExtracting(ogel -> ogel.getSummary().getCanList())
+        .containsOnly("CanList for OGLX","CanList for OGLY","CanList for OGLZ");
+
     Response response = JerseyClientBuilder.createClient()
         .target(OGEL_URL)
         .request()
@@ -141,6 +175,18 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     List<OgelFullView> actual = response.readEntity(new GenericType<List<OgelFullView>>() {
     });
     assertThat(actual).extracting(ogel -> ogel.getId()).containsOnly("OGLX", "OGLY");
+
+    Response responseAfter = JerseyClientBuilder.createClient()
+        .target(OGEL_URL)
+        .request()
+        .get();
+
+    List<OgelFullView> actualResponseAfter = responseAfter.readEntity(new GenericType<List<OgelFullView>>() {});
+    assertThat(actualResponseAfter.size()).isEqualTo(4);
+    assertThat(actualResponseAfter).extracting(ogel -> ogel.getId())
+        .containsOnly("OGLX", "OGLY", "OGLZ", "OGL61");
+    assertThat(actualResponseAfter).flatExtracting(ogel -> ogel.getSummary().getCanList())
+        .containsOnly("can1", "can2", "can3", "can1", "can2", "can3", "CanList for OGLZ");
   }
 
   @Test
@@ -181,8 +227,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     assertThat(actualResponse1.size()).isEqualTo(4);
     assertThat(actualResponse1).extracting(ogel -> ogel.getId()).containsOnly("OGLX", "OGLY", "OGLZ", "OGL61");
     assertThat(actualResponse1).extracting(ogel -> ogel.getName()).containsOnly("NameOGLX", "NameOGLY", "NameOGLZ", "VirtualEuSpireNameOGL61");
-    assertThat(actualResponse1).extracting(ogel -> ogel.getSummary().getCanList())
-        .containsOnly(Arrays.asList("CanList for OGLX"),Arrays.asList("CanList for OGLY"),Arrays.asList("CanList for OGLZ"),Arrays.asList());
+    assertThat(actualResponse1).flatExtracting(ogel -> ogel.getSummary().getCanList()).containsOnly("CanList for OGLX", "CanList for OGLY", "CanList for OGLZ");
 
     // delete ogel
     JerseyClientBuilder.createClient()
@@ -198,14 +243,11 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
         .get();
 
     assertThat(response2.getStatus()).isEqualTo(200);
-    List<String> emptyCanList = new ArrayList<>();
-    List<OgelFullView> actualResponse2 = response2.readEntity(new GenericType<List<OgelFullView>>() {
-    });
+    List<OgelFullView> actualResponse2 = response2.readEntity(new GenericType<List<OgelFullView>>() {});
     assertThat(actualResponse2.size()).isEqualTo(4);
     assertThat(actualResponse2).extracting(ogel -> ogel.getId()).containsOnly("OGLX", "OGLY", "OGLZ", "OGL61");
     assertThat(actualResponse2).extracting(ogel -> ogel.getName()).containsOnly("SpireNameOGLX", "SpireNameOGLY", "SpireNameOGLZ", "VirtualEuSpireNameOGL61");
-    assertThat(actualResponse2).extracting(ogel -> ogel.getSummary().getCanList())
-        .containsOnly(emptyCanList, emptyCanList, emptyCanList, emptyCanList);
+    assertThat(actualResponse2).flatExtracting(ogel -> ogel.getSummary().getCanList()).isEmpty();
   }
 
   @Test
@@ -220,8 +262,8 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     OgelFullView actualResponse1 = response1.readEntity(OgelFullView.class);
     assertThat(actualResponse1.getId()).isEqualTo("OGLX");
     assertThat(actualResponse1.getName()).isEqualTo("NameOGLX");
-    assertThat(actualResponse1.getSummary().getCanList()).isEqualTo(Arrays.asList("CanList for OGLX"));
-    assertThat(actualResponse1.getSummary().getCantList()).isEqualTo(Arrays.asList("CantList for OGLX"));
+    assertThat(actualResponse1.getSummary().getCanList()).containsOnly("CanList for OGLX");
+    assertThat(actualResponse1.getSummary().getCantList()).containsOnly("CantList for OGLX");
 
     // delete ogel
     JerseyClientBuilder.createClient()
@@ -240,7 +282,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     OgelFullView actualResponse2 = response2.readEntity(OgelFullView.class);
     assertThat(actualResponse2.getId()).isEqualTo("OGLX");
     assertThat(actualResponse2.getName()).isEqualTo("SpireNameOGLX");
-    assertThat(actualResponse2.getSummary().getCanList()).isEqualTo(Arrays.asList());
-    assertThat(actualResponse2.getSummary().getCantList()).isEqualTo(Arrays.asList());
+    assertThat(actualResponse2.getSummary().getCanList()).isEmpty();
+    assertThat(actualResponse2.getSummary().getCantList()).isEmpty();
   }
 }

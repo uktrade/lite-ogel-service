@@ -33,7 +33,7 @@ import uk.gov.bis.lite.ogel.resource.ControlCodeConditionsResource;
 import uk.gov.bis.lite.ogel.resource.OgelResource;
 import uk.gov.bis.lite.ogel.resource.VirtualEuResource;
 import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
-import uk.gov.bis.lite.ogel.schedular.SpireOgelsCacheSchedular;
+import uk.gov.bis.lite.ogel.schedular.SpireOgelCacheScheduler;
 
 public class OgelApplication extends Application<MainApplicationConfiguration> {
 
@@ -84,8 +84,8 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());
     flyway.migrate();
 
-//    SpireOgelCache spireOgelCache = injector.getInstance(SpireOgelCache.class);
-//    spireOgelCache.load();
+    SpireOgelCache spireOgelCache = injector.getInstance(SpireOgelCache.class);
+    spireOgelCache.load();
 
   }
 
@@ -95,8 +95,7 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
         .modules(module)
         .installers(ResourceInstaller.class, HealthCheckInstaller.class, ManagedInstaller.class)
         .extensions(AdminResource.class, ApplicableOgelResource.class, OgelResource.class,
-          ControlCodeConditionsResource.class, SpireHealthCheck.class, VirtualEuResource.class,
-            SpireOgelsCacheSchedular.class, SpireLivenessCheck.class)
+          ControlCodeConditionsResource.class, SpireHealthCheck.class, VirtualEuResource.class, SpireOgelCacheScheduler.class)
         .build(Stage.PRODUCTION);
 
     bootstrap.addBundle(guiceBundle);
