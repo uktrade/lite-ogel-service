@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.core.GenericType;

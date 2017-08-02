@@ -23,9 +23,9 @@ public class SpireOgelServiceImpl implements SpireOgelService {
 
   @Override
   public List<SpireOgel> getAllOgels() {
-      if (spireOgelCache.getCache().isEmpty()) {
-        throw new CacheNotPopulatedException("Communication with Spire failed. Spire Ogel list is not populated");
-      }
+    if (spireOgelCache.getCache().isEmpty()) {
+      throw new CacheNotPopulatedException("Communication with Spire failed. Spire Ogel list is not populated");
+    }
     return new ArrayList<>(spireOgelCache.getCache().values());
   }
 

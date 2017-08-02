@@ -30,7 +30,6 @@ public class SpireOgelCache {
     this.ogelClient = ogelClient;
   }
 
-  @VisibleForTesting
   public void load() {
     try {
       List<SpireOgel> ogelList = getAllOgelsFromSpire();

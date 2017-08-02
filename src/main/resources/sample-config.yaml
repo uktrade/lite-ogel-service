@@ -1,4 +1,4 @@
-spireOgelsCacheJobCron: 0 0 0 * * ?
+spireOgelCacheJobCron: 0 0 0 * * ?
 
 cacheTimeout: 1000
 login: user

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.JerseyInvocation;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 
@@ -155,7 +156,8 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
         .put(Entity.entity(Arrays.asList(controlCodeCondition), MediaType.APPLICATION_JSON));
 
     assertThat(response.getStatus()).isEqualTo(404);
-    assertThat(response.readEntity(String.class)).isEqualTo("{\"code\":404,\"message\":\"No Ogel Found With Given Ogel ID: OGL_\"}");
+    String expectedErrorString = "{\"code\":404,\"message\":\"No Ogel Found With Given Ogel ID: OGL_\"}";
+    JSONAssert.assertEquals(expectedErrorString, response.readEntity(String.class), false);
   }
 
   @Test
@@ -170,7 +172,8 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
         .put(Entity.entity(Arrays.asList(controlCodeCondition), MediaType.APPLICATION_JSON));
 
     assertThat(response.getStatus()).isEqualTo(422);
-    assertThat(response.readEntity(String.class)).isEqualTo("{\"errors\":[\"The request body OGEL Control Code Condition without OGEL ID is not allowed, Index: 0\"]}");
+    String expectedErrorString = "{\"errors\":[\"The request body OGEL Control Code Condition without OGEL ID is not allowed, Index: 0\"]}";
+    JSONAssert.assertEquals(expectedErrorString, response.readEntity(String.class), false);
   }
 
   @Test
@@ -185,7 +188,8 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
         .put(Entity.entity(Arrays.asList(controlCodeCondition), MediaType.APPLICATION_JSON));
 
     assertThat(response.getStatus()).isEqualTo(422);
-    assertThat(response.readEntity(String.class)).isEqualTo("{\"errors\":[\"The request body OGEL Control Code Condition without Control Code is not allowed, Index: 0\"]}");
+    String expectedErrorString = "{\"errors\":[\"The request body OGEL Control Code Condition without Control Code is not allowed, Index: 0\"]}";
+    JSONAssert.assertEquals(expectedErrorString, response.readEntity(String.class), false);
   }
 
   @Test
@@ -204,7 +208,8 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
         .put(Entity.entity(Arrays.asList(controlCodeCondition1,controlCodeCondition2), MediaType.APPLICATION_JSON));
 
     assertThat(response.getStatus()).isEqualTo(422);
-    assertThat(response.readEntity(String.class)).isEqualTo("{\"errors\":[\"The request body Duplicate OGEL Control Code Conditions found in bulk update data: OGLX/55\"]}");
+    String expectedErrorString = "{\"errors\":[\"The request body Duplicate OGEL Control Code Conditions found in bulk update data: OGLX/55\"]}";
+    JSONAssert.assertEquals(expectedErrorString, response.readEntity(String.class), false);
   }
 
   @Test

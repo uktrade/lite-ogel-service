@@ -10,7 +10,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -198,7 +197,8 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
         .put(Entity.entity((TestUtil.getLocalOgelsMissingOgelId()), MediaType.APPLICATION_JSON));
 
     assertThat(response.getStatus()).isEqualTo(422);
-    assertThat(response.readEntity(String.class)).isEqualTo("{\"errors\":[\"The request body Local Ogel Without ID is not allowed! Index: 1\"]}");
+    String expectedJson = "{\"errors\":[\"The request body Local Ogel Without ID is not allowed! Index: 1\"]}";
+    JSONAssert.assertEquals(expectedJson, response.readEntity(String.class), false);
   }
 
   @Test
@@ -210,7 +210,8 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
         .put(Entity.entity((Arrays.asList()), MediaType.APPLICATION_JSON));
 
     assertThat(response.getStatus()).isEqualTo(400);
-    assertThat(response.readEntity(String.class)).isEqualTo("{\"code\":400,\"message\":\"Empty Ogel List\"}");
+    String expectedJson = "{\"code\":400,\"message\":\"Empty Ogel List\"}";
+    JSONAssert.assertEquals(expectedJson, response.readEntity(String.class), false);
   }
 
   @Test

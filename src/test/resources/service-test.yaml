@@ -1,4 +1,4 @@
-spireOgelsCacheJobCron: 0 0 0 * * ? # run at midnight everyday
+spireOgelCacheJobCron: 0 0 0 * * ? # run at midnight everyday
 
 cacheTimeout: 1000
 login: user

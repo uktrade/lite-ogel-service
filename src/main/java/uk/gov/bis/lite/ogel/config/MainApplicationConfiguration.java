@@ -50,7 +50,7 @@ public class MainApplicationConfiguration extends Configuration {
 
   @NotEmpty
   @JsonProperty
-  private String spireOgelsCacheJobCron;
+  private String spireOgelCacheJobCron;
 
   public String getSpireClientUserName() {
     return spireClientUserName;
@@ -99,7 +99,7 @@ public class MainApplicationConfiguration extends Configuration {
     return virtualEuOgelId;
   }
 
-  public String getSpireOgelsCacheJobCron() {
-    return spireOgelsCacheJobCron;
+  public String getSpireOgelCacheJobCron() {
+    return spireOgelCacheJobCron;
   }
 }
