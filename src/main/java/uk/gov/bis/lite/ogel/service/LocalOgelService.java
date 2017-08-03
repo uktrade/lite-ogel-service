@@ -3,11 +3,12 @@ package uk.gov.bis.lite.ogel.service;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LocalOgelService {
   LocalOgel updateSpireOgelCondition(String ogelID, List<String> newConditionList, String conditionField);
 
-  LocalOgel findLocalOgelById(String id);
+  Optional<LocalOgel> findLocalOgelById(String id);
 
   LocalOgel insertOrUpdateOgel(LocalOgel ogel);
 

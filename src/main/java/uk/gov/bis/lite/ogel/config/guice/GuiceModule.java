@@ -1,5 +1,7 @@
 package uk.gov.bis.lite.ogel.config.guice;
 
+import static uk.gov.bis.lite.ogel.OgelApplication.SPIRE_OGEL_CACHE;
+
 import com.fiestacabin.dropwizard.quartz.SchedulerConfiguration;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -13,13 +15,16 @@ import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 import org.skife.jdbi.v2.DBI;
 import uk.gov.bis.lite.common.jersey.filter.ClientCorrelationIdFilter;
+import uk.gov.bis.lite.common.metrics.readiness.ReadinessService;
 import uk.gov.bis.lite.common.spire.client.SpireClientConfig;
 import uk.gov.bis.lite.common.spire.client.SpireRequestConfig;
+import uk.gov.bis.lite.ogel.cache.SpireOgelCache;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.LocalControlCodeConditionDAO;
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.SqliteLocalControlCodeConditionDAOImpl;
 import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.database.dao.ogel.SqliteLocalOgelDAOImpl;
+import uk.gov.bis.lite.ogel.healthcheck.SpireOgelReadinessService;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelServiceImpl;
 import uk.gov.bis.lite.ogel.service.ControlCodeConditionsService;
@@ -73,6 +78,7 @@ public class GuiceModule extends AbstractModule {
     bind(SpireOgelService.class).to(SpireOgelServiceImpl.class);
     bind(ApplicableOgelService.class).to(ApplicableOgelServiceImpl.class);
     bind(ControlCodeConditionsService.class).to(ControlCodeConditionsServiceImpl.class);
+    bind(ReadinessService.class).to(SpireOgelReadinessService.class);
   }
 
   @Provides
@@ -85,9 +91,10 @@ public class GuiceModule extends AbstractModule {
 
   @Provides
   @Singleton
-  Scheduler provideScheduler() throws SchedulerException {
-    Scheduler defaultScheduler = StdSchedulerFactory.getDefaultScheduler();
-    return defaultScheduler;
+  Scheduler provideScheduler(SpireOgelCache spireOgelCache) throws SchedulerException {
+    Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+    scheduler.getContext().put(SPIRE_OGEL_CACHE, spireOgelCache);
+    return scheduler;
   }
 
   @Provides

@@ -1,6 +1,7 @@
 package uk.gov.bis.lite.ogel.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -19,6 +20,7 @@ import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.factory.ViewFactory;
+import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
@@ -32,6 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -81,6 +84,7 @@ public class ControlCodeConditionsResourceTest {
     ControlCodeConditionFullView controlCodeConditionFullView = ViewFactory.createControlCodeCondition(controlCodeCondition);
     when(controlCodeConditionsService.findControlCodeConditions(OGEL_ID, CONTROL_CODE))
         .thenReturn(Optional.of(controlCodeConditionFullView));
+    when(localOgelService.findLocalOgelById(anyString())).thenReturn(Optional.of(localOgel));
 
     Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")
       .request(MediaType.APPLICATION_JSON_TYPE)
@@ -96,7 +100,7 @@ public class ControlCodeConditionsResourceTest {
   public void getBulkControlCodeConditionsById () throws Exception {
     LocalOgel localOgel = new LocalOgel();
     localOgel.setId(OGEL_ID);
-    when(localOgelService.findLocalOgelById(OGEL_ID)).thenReturn(localOgel);
+    when(localOgelService.findLocalOgelById(OGEL_ID)).thenReturn(Optional.of(localOgel));
 
     LocalControlCodeCondition controlCodeCondition = buildControlCodeCondition(Arrays.asList("ML1a", "ML1b"));
     ControlCodeFullView controlCodeFullView = new ControlCodeFullView();
@@ -124,11 +128,45 @@ public class ControlCodeConditionsResourceTest {
   public void controlCodeConditionByIdReturnsNoContent() throws Exception {
     when(controlCodeConditionsService.findControlCodeConditions(OGEL_ID, CONTROL_CODE))
         .thenReturn(Optional.empty());
+    when(localOgelService.findLocalOgelById(anyString())).thenReturn(Optional.empty());
+
     Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")
       .request(MediaType.APPLICATION_JSON_TYPE)
       .get();
 
     assertThat(result.getStatus()).isEqualTo(204);
+  }
+
+  @Test
+  public void putOgelConditionsArraySuccess() {
+    SpireOgel ogel = new SpireOgel();
+    ogel.setId(OGEL_ID);
+    when(spireOgelService.findSpireOgelById(OGEL_ID)).thenReturn(Optional.of(ogel));
+
+    LocalControlCodeCondition controlCodeCondition = buildControlCodeCondition();
+
+    Response result = resources.getJerseyTest().target("/control-code-conditions")
+        .request(MediaType.APPLICATION_JSON)
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .put(Entity.entity(Arrays.asList(controlCodeCondition), MediaType.APPLICATION_JSON));
+
+    assertThat(result.getStatus()).isEqualTo(201);
+  }
+
+  @Test
+  public void putOgelConditionsArrayOgelNotFound() {
+    SpireOgel ogel = new SpireOgel();
+    ogel.setId(OGEL_ID);
+    when(spireOgelService.findSpireOgelById(anyString())).thenReturn(Optional.empty());
+
+    LocalControlCodeCondition controlCodeCondition = buildControlCodeCondition();
+
+    Response result = resources.getJerseyTest().target("/control-code-conditions")
+        .request(MediaType.APPLICATION_JSON)
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .put(Entity.entity(Arrays.asList(controlCodeCondition), MediaType.APPLICATION_JSON));
+
+    assertThat(result.getStatus()).isEqualTo(404);
   }
 
   @Test

@@ -6,6 +6,7 @@ import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 
 import java.util.List;
+import java.util.Optional;
 
 @Singleton
 public class LocalOgelServiceImpl implements LocalOgelService {
@@ -19,8 +20,9 @@ public class LocalOgelServiceImpl implements LocalOgelService {
   }
 
   @Override
-  public LocalOgel findLocalOgelById(String id) {
-    return localOgelDAO.getOgelById(id);
+  public Optional<LocalOgel> findLocalOgelById(String id) {
+    LocalOgel localOgel = localOgelDAO.getOgelById(id);
+    return Optional.ofNullable(localOgel);
   }
 
   @Override

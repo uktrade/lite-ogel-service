@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
@@ -67,6 +68,8 @@ public class ApplicableOgelResourceTest {
   @Test
   public void goodRequestWithResults() {
     when(applicableOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogels);
+    when(localOgelService.findLocalOgelById(anyString())).thenReturn(Optional.empty());
+
     Response response = resources.client().target("/applicable-ogels")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
         .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
@@ -102,6 +105,7 @@ public class ApplicableOgelResourceTest {
     ogelsWithVirtualEu.add(TestUtil.ogelEU());
 
     when(applicableOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogelsWithVirtualEu);
+    when(localOgelService.findLocalOgelById(anyString())).thenReturn(Optional.empty());
 
     Response response = resources.client().target("/applicable-ogels")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
@@ -157,6 +161,7 @@ public class ApplicableOgelResourceTest {
     List<SpireOgel> ogelsByAscendingRanking = Arrays.asList(TestUtil.ogelY(), TestUtil.ogelZ(), TestUtil.ogelX());
 
     when(applicableOgelService.findOgel(anyString(), anyListOf(String.class), anyListOf(ActivityType.class))).thenReturn(ogelsByAscendingRanking);
+    when(localOgelService.findLocalOgelById(anyString())).thenReturn(Optional.empty());
 
     Response response = resources.client().target("/applicable-ogels")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
@@ -176,6 +181,7 @@ public class ApplicableOgelResourceTest {
     List<SpireOgel> ogelsWithSameRanking = Arrays.asList(TestUtil.ogelX(), TestUtil.ogelW());
 
     when(applicableOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogelsWithSameRanking);
+    when(localOgelService.findLocalOgelById(anyString())).thenReturn(Optional.empty());
 
     Response response = resources.client().target("/applicable-ogels")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)

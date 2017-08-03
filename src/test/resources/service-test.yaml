@@ -1,13 +1,17 @@
+spireOgelCacheJobCron: 0 0 0 * * ? # run at midnight everyday
+
 cacheTimeout: 1000
 login: user
 password: pass
 
-controlCodeServiceUrl: http://control-code-service.svc.licensing.service.trade.gov.uk.test
+#controlCodeServiceUrl: http://control-code-service.svc.licensing.service.trade.gov.uk.test
+controlCodeServiceUrl: http://localhost:9000/
 virtualEuOgelId: OGL61
 
 spireClientUserName: spireuser
 spireClientPassword: spirepass
-spireClientUrl: http://service-mocking.svc.licensing.service.trade.gov.uk.test/spire/fox/ispire/
+spireClientUrl: http://localhost:9000/spire/fox/ispire/
+#spireClientUrl: http://service-mocking.svc.dev.licensing.service.trade.gov.uk.test/spire/fox/ispire/
 
 jerseyClient:
   timeout: 10000ms
@@ -21,7 +25,7 @@ logging:
 
 database:
   driverClass: org.sqlite.JDBC
-  url: jdbc:sqlite:localOgel.db
+  url: jdbc:sqlite:file::memory:?cache=shared
   properties:
     charSet: UTF-8
   maxWaitForConnection: 30s

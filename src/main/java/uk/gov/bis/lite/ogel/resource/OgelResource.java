@@ -23,6 +23,7 @@ import uk.gov.bis.lite.ogel.validator.CheckLocalOgelList;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
@@ -41,21 +42,21 @@ import javax.ws.rs.core.Response;
 public class OgelResource {
   private static final Logger LOGGER = LoggerFactory.getLogger(OgelResource.class);
 
-  private final SpireOgelService ogelService;
+  private final SpireOgelService spireOgelService;
   private final LocalOgelService localOgelService;
 
   @Inject
-  public OgelResource(SpireOgelService ogelService, LocalOgelService localOgelService) {
-    this.ogelService = ogelService;
+  public OgelResource(SpireOgelService spireOgelService, LocalOgelService localOgelService) {
+    this.spireOgelService = spireOgelService;
     this.localOgelService = localOgelService;
   }
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<OgelFullView> getAllOgels() throws OgelNotFoundException {
-    List<SpireOgel> allSpireOgels = ogelService.getAllOgels();
+    List<SpireOgel> allSpireOgels = spireOgelService.getAllOgels();
     return allSpireOgels
-        .stream().map(so -> ViewFactory.createOgel(so, localOgelService.findLocalOgelById(so.getId())))
+        .stream().map(so -> ViewFactory.createOgel(so, localOgelService.findLocalOgelById(so.getId()).orElse(null)))
         .collect(Collectors.toList());
   }
 
@@ -63,12 +64,15 @@ public class OgelResource {
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public OgelFullView getOgelByOgelID(@NotNull @PathParam("id") String ogelId) {
-    SpireOgel foundSpireOgel = ogelService.findSpireOgelById(ogelId);
-    LocalOgel localOgelFound = localOgelService.findLocalOgelById(ogelId);
-    if (localOgelFound == null) {
+    Optional<SpireOgel> foundSpireOgelOptional = spireOgelService.findSpireOgelById(ogelId);
+    if(!foundSpireOgelOptional.isPresent()) {
+      throw new OgelNotFoundException(ogelId);
+    }
+    Optional<LocalOgel> localOgelFound = localOgelService.findLocalOgelById(ogelId);
+    if (!localOgelFound.isPresent()) {
       LOGGER.warn("Local Ogel Not Found for ogel ID: {}", ogelId);
     }
-    return ViewFactory.createOgel(foundSpireOgel, localOgelFound);
+    return ViewFactory.createOgel(foundSpireOgelOptional.get(), localOgelFound.orElse(null));
   }
 
   @PUT
@@ -83,7 +87,9 @@ public class OgelResource {
     } catch (IllegalArgumentException e) {
       return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
     }
-    ogelService.findSpireOgelById(ogelId);
+    if(!spireOgelService.findSpireOgelById(ogelId).isPresent()) {
+      throw new OgelNotFoundException(ogelId);
+    }
     ObjectMapper mapper = new ObjectMapper();
     try {
       List<String> updateConditionDataList = mapper.readValue(message,
@@ -105,7 +111,9 @@ public class OgelResource {
   public Response insertOrUpdateOgel(@Auth PrincipalImpl user,
                                      @NotNull @PathParam("id") String ogelId,
                                      @CheckLocalOgel LocalOgel localOgel) {
-    ogelService.findSpireOgelById(ogelId);
+    if(!spireOgelService.findSpireOgelById(ogelId).isPresent()) {
+      throw new OgelNotFoundException(ogelId);
+    }
 
     localOgel.setId(ogelId);
     localOgelService.insertOrUpdateOgel(localOgel);
@@ -118,7 +126,12 @@ public class OgelResource {
     if (ogelList.isEmpty()) {
       return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, "Empty Ogel List")).build();
     }
-    ogelList.forEach(o -> ogelService.findSpireOgelById(o.getId()));
+    ogelList.forEach(o -> {
+      if(!spireOgelService.findSpireOgelById(o.getId()).isPresent()) {
+        throw new OgelNotFoundException(o.getId());
+      }
+    });
+
     localOgelService.insertOgelList(ogelList);
     List<String> updatedOgelIds = ogelList.stream().map(LocalOgel::getId).collect(Collectors.toList());
     return Response.status(Response.Status.CREATED).entity(

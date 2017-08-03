@@ -1,0 +1,7 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:spir="http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_OGEL_TYPES">
+  <SOAP-ENV:Header/>
+  <SOAP-ENV:Body>
+    <spir:getOgelTypes/>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
