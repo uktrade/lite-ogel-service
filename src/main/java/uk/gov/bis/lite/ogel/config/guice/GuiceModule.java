@@ -15,6 +15,7 @@ import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 import org.skife.jdbi.v2.DBI;
 import uk.gov.bis.lite.common.jersey.filter.ClientCorrelationIdFilter;
+import uk.gov.bis.lite.common.metrics.readiness.ReadinessService;
 import uk.gov.bis.lite.common.spire.client.SpireClientConfig;
 import uk.gov.bis.lite.common.spire.client.SpireRequestConfig;
 import uk.gov.bis.lite.ogel.cache.SpireOgelCache;
@@ -23,6 +24,7 @@ import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.LocalControlCodeCo
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.SqliteLocalControlCodeConditionDAOImpl;
 import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.database.dao.ogel.SqliteLocalOgelDAOImpl;
+import uk.gov.bis.lite.ogel.healthcheck.SpireOgelReadinessService;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelServiceImpl;
 import uk.gov.bis.lite.ogel.service.ControlCodeConditionsService;
@@ -76,6 +78,7 @@ public class GuiceModule extends AbstractModule {
     bind(SpireOgelService.class).to(SpireOgelServiceImpl.class);
     bind(ApplicableOgelService.class).to(ApplicableOgelServiceImpl.class);
     bind(ControlCodeConditionsService.class).to(ControlCodeConditionsServiceImpl.class);
+    bind(ReadinessService.class).to(SpireOgelReadinessService.class);
   }
 
   @Provides

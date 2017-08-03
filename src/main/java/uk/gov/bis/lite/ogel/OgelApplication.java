@@ -17,8 +17,8 @@ import ru.vyarus.dropwizard.guice.module.installer.feature.ManagedInstaller;
 import ru.vyarus.dropwizard.guice.module.installer.feature.health.HealthCheckInstaller;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
 import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
+import uk.gov.bis.lite.common.metrics.readiness.ReadinessServlet;
 import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
-import uk.gov.bis.lite.ogel.cache.SpireOgelCache;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
@@ -60,6 +60,9 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
   public void run(MainApplicationConfiguration configuration, Environment environment) {
     final Injector injector = guiceBundle.getInjector();
 
+    ReadinessServlet readinessServlet = injector.getInstance(ReadinessServlet.class);
+    environment.admin().addServlet("ready", readinessServlet).addMapping("/ready");
+
     environment.jersey().register(SpireClientException.ServiceExceptionMapper.class);
 
     //Authorization and authentication handlers
@@ -78,10 +81,6 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     Flyway flyway = new Flyway();
     flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());
     flyway.migrate();
-
-    SpireOgelCache spireOgelCache = injector.getInstance(SpireOgelCache.class);
-    spireOgelCache.load();
-
   }
 
   @Override
