@@ -36,13 +36,13 @@ public class SpireOgelReadinessService implements ReadinessService {
 
   @Override
   public JsonNode readinessJson() {
-    SpireOgelReadiness countryReadiness;
+    SpireOgelReadiness spireOgelReadiness;
     if (isReady()) {
-      countryReadiness = new SpireOgelReadiness(true, null);
+      spireOgelReadiness = new SpireOgelReadiness(true, null);
     } else {
-      countryReadiness = new SpireOgelReadiness(false, "Spire ogel cache is not populated.");
+      spireOgelReadiness = new SpireOgelReadiness(false, "Spire ogel cache is not populated.");
     }
     ObjectMapper mapper = new ObjectMapper();
-    return mapper.valueToTree(countryReadiness);
+    return mapper.valueToTree(spireOgelReadiness);
   }
 }
