@@ -22,7 +22,6 @@ public class SpireOgelCache {
   private volatile Map<String, SpireOgel> cache = new HashMap<>();
   private SpireHealthStatus healthStatus = SpireHealthStatus.unhealthy("Cache not initialised");
   private SpireOgelClient ogelClient;
-  private volatile boolean spireReady = false;
 
   @Inject
   public SpireOgelCache(SpireOgelClient ogelClient) {
@@ -46,7 +45,6 @@ public class SpireOgelCache {
       LOGGER.warn("An unexpected error occurred getting OGEL data from SPIRE", th);
       healthStatus = SpireHealthStatus.unhealthy(th.getMessage());
     }
-    spireReady = true;
   }
 
   public Map<String, SpireOgel> getCache() {
@@ -63,6 +61,6 @@ public class SpireOgelCache {
   }
 
   public boolean isSpireReady() {
-    return spireReady;
+    return !cache.isEmpty();
   }
 }
