@@ -63,7 +63,6 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     ReadinessServlet readinessServlet = injector.getInstance(ReadinessServlet.class);
     environment.admin().addServlet("ready", readinessServlet).addMapping("/ready");
 
-    environment.jersey().register(SpireClientException.ServiceExceptionMapper.class);
 
     //Authorization and authentication handlers
     environment.jersey().register(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
