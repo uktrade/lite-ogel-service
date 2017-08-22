@@ -13,6 +13,7 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.flywaydb.core.Flyway;
 import org.glassfish.jersey.client.JerseyClientBuilder;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -27,33 +28,46 @@ public class BaseIntegrationTest {
   @Rule
   public WireMockClassRule wireMockRule = wireMockClassRule;
 
-  @Rule
-  public final DropwizardAppRule<MainApplicationConfiguration> RULE =
+  @ClassRule
+  public static final DropwizardAppRule<MainApplicationConfiguration> RULE =
       new DropwizardAppRule<>(OgelApplication.class, resourceFilePath("service-test.yaml"));
 
   @Before
-  public void setUpMock() {
+  public void setUp() {
+    // Start WireMock
+    wireMockRule.start();
     wireMockRule.stubFor(post(urlEqualTo("/spire/fox/ispire/SPIRE_OGEL_TYPES"))
         .willReturn(aResponse()
             .withStatus(200)
             .withHeader("Content-Type", "text/xml")
             .withBody(fixture("fixture/integration/spire/getAllOgelsResponse.xml"))));
-  }
 
-  @Before
-  public void setupDatabase() {
+    // Wait until WireMock is running
+    await().with().pollInterval(1, SECONDS).atMost(10, SECONDS).until(() -> wireMockRule.isRunning());
+
+    // Start Dropwizard
+    RULE.getTestSupport().before();
+
     DataSourceFactory f = RULE.getConfiguration().getDataSourceFactory();
     Flyway flyway = new Flyway();
     flyway.setDataSource(f.getUrl(), f.getUser(), f.getPassword());
     flyway.migrate();
-  }
 
-  @Before
-  public void awaitSpireOgelCacheLoad() {
+    // Wait until Dropwizard is ready
     await().with().pollInterval(1, SECONDS).atMost(10, SECONDS).until(() -> JerseyClientBuilder.createClient()
         .target("http://localhost:"+RULE.getAdminPort()+"/ready")
         .request()
         .get()
         .getStatus() == 200);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    // Stop dropwizard
+    RULE.getTestSupport().after();
+
+    //Stop WireMock
+    wireMockRule.stop();
+    wireMockRule.resetAll();
   }
 }
