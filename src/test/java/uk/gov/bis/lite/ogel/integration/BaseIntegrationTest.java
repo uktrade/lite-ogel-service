@@ -28,7 +28,7 @@ public class BaseIntegrationTest {
 
   @Before
   public void setUp() {
-    wireMockRule = new WireMockRule(options().dynamicPort());
+    wireMockRule = new WireMockRule(options().port(9000));
     wireMockRule.start();
     wireMockRule.stubFor(post(urlEqualTo("/spire/fox/ispire/SPIRE_OGEL_TYPES"))
         .willReturn(aResponse()
