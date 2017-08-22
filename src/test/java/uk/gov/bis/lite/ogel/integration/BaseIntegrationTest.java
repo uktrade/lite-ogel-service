@@ -43,13 +43,6 @@ public class BaseIntegrationTest {
             .withHeader("Content-Type", "text/xml")
             .withBody(fixture("fixture/integration/spire/getAllOgelsResponse.xml"))));
 
-    // Wait until WireMock is running
-    await().with().pollInterval(50, MILLISECONDS).atMost(10, SECONDS).until(() -> {
-      boolean running = wireMockRule.isRunning();
-      System.out.println("WireMock starting: running = " + running);
-      return running;
-    });
-
     // Start Dropwizard
     RULE.getTestSupport().before();
 
@@ -75,20 +68,10 @@ public class BaseIntegrationTest {
     // Stop Dropwizard
     RULE.getTestSupport().after();
 
-    await().with().pollInterval(50, MILLISECONDS).atMost(10, SECONDS).until(() -> {
-      boolean running = RULE.getTestSupport().getEnvironment().getApplicationContext().isRunning();
-      System.out.println("Dropwizard stopping: running = " + running);
-      return !running;
-    });
-
     //Stop WireMock
     wireMockRule.stop();
     wireMockRule.resetAll();
 
-    await().with().pollInterval(50, MILLISECONDS).atMost(10, SECONDS).until(() -> {
-      boolean running = wireMockRule.isRunning();
-      System.out.println("WireMock stopping: running = " + running);
-      return !running;
-    });
+    Thread.sleep(1000);
   }
 }
