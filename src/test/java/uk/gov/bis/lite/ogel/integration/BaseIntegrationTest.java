@@ -62,9 +62,10 @@ public class BaseIntegrationTest {
   public static void afterClass() {
     wireMockClassRule.stop();
 
-    await().with().pollInterval(1, SECONDS).until(() -> {
-      System.out.println("POLLING");
-      return !wireMockClassRule.isRunning(); }
-    );
+    try {
+      Thread.sleep(30000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 }
