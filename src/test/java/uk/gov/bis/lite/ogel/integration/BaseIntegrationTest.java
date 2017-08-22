@@ -9,6 +9,7 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.testing.junit.DropwizardAppRule;
@@ -24,7 +25,7 @@ import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 public class BaseIntegrationTest {
 
   @ClassRule
-  public static final WireMockRule wireMockRule = new WireMockRule(9000);
+  public static final WireMockClassRule wireMockClassRule = new WireMockClassRule(9000);
 
   @Rule
   public final DropwizardAppRule<MainApplicationConfiguration> RULE =
