@@ -43,7 +43,11 @@ public class BaseIntegrationTest {
             .withBody(fixture("fixture/integration/spire/getAllOgelsResponse.xml"))));
 
     // Wait until WireMock is running
-    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> wireMockRule.isRunning());
+    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> {
+      boolean running = wireMockRule.isRunning();
+      System.out.println("WireMock starting: running = " + running);
+      return running;
+    });
 
     // Start Dropwizard
     RULE.getTestSupport().before();
@@ -54,24 +58,36 @@ public class BaseIntegrationTest {
     flyway.migrate();
 
     // Wait until Dropwizard is ready
-    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> JerseyClientBuilder.createClient()
-        .target("http://localhost:"+RULE.getAdminPort()+"/ready")
-        .request()
-        .get()
-        .getStatus() == 200);
+    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> {
+      boolean ready = JerseyClientBuilder.createClient()
+              .target("http://localhost:"+RULE.getAdminPort()+"/ready")
+              .request()
+              .get()
+              .getStatus() == 200;
+      System.out.println("Dropwizard starting: ready = " + ready);
+      return ready;
+    });
   }
 
   @After
   public void tearDown() throws Exception {
-    // Stop dropwizard
+    // Stop Dropwizard
     RULE.getTestSupport().after();
 
-    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> !RULE.getTestSupport().getEnvironment().getApplicationContext().isRunning());
+    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> {
+      boolean running = RULE.getTestSupport().getEnvironment().getApplicationContext().isRunning();
+      System.out.println("Dropwizard stopping: running = " + running);
+      return !running;
+    });
 
     //Stop WireMock
     wireMockRule.stop();
     wireMockRule.resetAll();
 
-    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> !wireMockRule.isRunning());
+    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> {
+      boolean running = wireMockRule.isRunning();
+      System.out.println("WireMock stopping: running = " + running);
+      return !running;
+    });
   }
 }
