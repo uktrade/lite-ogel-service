@@ -3,45 +3,42 @@ package uk.gov.bis.lite.ogel.integration;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.dropwizard.db.DataSourceFactory;
+import io.dropwizard.testing.ConfigOverride;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.flywaydb.core.Flyway;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import uk.gov.bis.lite.ogel.OgelApplication;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 
 public class BaseIntegrationTest {
 
-  @ClassRule
-  public static final WireMockClassRule wireMockClassRule = new WireMockClassRule(9000);
+  public WireMockRule wireMockRule;
 
-  @Rule
-  public WireMockClassRule wireMockRule = wireMockClassRule;
-
-  @ClassRule
-  public static final DropwizardAppRule<MainApplicationConfiguration> RULE =
-      new DropwizardAppRule<>(OgelApplication.class, resourceFilePath("service-test.yaml"));
+  public DropwizardAppRule<MainApplicationConfiguration> RULE;
 
   @Before
   public void setUp() {
-    // Start WireMock
+    wireMockRule = new WireMockRule(options().dynamicPort());
     wireMockRule.start();
     wireMockRule.stubFor(post(urlEqualTo("/spire/fox/ispire/SPIRE_OGEL_TYPES"))
         .willReturn(aResponse()
             .withStatus(200)
             .withHeader("Content-Type", "text/xml")
             .withBody(fixture("fixture/integration/spire/getAllOgelsResponse.xml"))));
+
+    RULE = new DropwizardAppRule<>(OgelApplication.class, resourceFilePath("service-test.yaml"),
+        ConfigOverride.config("controlCodeServiceUrl", "http://localhost:" +  wireMockRule.port() + "/"),
+        ConfigOverride.config("spireClientUrl", "http://localhost:" +  wireMockRule.port() + "/spire/fox/ispire/"));
 
     // Start Dropwizard
     RULE.getTestSupport().before();
@@ -70,8 +67,5 @@ public class BaseIntegrationTest {
 
     //Stop WireMock
     wireMockRule.stop();
-    wireMockRule.resetAll();
-
-    Thread.sleep(1000);
   }
 }
