@@ -15,6 +15,7 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.flywaydb.core.Flyway;
 import org.glassfish.jersey.client.JerseyClientBuilder;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -55,5 +56,15 @@ public class BaseIntegrationTest {
     Flyway flyway = new Flyway();
     flyway.setDataSource(f.getUrl(), f.getUser(), f.getPassword());
     flyway.migrate();
+  }
+
+  @AfterClass
+  public static void afterClass() {
+    wireMockClassRule.stop();
+
+    await().with().pollInterval(1, SECONDS).until(() -> {
+      System.out.println("POLLING");
+      return !wireMockClassRule.isRunning(); }
+    );
   }
 }
