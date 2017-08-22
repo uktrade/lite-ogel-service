@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 
@@ -43,7 +44,7 @@ public class BaseIntegrationTest {
             .withBody(fixture("fixture/integration/spire/getAllOgelsResponse.xml"))));
 
     // Wait until WireMock is running
-    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> {
+    await().with().pollInterval(50, MILLISECONDS).atMost(10, SECONDS).until(() -> {
       boolean running = wireMockRule.isRunning();
       System.out.println("WireMock starting: running = " + running);
       return running;
@@ -58,7 +59,7 @@ public class BaseIntegrationTest {
     flyway.migrate();
 
     // Wait until Dropwizard is ready
-    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> {
+    await().with().pollInterval(1, SECONDS).atMost(10, SECONDS).until(() -> {
       boolean ready = JerseyClientBuilder.createClient()
               .target("http://localhost:"+RULE.getAdminPort()+"/ready")
               .request()
@@ -74,7 +75,7 @@ public class BaseIntegrationTest {
     // Stop Dropwizard
     RULE.getTestSupport().after();
 
-    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> {
+    await().with().pollInterval(50, MILLISECONDS).atMost(10, SECONDS).until(() -> {
       boolean running = RULE.getTestSupport().getEnvironment().getApplicationContext().isRunning();
       System.out.println("Dropwizard stopping: running = " + running);
       return !running;
@@ -84,7 +85,7 @@ public class BaseIntegrationTest {
     wireMockRule.stop();
     wireMockRule.resetAll();
 
-    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> {
+    await().with().pollInterval(50, MILLISECONDS).atMost(10, SECONDS).until(() -> {
       boolean running = wireMockRule.isRunning();
       System.out.println("WireMock stopping: running = " + running);
       return !running;
