@@ -43,7 +43,7 @@ public class BaseIntegrationTest {
             .withBody(fixture("fixture/integration/spire/getAllOgelsResponse.xml"))));
 
     // Wait until WireMock is running
-    await().with().pollInterval(1, SECONDS).atMost(10, SECONDS).until(() -> wireMockRule.isRunning());
+    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> wireMockRule.isRunning());
 
     // Start Dropwizard
     RULE.getTestSupport().before();
@@ -54,7 +54,7 @@ public class BaseIntegrationTest {
     flyway.migrate();
 
     // Wait until Dropwizard is ready
-    await().with().pollInterval(1, SECONDS).atMost(10, SECONDS).until(() -> JerseyClientBuilder.createClient()
+    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> JerseyClientBuilder.createClient()
         .target("http://localhost:"+RULE.getAdminPort()+"/ready")
         .request()
         .get()
@@ -66,8 +66,12 @@ public class BaseIntegrationTest {
     // Stop dropwizard
     RULE.getTestSupport().after();
 
+    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> !RULE.getTestSupport().getEnvironment().getApplicationContext().isRunning());
+
     //Stop WireMock
     wireMockRule.stop();
     wireMockRule.resetAll();
+
+    await().with().pollInterval(1, SECONDS).atMost(30, SECONDS).until(() -> !wireMockRule.isRunning());
   }
 }
