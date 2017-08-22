@@ -2,7 +2,6 @@ package uk.gov.bis.lite.ogel.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +45,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
   @Test
   public void getControlCodeConditionByIdBulkControlCode() {
     // return all external control codes
-    stubFor(get(urlEqualTo("/bulk-control-codes?controlCode=33"))
+    wireMockRule.stubFor(get(urlEqualTo("/bulk-control-codes?controlCode=33"))
         .willReturn(aResponse()
             .withStatus(200)
             .withHeader("Content-Type", "application/json")
@@ -69,7 +68,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
   @Test
   public void getControlCodeConditionByIdPartialContent() {
     // return all external control codes
-    stubFor(get(urlEqualTo("/bulk-control-codes?controlCode=33"))
+    wireMockRule.stubFor(get(urlEqualTo("/bulk-control-codes?controlCode=33"))
         .willReturn(aResponse()
             .withStatus(206)
             .withHeader("Content-Type", "application/json")

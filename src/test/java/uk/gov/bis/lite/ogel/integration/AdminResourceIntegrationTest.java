@@ -2,7 +2,6 @@ package uk.gov.bis.lite.ogel.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +23,7 @@ public class AdminResourceIntegrationTest extends BaseIntegrationTest {
   @Test
   public void validateSuccess() {
     // return all external control codes
-    stubFor(get(urlEqualTo("/control-codes"))
+    wireMockRule.stubFor(get(urlEqualTo("/control-codes"))
         .willReturn(aResponse()
             .withStatus(200)
             .withHeader("Content-Type", "application/json")
@@ -46,7 +45,7 @@ public class AdminResourceIntegrationTest extends BaseIntegrationTest {
   @Test
   public void validateUnmatched() {
     // return all external control codes
-    stubFor(get(urlEqualTo("/control-codes"))
+    wireMockRule.stubFor(get(urlEqualTo("/control-codes"))
         .willReturn(aResponse()
             .withStatus(200)
             .withHeader("Content-Type", "application/json")
@@ -77,7 +76,7 @@ public class AdminResourceIntegrationTest extends BaseIntegrationTest {
   @Test
   public void validateControlCodeFailure() throws Exception {
     // return all external control codes
-    stubFor(get(urlEqualTo("/control-codes"))
+    wireMockRule.stubFor(get(urlEqualTo("/control-codes"))
         .willReturn(aResponse()
             .withStatus(500)));
 
