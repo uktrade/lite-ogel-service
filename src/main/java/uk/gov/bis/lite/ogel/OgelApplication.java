@@ -18,7 +18,6 @@ import ru.vyarus.dropwizard.guice.module.installer.feature.health.HealthCheckIns
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
 import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
 import uk.gov.bis.lite.common.metrics.readiness.ReadinessServlet;
-import uk.gov.bis.lite.common.spire.client.exception.SpireClientException;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
@@ -31,7 +30,7 @@ import uk.gov.bis.lite.ogel.resource.ControlCodeConditionsResource;
 import uk.gov.bis.lite.ogel.resource.OgelResource;
 import uk.gov.bis.lite.ogel.resource.VirtualEuResource;
 import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
-import uk.gov.bis.lite.ogel.schedular.SpireOgelCacheScheduler;
+import uk.gov.bis.lite.ogel.scheduler.SpireOgelCacheScheduler;
 
 public class OgelApplication extends Application<MainApplicationConfiguration> {
 

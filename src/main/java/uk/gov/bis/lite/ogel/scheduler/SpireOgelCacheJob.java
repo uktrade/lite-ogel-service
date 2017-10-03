@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.ogel.schedular;
+package uk.gov.bis.lite.ogel.scheduler;
 
 import static uk.gov.bis.lite.ogel.OgelApplication.SPIRE_OGEL_CACHE;
 

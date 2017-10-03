@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.ogel.schedular;
+package uk.gov.bis.lite.ogel.scheduler;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
@@ -12,19 +12,16 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.TriggerKey;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
-import uk.gov.bis.lite.ogel.service.SpireOgelServiceImpl;
 
 public class SpireOgelCacheScheduler implements Managed {
 
   private final org.quartz.Scheduler scheduler;
   private final MainApplicationConfiguration config;
-  private final SpireOgelServiceImpl spireOgelService;
 
   @Inject
-  public SpireOgelCacheScheduler(Scheduler scheduler, MainApplicationConfiguration config, SpireOgelServiceImpl spireOgelService) {
+  public SpireOgelCacheScheduler(Scheduler scheduler, MainApplicationConfiguration config) {
     this.scheduler = scheduler;
     this.config = config;
-    this.spireOgelService = spireOgelService;
   }
 
   @Override
