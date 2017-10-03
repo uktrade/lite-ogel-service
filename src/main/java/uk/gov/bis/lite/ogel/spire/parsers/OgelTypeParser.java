@@ -47,7 +47,7 @@ public class OgelTypeParser implements SpireParser<List<SpireOgel>> {
 
     for (Node node : nodes) {
       SpireOgel currentOgel = new SpireOgel();
-      Node currentNode = node.cloneNode(true);
+      Node currentNode = node.cloneNode(true); //Performance enhancement
       if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
         try {
           currentOgel.setId(((Node) xpath.evaluate("OGEL_TYPE_REF", currentNode, XPathConstants.NODE)).getTextContent());
