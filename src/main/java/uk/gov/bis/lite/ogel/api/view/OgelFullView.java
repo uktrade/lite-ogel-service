@@ -11,6 +11,7 @@ public class OgelFullView {
   private String name;
   private OgelConditionSummary summary;
   private String link;
+  private String lastUpdatedDate;
 
   public void setId(String id) {
     this.id = id;
@@ -42,6 +43,14 @@ public class OgelFullView {
 
   public String getLink() {
     return link;
+  }
+
+  public String getLastUpdatedDate() {
+    return lastUpdatedDate;
+  }
+
+  public void setLastUpdatedDate(String lastUpdatedDate) {
+    this.lastUpdatedDate = lastUpdatedDate;
   }
 
   @JsonIgnoreProperties(ignoreUnknown = true)

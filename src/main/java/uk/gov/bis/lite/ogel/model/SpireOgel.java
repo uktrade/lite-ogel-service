@@ -18,6 +18,7 @@ public class SpireOgel {
   @JsonIgnore
   private ActivityType activityType;
   private int ranking;
+  private String lastUpdatedDate;
 
   public String getId() {
     return id;
@@ -69,4 +70,11 @@ public class SpireOgel {
     this.ranking = ranking;
   }
 
+  public String getLastUpdatedDate() {
+    return lastUpdatedDate;
+  }
+
+  public void setLastUpdatedDate(String lastUpdatedDate) {
+    this.lastUpdatedDate = lastUpdatedDate;
+  }
 }

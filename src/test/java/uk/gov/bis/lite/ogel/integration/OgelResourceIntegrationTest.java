@@ -36,6 +36,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     assertThat(actualResponse).extracting(ogel -> ogel.getId()).containsOnly("OGLX", "OGLY", "OGLZ", "OGL61");
     assertThat(actualResponse).extracting(ogel -> ogel.getName()).containsOnly("NameOGLX", "NameOGLY", "NameOGLZ", "VirtualEuSpireNameOGL61");
     assertThat(actualResponse).flatExtracting(ogel -> ogel.getSummary().getCanList()).containsOnly("CanList for OGLX", "CanList for OGLY", "CanList for OGLZ");
+    assertThat(actualResponse).extracting(ogel -> ogel.getLastUpdatedDate()).containsOnly("01/07/2015", "11/05/2015", "21/07/2015", "12/12/2015");
   }
 
   @Test
@@ -49,6 +50,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     OgelFullView actualResponse = response.readEntity(OgelFullView.class);
     assertThat(actualResponse.getId()).isEqualTo("OGLX");
     assertThat(actualResponse.getName()).isEqualTo("NameOGLX");
+    assertThat(actualResponse.getLastUpdatedDate()).isEqualTo("01/07/2015");
     assertThat(actualResponse.getSummary().getCanList()).containsOnly("CanList for OGLX");
     assertThat(actualResponse.getSummary().getCantList()).containsOnly("CantList for OGLX");
     assertThat(actualResponse.getSummary().getHowToUseList()).isNull();

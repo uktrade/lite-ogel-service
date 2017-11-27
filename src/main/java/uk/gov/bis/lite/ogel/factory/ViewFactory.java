@@ -60,6 +60,7 @@ public class ViewFactory {
     ogelFullView.setId(spireOgel.getId());
     ogelFullView.setName(getOgelName(localOgel, spireOgel));
     ogelFullView.setLink(spireOgel.getLink());
+    ogelFullView.setLastUpdatedDate(spireOgel.getLastUpdatedDate());
 
     OgelFullView.OgelConditionSummary summary = new OgelFullView.OgelConditionSummary();
     if (localOgel != null) {
