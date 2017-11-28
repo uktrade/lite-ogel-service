@@ -1,6 +1,8 @@
 package uk.gov.bis.lite.ogel.factory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.controlcode.api.view.BulkControlCodes;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
@@ -10,12 +12,19 @@ import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class ViewFactory {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ViewFactory.class);
 
   public static ControlCodeConditionFullView createControlCodeCondition(LocalControlCodeCondition localControlCodeCondition) {
     ControlCodeConditionFullView view = new ControlCodeConditionFullView();
@@ -60,7 +69,7 @@ public class ViewFactory {
     ogelFullView.setId(spireOgel.getId());
     ogelFullView.setName(getOgelName(localOgel, spireOgel));
     ogelFullView.setLink(spireOgel.getLink());
-    ogelFullView.setLastUpdatedDate(spireOgel.getLastUpdatedDate());
+    ogelFullView.setLastUpdatedDate(parseSpireDate(spireOgel.getLastUpdatedDate()));
 
     OgelFullView.OgelConditionSummary summary = new OgelFullView.OgelConditionSummary();
     if (localOgel != null) {
@@ -95,6 +104,22 @@ public class ViewFactory {
       return spireOgel.getName();
     } else {
       return localOgel.getName();
+    }
+  }
+
+  private static LocalDate parseSpireDate(String spireDate) {
+    if (StringUtils.isEmpty(spireDate)) {
+      return null;
+    }
+    DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder()
+        .parseCaseInsensitive()
+        .appendPattern("dd/MM/uuuu")
+        .toFormatter(Locale.ENGLISH);
+    try {
+      return LocalDate.parse(spireDate, dateTimeFormatter);
+    } catch (DateTimeParseException e) {
+      LOGGER.error("Unexpected date format: \"%s\"", spireDate);
+      throw e;
     }
   }
 }

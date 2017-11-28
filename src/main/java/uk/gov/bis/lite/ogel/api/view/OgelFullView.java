@@ -1,7 +1,9 @@
 package uk.gov.bis.lite.ogel.api.view;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -11,7 +13,9 @@ public class OgelFullView {
   private String name;
   private OgelConditionSummary summary;
   private String link;
-  private String lastUpdatedDate;
+
+  @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+  private LocalDate lastUpdatedDate;
 
   public void setId(String id) {
     this.id = id;
@@ -45,11 +49,11 @@ public class OgelFullView {
     return link;
   }
 
-  public String getLastUpdatedDate() {
+  public LocalDate getLastUpdatedDate() {
     return lastUpdatedDate;
   }
 
-  public void setLastUpdatedDate(String lastUpdatedDate) {
+  public void setLastUpdatedDate(LocalDate lastUpdatedDate) {
     this.lastUpdatedDate = lastUpdatedDate;
   }
 
