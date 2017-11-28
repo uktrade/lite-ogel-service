@@ -69,7 +69,7 @@ public class ViewFactory {
     ogelFullView.setId(spireOgel.getId());
     ogelFullView.setName(getOgelName(localOgel, spireOgel));
     ogelFullView.setLink(spireOgel.getLink());
-    ogelFullView.setLastUpdatedDate(parseSpireDate(spireOgel.getLastUpdatedDate()));
+    ogelFullView.setLastUpdatedDate(parseSpireDate(spireOgel.getLastUpdatedDate(), spireOgel.getId()));
 
     OgelFullView.OgelConditionSummary summary = new OgelFullView.OgelConditionSummary();
     if (localOgel != null) {
@@ -107,7 +107,7 @@ public class ViewFactory {
     }
   }
 
-  private static LocalDate parseSpireDate(String spireDate) {
+  private static LocalDate parseSpireDate(String spireDate, String ogelId) {
     if (StringUtils.isEmpty(spireDate)) {
       return null;
     }
@@ -118,8 +118,8 @@ public class ViewFactory {
     try {
       return LocalDate.parse(spireDate, dateTimeFormatter);
     } catch (DateTimeParseException e) {
-      LOGGER.error("Unexpected date format: \"%s\"", spireDate);
-      throw e;
+      LOGGER.error("Unexpected date format \'{}\' for ogelId {}", spireDate, ogelId, e);
+      return null;
     }
   }
 }
