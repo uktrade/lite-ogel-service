@@ -3,6 +3,8 @@ package uk.gov.bis.lite.ogel.integration;
 import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.JerseyInvocation;
 import org.junit.Test;
@@ -10,45 +12,56 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 public class OgelResourceIntegrationTest extends BaseIntegrationTest {
 
   private static final String OGEL_URL = "http://localhost:8080/ogels/";
+  private static final ObjectMapper MAPPER;
+
+  static {
+    MAPPER = new ObjectMapper();
+    MAPPER.registerModule(new JavaTimeModule());
+  }
 
   @Test
-  public void getAllOgelsSuccess() {
+  public void getAllOgelsSuccess() throws IOException {
     Response response = JerseyClientBuilder.createClient()
         .target(OGEL_URL)
         .request()
         .get();
 
     assertThat(response.getStatus()).isEqualTo(200);
-    List<OgelFullView> actualResponse = response.readEntity(new GenericType<List<OgelFullView>>() {
-    });
+
+    List<OgelFullView> actualResponse = Arrays.asList(MAPPER.readValue(response.readEntity(String.class), OgelFullView[].class));
     assertThat(actualResponse.size()).isEqualTo(4);
     assertThat(actualResponse).extracting(ogel -> ogel.getId()).containsOnly("OGLX", "OGLY", "OGLZ", "OGL61");
     assertThat(actualResponse).extracting(ogel -> ogel.getName()).containsOnly("NameOGLX", "NameOGLY", "NameOGLZ", "VirtualEuSpireNameOGL61");
     assertThat(actualResponse).flatExtracting(ogel -> ogel.getSummary().getCanList()).containsOnly("CanList for OGLX", "CanList for OGLY", "CanList for OGLZ");
+    assertThat(actualResponse).extracting(ogel -> ogel.getLastUpdatedDate())
+        .containsOnly(LocalDate.of(2015, 07, 01), LocalDate.of(2015, 05, 11),
+            LocalDate.of(2015, 07, 21), LocalDate.of(2015, 12, 12));
   }
 
   @Test
-  public void getOgelByIdSuccess() {
+  public void getOgelByIdSuccess() throws IOException {
     Response response = JerseyClientBuilder.createClient()
-        .target(OGEL_URL+"OGLX")
+        .target(OGEL_URL + "OGLX")
         .request()
         .get();
 
     assertThat(response.getStatus()).isEqualTo(200);
-    OgelFullView actualResponse = response.readEntity(OgelFullView.class);
+    OgelFullView actualResponse = MAPPER.readValue(response.readEntity(String.class), OgelFullView.class);
     assertThat(actualResponse.getId()).isEqualTo("OGLX");
     assertThat(actualResponse.getName()).isEqualTo("NameOGLX");
+    assertThat(actualResponse.getLastUpdatedDate()).isEqualTo(LocalDate.of(2015, 07, 01));
     assertThat(actualResponse.getSummary().getCanList()).containsOnly("CanList for OGLX");
     assertThat(actualResponse.getSummary().getCantList()).containsOnly("CantList for OGLX");
     assertThat(actualResponse.getSummary().getHowToUseList()).isNull();
@@ -58,7 +71,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
   @Test
   public void getOgelByIdOgelNotFoundException() {
     Response response = JerseyClientBuilder.createClient()
-        .target(OGEL_URL+"OGL_")
+        .target(OGEL_URL + "OGL_")
         .request()
         .get();
 
@@ -68,15 +81,15 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  public void updateOgelConditionSuccess() {
+  public void updateOgelConditionSuccess() throws IOException {
     Response response = JerseyClientBuilder.createClient()
-        .target(OGEL_URL+"OGLX" + "/summary/canList")
+        .target(OGEL_URL + "OGLX" + "/summary/canList")
         .request()
         .header("Authorization", "Basic dXNlcjpwYXNz")
         .put(Entity.entity(fixture("fixture/integration/updateOgelConditionRequest.json"), MediaType.APPLICATION_JSON_TYPE));
 
     assertThat(response.getStatus()).isEqualTo(202);
-    OgelFullView actual = response.readEntity(OgelFullView.class);
+    OgelFullView actual = MAPPER.readValue(response.readEntity(String.class), OgelFullView.class);
     assertThat(actual.getId()).isEqualTo("OGLX");
     assertThat(actual.getName()).isEqualTo("NameOGLX");
     assertThat(actual.getSummary().getCanList()).containsOnly("update canList with some text");
@@ -96,14 +109,14 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  public void insertOrUpdateOgelSuccess() {
-    JerseyInvocation.Builder getOgelByIdRequest= JerseyClientBuilder.createClient()
-        .target(OGEL_URL+"OGLX")
+  public void insertOrUpdateOgelSuccess() throws IOException {
+    JerseyInvocation.Builder getOgelByIdRequest = JerseyClientBuilder.createClient()
+        .target(OGEL_URL + "OGLX")
         .request();
 
     Response responseBefore = getOgelByIdRequest.get();
 
-    OgelFullView actualResponseBefore = responseBefore.readEntity(OgelFullView.class);
+    OgelFullView actualResponseBefore = MAPPER.readValue(responseBefore.readEntity(String.class), OgelFullView.class);
     assertThat(actualResponseBefore.getId()).isEqualTo("OGLX");
     assertThat(actualResponseBefore.getName()).isEqualTo("NameOGLX");
     assertThat(actualResponseBefore.getSummary().getCanList()).containsOnly("CanList for OGLX");
@@ -112,13 +125,13 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     assertThat(actualResponseBefore.getSummary().getMustList()).isNull();
 
     Response response = JerseyClientBuilder.createClient()
-        .target(OGEL_URL+"OGLX")
+        .target(OGEL_URL + "OGLX")
         .request()
         .header("Authorization", "Basic dXNlcjpwYXNz")
         .put(Entity.entity((TestUtil.localX()), MediaType.APPLICATION_JSON));
 
     assertThat(response.getStatus()).isEqualTo(201);
-    OgelFullView actual = response.readEntity(OgelFullView.class);
+    OgelFullView actual = MAPPER.readValue(response.readEntity(String.class), OgelFullView.class);
     assertThat(actual.getId()).isEqualTo("OGLX");
     assertThat(actual.getName()).isEqualTo("NameOGLX");
     assertThat(actual.getSummary().getCanList()).containsOnly("can1", "can2", "can3");
@@ -128,7 +141,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
 
     Response responseAfter = getOgelByIdRequest.get();
 
-    OgelFullView actualResponseAfter = responseAfter.readEntity(OgelFullView.class);
+    OgelFullView actualResponseAfter = MAPPER.readValue(responseAfter.readEntity(String.class), OgelFullView.class);
     assertThat(actualResponseAfter.getId()).isEqualTo("OGLX");
     assertThat(actualResponseAfter.getName()).isEqualTo("NameOGLX");
     assertThat(actualResponseAfter.getSummary().getCanList()).containsOnly("can1", "can2", "can3");
@@ -140,7 +153,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
   @Test
   public void insertOrUpdateOgelNotFound() {
     Response response = JerseyClientBuilder.createClient()
-        .target(OGEL_URL+"OGL_")
+        .target(OGEL_URL + "OGL_")
         .request()
         .header("Authorization", "Basic dXNlcjpwYXNz")
         .put(Entity.entity((TestUtil.localX()), MediaType.APPLICATION_JSON));
@@ -151,18 +164,18 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  public void insertOgelArraySuccess() {
+  public void insertOgelArraySuccess() throws IOException {
     Response responseBefore = JerseyClientBuilder.createClient()
         .target(OGEL_URL)
         .request()
         .get();
 
-    List<OgelFullView> actualResponseBefore = responseBefore.readEntity(new GenericType<List<OgelFullView>>() {});
+    List<OgelFullView> actualResponseBefore = Arrays.asList(MAPPER.readValue(responseBefore.readEntity(String.class), OgelFullView[].class));
     assertThat(actualResponseBefore.size()).isEqualTo(4);
     assertThat(actualResponseBefore).extracting(ogel -> ogel.getId())
         .containsOnly("OGLX", "OGLY", "OGLZ", "OGL61");
     assertThat(actualResponseBefore).flatExtracting(ogel -> ogel.getSummary().getCanList())
-        .containsOnly("CanList for OGLX","CanList for OGLY","CanList for OGLZ");
+        .containsOnly("CanList for OGLX", "CanList for OGLY", "CanList for OGLZ");
 
     Response response = JerseyClientBuilder.createClient()
         .target(OGEL_URL)
@@ -171,8 +184,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
         .put(Entity.entity((TestUtil.getLocalOgels()), MediaType.APPLICATION_JSON));
 
     assertThat(response.getStatus()).isEqualTo(201);
-    List<OgelFullView> actual = response.readEntity(new GenericType<List<OgelFullView>>() {
-    });
+    List<OgelFullView> actual = Arrays.asList(MAPPER.readValue(response.readEntity(String.class), OgelFullView[].class));
     assertThat(actual).extracting(ogel -> ogel.getId()).containsOnly("OGLX", "OGLY");
 
     Response responseAfter = JerseyClientBuilder.createClient()
@@ -180,7 +192,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
         .request()
         .get();
 
-    List<OgelFullView> actualResponseAfter = responseAfter.readEntity(new GenericType<List<OgelFullView>>() {});
+    List<OgelFullView> actualResponseAfter = Arrays.asList(MAPPER.readValue(responseAfter.readEntity(String.class), OgelFullView[].class));
     assertThat(actualResponseAfter.size()).isEqualTo(4);
     assertThat(actualResponseAfter).extracting(ogel -> ogel.getId())
         .containsOnly("OGLX", "OGLY", "OGLZ", "OGL61");
@@ -215,7 +227,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  public void deleteAllOgelsSuccess() {
+  public void deleteAllOgelsSuccess() throws IOException {
     //before delete
     Response response1 = JerseyClientBuilder.createClient()
         .target(OGEL_URL)
@@ -223,8 +235,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
         .get();
 
     assertThat(response1.getStatus()).isEqualTo(200);
-    List<OgelFullView> actualResponse1 = response1.readEntity(new GenericType<List<OgelFullView>>() {
-    });
+    List<OgelFullView> actualResponse1 = Arrays.asList(MAPPER.readValue(response1.readEntity(String.class), OgelFullView[].class));
     assertThat(actualResponse1.size()).isEqualTo(4);
     assertThat(actualResponse1).extracting(ogel -> ogel.getId()).containsOnly("OGLX", "OGLY", "OGLZ", "OGL61");
     assertThat(actualResponse1).extracting(ogel -> ogel.getName()).containsOnly("NameOGLX", "NameOGLY", "NameOGLZ", "VirtualEuSpireNameOGL61");
@@ -244,7 +255,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
         .get();
 
     assertThat(response2.getStatus()).isEqualTo(200);
-    List<OgelFullView> actualResponse2 = response2.readEntity(new GenericType<List<OgelFullView>>() {});
+    List<OgelFullView> actualResponse2 = Arrays.asList(MAPPER.readValue(response2.readEntity(String.class), OgelFullView[].class));
     assertThat(actualResponse2.size()).isEqualTo(4);
     assertThat(actualResponse2).extracting(ogel -> ogel.getId()).containsOnly("OGLX", "OGLY", "OGLZ", "OGL61");
     assertThat(actualResponse2).extracting(ogel -> ogel.getName()).containsOnly("SpireNameOGLX", "SpireNameOGLY", "SpireNameOGLZ", "VirtualEuSpireNameOGL61");
@@ -252,15 +263,15 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  public void deleteOgelByIdSuccess() {
+  public void deleteOgelByIdSuccess() throws IOException {
     //before delete
     Response response1 = JerseyClientBuilder.createClient()
-        .target(OGEL_URL+"OGLX")
+        .target(OGEL_URL + "OGLX")
         .request()
         .get();
 
     assertThat(response1.getStatus()).isEqualTo(200);
-    OgelFullView actualResponse1 = response1.readEntity(OgelFullView.class);
+    OgelFullView actualResponse1 = MAPPER.readValue(response1.readEntity(String.class), OgelFullView.class);
     assertThat(actualResponse1.getId()).isEqualTo("OGLX");
     assertThat(actualResponse1.getName()).isEqualTo("NameOGLX");
     assertThat(actualResponse1.getSummary().getCanList()).containsOnly("CanList for OGLX");
@@ -268,19 +279,19 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
 
     // delete ogel
     JerseyClientBuilder.createClient()
-        .target(OGEL_URL+"OGLX")
+        .target(OGEL_URL + "OGLX")
         .request()
         .header("Authorization", "Basic dXNlcjpwYXNz")
         .delete();
 
     //after delete
     Response response2 = JerseyClientBuilder.createClient()
-        .target(OGEL_URL+"OGLX")
+        .target(OGEL_URL + "OGLX")
         .request()
         .get();
 
     assertThat(response2.getStatus()).isEqualTo(200);
-    OgelFullView actualResponse2 = response2.readEntity(OgelFullView.class);
+    OgelFullView actualResponse2 = MAPPER.readValue(response2.readEntity(String.class), OgelFullView.class);
     assertThat(actualResponse2.getId()).isEqualTo("OGLX");
     assertThat(actualResponse2.getName()).isEqualTo("SpireNameOGLX");
     assertThat(actualResponse2.getSummary().getCanList()).isEmpty();

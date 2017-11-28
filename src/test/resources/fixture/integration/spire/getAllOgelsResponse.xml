@@ -43,6 +43,7 @@
           <OGL_ACTIVITY>TECH</OGL_ACTIVITY>
           <LINK_TO_OGL>https://www.gov.uk/government/publications/open-general-export-licence-access-overseas-to-software-and-technology-for-military-goods-individual-use-only</LINK_TO_OGL>
           <OGL_RANKING>4</OGL_RANKING>
+          <LAST_UPDATED_DATE>01/07/2015</LAST_UPDATED_DATE>
         </OGL_TYPE>
         <OGL_TYPE>
           <OGEL_TYPE_REF>OGLY</OGEL_TYPE_REF>
@@ -89,6 +90,7 @@
           <OGL_ACTIVITY>MIL_GOV</OGL_ACTIVITY>
           <LINK_TO_OGL>https://www.gov.uk/government/publications/open-general-export-licence-military-goods-government-or-nato-end-use--6</LINK_TO_OGL>
           <OGL_RANKING>5</OGL_RANKING>
+          <LAST_UPDATED_DATE>11/05/2015</LAST_UPDATED_DATE>
         </OGL_TYPE>
         <OGL_TYPE>
           <OGEL_TYPE_REF>OGLZ</OGEL_TYPE_REF>
@@ -149,6 +151,7 @@
           <OGL_ACTIVITY>DU_ANY</OGL_ACTIVITY>
           <LINK_TO_OGL>https://www.gov.uk/government/publications/open-general-export-licence-historic-military-goods</LINK_TO_OGL>
           <OGL_RANKING>41</OGL_RANKING>
+          <LAST_UPDATED_DATE>21/07/2015</LAST_UPDATED_DATE>
         </OGL_TYPE>
         <OGL_TYPE>
           <OGEL_TYPE_REF>OGL61</OGEL_TYPE_REF>
@@ -209,6 +212,7 @@
           <OGL_ACTIVITY>DU_ANY</OGL_ACTIVITY>
           <LINK_TO_OGL>https://www.gov.uk/government/publications/open-general-export-licence-historic-military-goods</LINK_TO_OGL>
           <OGL_RANKING>41</OGL_RANKING>
+          <LAST_UPDATED_DATE>12/12/2015</LAST_UPDATED_DATE>
         </OGL_TYPE>
       </OGEL_TYPES_LIST>
     </ns:getOgelTypesResponse>

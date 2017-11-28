@@ -61,7 +61,10 @@ public class OgelTypeParser implements SpireParser<List<SpireOgel>> {
           if (activityNode != null) {
             currentOgel.setActivityType(ActivityType.valueOf(activityNode.getTextContent()));
           }
-
+          Node lastUpdatedNode = (Node) xpath.evaluate("LAST_UPDATED_DATE", currentNode, XPathConstants.NODE);
+          if (lastUpdatedNode != null) {
+            currentOgel.setLastUpdatedDate(lastUpdatedNode.getTextContent());
+          }
           List<OgelCondition> ogelConditions = unmarshallOgelConditions(xpath, currentNode);
           currentOgel.setOgelConditions(ogelConditions);
 
