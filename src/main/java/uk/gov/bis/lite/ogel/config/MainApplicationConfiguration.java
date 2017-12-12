@@ -14,7 +14,7 @@ public class MainApplicationConfiguration extends Configuration {
   @Valid
   @NotNull
   @JsonProperty
-  private DataSourceFactory database = new DataSourceFactory();
+  private DataSourceFactory database;
 
   public DataSourceFactory getDataSourceFactory() {
     return database;

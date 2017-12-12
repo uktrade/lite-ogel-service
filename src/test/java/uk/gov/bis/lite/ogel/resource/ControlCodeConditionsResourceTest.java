@@ -31,6 +31,7 @@ import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,23 +52,23 @@ public class ControlCodeConditionsResourceTest {
 
   @Rule
   public final ResourceTestRule resources = ResourceTestRule.builder()
-    .addResource(new ControlCodeConditionsResource(spireOgelService, localOgelService, localControlCodeConditionService, controlCodeConditionsService))
-    .addProvider(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
-      .setAuthenticator(new SimpleAuthenticator("user", "password"))
-      .setRealm("SUPER SECRET STUFF")
-      .buildAuthFilter()))
-    .addProvider(CacheNotPopulatedException.CacheNotPopulatedExceptionHandler.class)
-    .addResource(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class))
-    .build();
+      .addResource(new ControlCodeConditionsResource(spireOgelService, localOgelService, localControlCodeConditionService, controlCodeConditionsService))
+      .addProvider(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
+          .setAuthenticator(new SimpleAuthenticator("user", "password"))
+          .setRealm("SUPER SECRET STUFF")
+          .buildAuthFilter()))
+      .addProvider(CacheNotPopulatedException.CacheNotPopulatedExceptionHandler.class)
+      .addResource(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class))
+      .build();
 
   @Test
   public void getControlCodeConditions() throws Exception {
     LocalControlCodeCondition controlCodeCondition = buildControlCodeCondition();
-    when(localControlCodeConditionService.getAllControlCodeConditions()).thenReturn(Arrays.asList(controlCodeCondition));
+    when(localControlCodeConditionService.getAllControlCodeConditions()).thenReturn(Collections.singletonList(controlCodeCondition));
 
     Response result = resources.getJerseyTest().target("/control-code-conditions")
-      .request(MediaType.APPLICATION_JSON_TYPE)
-      .get();
+        .request(MediaType.APPLICATION_JSON)
+        .get();
 
     assertThat(result.getStatus()).isEqualTo(200);
     List<LocalControlCodeCondition> controlCodeConditions = result.readEntity(new GenericType<List<LocalControlCodeCondition>>() {
@@ -77,7 +78,7 @@ public class ControlCodeConditionsResourceTest {
   }
 
   @Test
-  public void getControlCodeConditionById () throws Exception {
+  public void getControlCodeConditionById() throws Exception {
     LocalOgel localOgel = new LocalOgel();
     localOgel.setId(OGEL_ID);
     LocalControlCodeCondition controlCodeCondition = buildControlCodeCondition(new ArrayList<>());
@@ -87,8 +88,8 @@ public class ControlCodeConditionsResourceTest {
     when(localOgelService.findLocalOgelById(anyString())).thenReturn(Optional.of(localOgel));
 
     Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")
-      .request(MediaType.APPLICATION_JSON_TYPE)
-      .get();
+        .request(MediaType.APPLICATION_JSON)
+        .get();
 
     assertThat(result.getStatus()).isEqualTo(200);
     String expectedJson = "{\"controlCode\":ML1a,\"conditionDescription\":Goods,\"itemsAllowed\":false,\"ogelId\":\"OGL01\",\"conditionDescriptionControlCodes\":null}";
@@ -97,7 +98,7 @@ public class ControlCodeConditionsResourceTest {
   }
 
   @Test
-  public void getBulkControlCodeConditionsById () throws Exception {
+  public void getBulkControlCodeConditionsById() throws Exception {
     LocalOgel localOgel = new LocalOgel();
     localOgel.setId(OGEL_ID);
     when(localOgelService.findLocalOgelById(OGEL_ID)).thenReturn(Optional.of(localOgel));
@@ -108,15 +109,15 @@ public class ControlCodeConditionsResourceTest {
     controlCodeFullView.setControlCode(CONTROL_CODE);
     controlCodeFullView.setFriendlyDescription("Goods");
     BulkControlCodes bulkControlCodes = new BulkControlCodes();
-    bulkControlCodes.setControlCodeFullViews(Arrays.asList(controlCodeFullView));
+    bulkControlCodes.setControlCodeFullViews(Collections.singletonList(controlCodeFullView));
     bulkControlCodes.setMissingControlCodes(new ArrayList<>());
     ControlCodeConditionFullView controlCodeConditionFullView = ViewFactory.createControlCodeCondition(controlCodeCondition, bulkControlCodes);
     when(controlCodeConditionsService.findControlCodeConditions(OGEL_ID, CONTROL_CODE))
         .thenReturn(Optional.of(controlCodeConditionFullView));
 
     Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")
-      .request(MediaType.APPLICATION_JSON_TYPE)
-      .get();
+        .request(MediaType.APPLICATION_JSON)
+        .get();
 
     assertThat(result.getStatus()).isEqualTo(200);
     String expectedJson = "{\"controlCode\":\"ML1a\",\"conditionDescription\":\"Goods\",\"conditionDescriptionControlCodes\":{\"missingControlCodes\":[],\"controlCodes\":[{\"id\":\"123\",\"controlCode\":\"ML1a\",\"friendlyDescription\":\"Goods\"}]},\"itemsAllowed\":false,\"ogelId\":\"OGL01\"}";
@@ -131,8 +132,8 @@ public class ControlCodeConditionsResourceTest {
     when(localOgelService.findLocalOgelById(anyString())).thenReturn(Optional.empty());
 
     Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")
-      .request(MediaType.APPLICATION_JSON_TYPE)
-      .get();
+        .request(MediaType.APPLICATION_JSON)
+        .get();
 
     assertThat(result.getStatus()).isEqualTo(204);
   }
@@ -148,7 +149,7 @@ public class ControlCodeConditionsResourceTest {
     Response result = resources.getJerseyTest().target("/control-code-conditions")
         .request(MediaType.APPLICATION_JSON)
         .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
-        .put(Entity.entity(Arrays.asList(controlCodeCondition), MediaType.APPLICATION_JSON));
+        .put(Entity.json(Collections.singletonList(controlCodeCondition)));
 
     assertThat(result.getStatus()).isEqualTo(201);
   }
@@ -164,7 +165,7 @@ public class ControlCodeConditionsResourceTest {
     Response result = resources.getJerseyTest().target("/control-code-conditions")
         .request(MediaType.APPLICATION_JSON)
         .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
-        .put(Entity.entity(Arrays.asList(controlCodeCondition), MediaType.APPLICATION_JSON));
+        .put(Entity.json(Collections.singletonList(controlCodeCondition)));
 
     assertThat(result.getStatus()).isEqualTo(404);
   }
@@ -172,9 +173,9 @@ public class ControlCodeConditionsResourceTest {
   @Test
   public void deleteControlCodeConditions() throws Exception {
     Response result = resources.getJerseyTest().target("/control-code-conditions")
-      .request(MediaType.APPLICATION_JSON_TYPE)
-      .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
-      .delete();
+        .request(MediaType.APPLICATION_JSON)
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .delete();
 
     assertThat(result.getStatus()).isEqualTo(204);
     verify(localControlCodeConditionService).deleteControlCodeConditions();
@@ -183,9 +184,9 @@ public class ControlCodeConditionsResourceTest {
   @Test
   public void deleteShouldReturnUnauthorisedStatus() throws Exception {
     Response result = resources.getJerseyTest().target("/control-code-conditions")
-      .request(MediaType.APPLICATION_JSON_TYPE)
-      .header("Authorization", "blah")
-      .delete();
+        .request(MediaType.APPLICATION_JSON)
+        .header("Authorization", "blah")
+        .delete();
 
     assertThat(result.getStatus()).isEqualTo(401);
     verify(localControlCodeConditionService, never()).deleteControlCodeConditions();

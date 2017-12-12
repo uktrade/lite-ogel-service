@@ -2,12 +2,14 @@ package uk.gov.bis.lite.ogel.resource;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.bis.lite.ogel.api.view.VirtualEuView;
 import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.spire.SpireUtil;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
@@ -15,7 +17,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -35,15 +36,13 @@ public class VirtualEuResource {
   @GET
   public Response getVirtualEu(@NotNull @QueryParam("controlCode") String controlCode,
                                @NotNull @QueryParam("sourceCountry") String sourceCountry,
-                               @QueryParam("destinationCountry") List<String> destinationCountries) {
+                               @NotEmpty @QueryParam("destinationCountry") List<String> destinationCountries) {
 
-    if (destinationCountries.size() == 0) {
-      throw new WebApplicationException("At least one destinationCountry must be provided", 400);
-    }
+    List<SpireOgel> ogels = applicableOgelService.findOgel(controlCode,
+        SpireUtil.stripCountryPrefix(destinationCountries),
+        Collections.singletonList(ActivityType.DU_ANY));
 
-    List<SpireOgel> ogels = applicableOgelService.findOgel(controlCode, SpireUtil.stripCountryPrefix(destinationCountries),
-        ActivityType.DU_ANY.asList());
-    boolean found = ogels.stream().filter(s -> s.getId().equalsIgnoreCase(virtualEuOgelId)).findFirst().isPresent();
+    boolean found = ogels.stream().anyMatch(s -> s.getId().equalsIgnoreCase(virtualEuOgelId));
 
     VirtualEuView virtualEuView = new VirtualEuView();
     virtualEuView.setVirtualEu(found);

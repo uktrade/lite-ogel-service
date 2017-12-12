@@ -28,9 +28,9 @@ public class BaseIntegrationTest {
    * to a bug with WireMocks' Jetty configuration.
    * TODO convert to @ClassRule WireMockClassRule when https://github.com/tomakehurst/wiremock/issues/97 is resolved.
    */
-  public WireMockRule wireMockRule;
+  private WireMockRule wireMockRule;
 
-  public DropwizardAppRule<MainApplicationConfiguration> dwAppRule;
+  private DropwizardAppRule<MainApplicationConfiguration> appRule;
 
   @Before
   public void setUp() {
@@ -39,7 +39,7 @@ public class BaseIntegrationTest {
     wireMockRule.start();
 
     // configures stubFor to use allocated port
-    configureFor("localhost",  wireMockRule.port());
+    configureFor("localhost", wireMockRule.port());
 
     stubFor(post(urlEqualTo("/spire/fox/ispire/SPIRE_OGEL_TYPES"))
         .willReturn(aResponse()
@@ -48,20 +48,20 @@ public class BaseIntegrationTest {
             .withBody(fixture("fixture/integration/spire/getAllOgelsResponse.xml"))));
 
     // Dropwizard setup overriding
-    dwAppRule = new DropwizardAppRule<>(OgelApplication.class, resourceFilePath("service-test.yaml"),
-        ConfigOverride.config("controlCodeServiceUrl", "http://localhost:" +  wireMockRule.port() + "/"),
-        ConfigOverride.config("spireClientUrl", "http://localhost:" +  wireMockRule.port() + "/spire/fox/ispire/"));
-    dwAppRule.getTestSupport().before();
+    appRule = new DropwizardAppRule<>(OgelApplication.class, resourceFilePath("service-test.yaml"),
+        ConfigOverride.config("controlCodeServiceUrl", "http://localhost:" + wireMockRule.port() + "/"),
+        ConfigOverride.config("spireClientUrl", "http://localhost:" + wireMockRule.port() + "/spire/fox/ispire/"));
+    appRule.getTestSupport().before();
 
     // Setup database
-    DataSourceFactory f = dwAppRule.getConfiguration().getDataSourceFactory();
+    DataSourceFactory f = appRule.getConfiguration().getDataSourceFactory();
     Flyway flyway = new Flyway();
     flyway.setDataSource(f.getUrl(), f.getUser(), f.getPassword());
     flyway.migrate();
 
     // await Spire OGEL cache load
     await().with().pollInterval(1, SECONDS).atMost(10, SECONDS).until(() -> JerseyClientBuilder.createClient()
-        .target("http://localhost:"+ dwAppRule.getAdminPort()+"/ready")
+        .target("http://localhost:" + appRule.getAdminPort() + "/ready")
         .request()
         .get()
         .getStatus() == 200);
@@ -70,8 +70,8 @@ public class BaseIntegrationTest {
   @After
   public void tearDown() throws Exception {
     wireMockRule.stop();
-    dwAppRule.getTestSupport().after();
+    appRule.getTestSupport().after();
     wireMockRule = null;
-    dwAppRule = null;
+    appRule = null;
   }
 }

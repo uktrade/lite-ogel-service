@@ -4,8 +4,8 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import io.dropwizard.jersey.caching.CacheControl;
-import org.glassfish.jersey.message.internal.OutboundJaxrsResponse;
-import org.glassfish.jersey.message.internal.OutboundMessageContext;
+import org.apache.commons.lang3.EnumUtils;
+import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.ActivityType;
@@ -49,24 +49,18 @@ public class ApplicableOgelResource {
   @CacheControl(maxAge = 1, maxAgeUnit = TimeUnit.DAYS)
   public Response getOgelList(@NotNull @QueryParam("controlCode") String controlCode,
                               @NotNull @QueryParam("sourceCountry") String sourceCountry,
-                              @QueryParam("destinationCountry") List<String> destinationCountries,
-                              @QueryParam("activityType") List<String> activityTypesParam) {
-
-    if (destinationCountries.size() == 0) {
-      throw new WebApplicationException("At least one destinationCountry must be provided", 400);
-    }
+                              @NotEmpty @QueryParam("destinationCountry") List<String> destinationCountries,
+                              @NotEmpty @QueryParam("activityType") List<String> activityTypesParam) {
 
     for (String activityTypeParam : activityTypesParam) {
-      if (!ActivityType.typeExists(activityTypeParam)) {
-        throw new WebApplicationException("Invalid activityType: " + activityTypeParam, 400);
+      if (EnumUtils.getEnum(ActivityType.class, activityTypeParam) == null) {
+        throw new WebApplicationException("Invalid activityType: " + activityTypeParam, Response.Status.BAD_REQUEST);
       }
     }
 
-    if (activityTypesParam.size() == 0) {
-      throw new WebApplicationException("At least one activityType must be provided", 400);
-    }
-
-    List<ActivityType> activityTypes = activityTypesParam.stream().map(ActivityType::valueOf).collect(Collectors.toList());
+    List<ActivityType> activityTypes = activityTypesParam.stream()
+        .map(param -> EnumUtils.getEnum(ActivityType.class, param))
+        .collect(Collectors.toList());
 
     List<ApplicableOgelView> applicableOgels = applicableOgelService
         .findOgel(controlCode, SpireUtil.stripCountryPrefix(destinationCountries), activityTypes)
@@ -76,10 +70,6 @@ public class ApplicableOgelResource {
         .map(e -> ViewFactory.createApplicableOgel(e, localOgelService.findLocalOgelById(e.getId()).orElse(null)))
         .collect(Collectors.toList());
 
-    OutboundMessageContext messageContext = new OutboundMessageContext();
-    messageContext.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-    messageContext.setEntity(applicableOgels);
-
-    return new OutboundJaxrsResponse(Response.Status.OK, messageContext);
+    return Response.ok(applicableOgels).build();
   }
 }

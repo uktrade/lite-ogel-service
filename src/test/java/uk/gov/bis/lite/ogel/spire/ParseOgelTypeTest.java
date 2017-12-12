@@ -20,14 +20,14 @@ import javax.xml.xpath.XPathExpressionException;
 
 public class ParseOgelTypeTest extends SpireParseTest {
 
+  private static final String A1 = "A1";
+  private static final String A2 = "A2";
+  private static final String A3 = "A3";
+
   private List<SpireOgel> ogels;
 
-  private String A1 = "A1";
-  private String A2 = "A2";
-  private String A3 = "A3";
-
   @Before
-  public void setUp()  throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
+  public void setUp() throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
     ogels = new OgelTypeParser().parseResponse(createSpireResponse("spire/ogelTypes.xml"));
   }
 

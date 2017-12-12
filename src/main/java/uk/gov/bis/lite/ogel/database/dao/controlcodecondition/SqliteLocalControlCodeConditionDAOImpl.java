@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
-import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelJDBIDao;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 
 import java.util.List;

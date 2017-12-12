@@ -35,7 +35,7 @@ public class ControlCodePactTest {
   private static final List<String> CONTROL_CODES = Arrays.asList("C1","C2");
 
   @Rule
-  public PactProviderRule mockProvider = new PactProviderRule(PROVIDER, this);
+  public final PactProviderRule mockProvider = new PactProviderRule(PROVIDER, this);
 
   @Before
   public void before() {
@@ -129,7 +129,7 @@ public class ControlCodePactTest {
   public void shouldGetBulkCCMatchAndNoMatch() throws Exception {
     BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(Arrays.asList("EXISTING_CODE","MISSING_CODE"));
     assertThat(bulkControlCodes).isNotNull();
-    assertThat(bulkControlCodes.getControlCodeFullViews()).extracting(e -> e.getControlCode()).containsOnly("EXISTING_CODE");
+    assertThat(bulkControlCodes.getControlCodeFullViews()).extracting(ControlCodeFullView::getControlCode).containsOnly("EXISTING_CODE");
     assertThat(bulkControlCodes.getControlCodeFullViews().get(0).getId()).isEqualTo("1");
     assertThat(bulkControlCodes.getControlCodeFullViews().get(0).getFriendlyDescription()).isEqualTo("Friendly Description");
     assertThat(bulkControlCodes.getMissingControlCodes().get(0)).isEqualTo("MISSING_CODE");
@@ -140,7 +140,7 @@ public class ControlCodePactTest {
   public void shouldGetBulkCCNoneMatch() throws Exception {
     BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(CONTROL_CODES);
     assertThat(bulkControlCodes).isNotNull();
-    assertThat(bulkControlCodes.getControlCodeFullViews()).extracting(e -> e.getControlCode()).isEmpty();
+    assertThat(bulkControlCodes.getControlCodeFullViews()).extracting(ControlCodeFullView::getControlCode).isEmpty();
     assertThat(bulkControlCodes.getMissingControlCodes().get(0)).isEqualTo("C1");
   }
 

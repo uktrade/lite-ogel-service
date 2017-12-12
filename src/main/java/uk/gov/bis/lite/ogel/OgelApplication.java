@@ -22,7 +22,6 @@ import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.exception.CheckLocalOgelExceptionMapper;
-import uk.gov.bis.lite.ogel.exception.CustomJsonProcessingExceptionMapper;
 import uk.gov.bis.lite.ogel.healthcheck.SpireHealthCheck;
 import uk.gov.bis.lite.ogel.resource.AdminResource;
 import uk.gov.bis.lite.ogel.resource.ApplicableOgelResource;
@@ -69,7 +68,6 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
         .setRealm("OGEL Service Admin Authentication")
         .buildAuthFilter()));
     environment.jersey().register(CacheNotPopulatedException.CacheNotPopulatedExceptionHandler.class);
-    environment.jersey().register(CustomJsonProcessingExceptionMapper.class);
     environment.jersey().register(CheckLocalOgelExceptionMapper.class);
     environment.jersey().register(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class));
     environment.jersey().register(ContainerCorrelationIdFilter.class);
@@ -87,7 +85,7 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
         .modules(module)
         .installers(ResourceInstaller.class, HealthCheckInstaller.class, ManagedInstaller.class)
         .extensions(AdminResource.class, ApplicableOgelResource.class, OgelResource.class,
-          ControlCodeConditionsResource.class, SpireHealthCheck.class, VirtualEuResource.class, SpireOgelCacheScheduler.class)
+            ControlCodeConditionsResource.class, SpireHealthCheck.class, VirtualEuResource.class, SpireOgelCacheScheduler.class)
         .build(Stage.PRODUCTION);
 
     bootstrap.addBundle(guiceBundle);

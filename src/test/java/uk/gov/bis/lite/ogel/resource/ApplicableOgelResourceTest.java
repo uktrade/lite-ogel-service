@@ -56,7 +56,7 @@ public class ApplicableOgelResourceTest {
   }
 
   @After
-  public void tearDown(){
+  public void tearDown() {
     reset(localOgelService);
   }
 
@@ -67,7 +67,7 @@ public class ApplicableOgelResourceTest {
 
   @Test
   public void goodRequestWithResults() {
-    when(applicableOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogels);
+    when(applicableOgelService.findOgel(anyString(), anyListOf(String.class), anyListOf(ActivityType.class))).thenReturn(ogels);
     when(localOgelService.findLocalOgelById(anyString())).thenReturn(Optional.empty());
 
     Response response = resources.client().target("/applicable-ogels")
@@ -84,7 +84,7 @@ public class ApplicableOgelResourceTest {
 
   @Test
   public void goodRequestWithNoResults() {
-    when(applicableOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(Collections.emptyList());
+    when(applicableOgelService.findOgel(anyString(), anyListOf(String.class), anyListOf(ActivityType.class))).thenReturn(Collections.emptyList());
     final Response response = resources.client()
         .target("/applicable-ogels")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
@@ -104,7 +104,7 @@ public class ApplicableOgelResourceTest {
     List<SpireOgel> ogelsWithVirtualEu = new ArrayList<>(ogels);
     ogelsWithVirtualEu.add(TestUtil.ogelEU());
 
-    when(applicableOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogelsWithVirtualEu);
+    when(applicableOgelService.findOgel(anyString(), anyListOf(String.class), anyListOf(ActivityType.class))).thenReturn(ogelsWithVirtualEu);
     when(localOgelService.findLocalOgelById(anyString())).thenReturn(Optional.empty());
 
     Response response = resources.client().target("/applicable-ogels")
@@ -180,7 +180,7 @@ public class ApplicableOgelResourceTest {
     // Descending by ID alphabetically
     List<SpireOgel> ogelsWithSameRanking = Arrays.asList(TestUtil.ogelX(), TestUtil.ogelW());
 
-    when(applicableOgelService.findOgel(anyString(), any(), anyListOf(ActivityType.class))).thenReturn(ogelsWithSameRanking);
+    when(applicableOgelService.findOgel(anyString(), anyListOf(String.class), anyListOf(ActivityType.class))).thenReturn(ogelsWithSameRanking);
     when(localOgelService.findLocalOgelById(anyString())).thenReturn(Optional.empty());
 
     Response response = resources.client().target("/applicable-ogels")
@@ -196,11 +196,7 @@ public class ApplicableOgelResourceTest {
     assertThat(getEntityOgels(response)).extracting("id").containsExactly(TestUtil.OGLW, TestUtil.OGLX);
   }
 
-  public static <T> List<String> any() {
-    return Arrays.asList(anyString());
-  }
-
   private List<Map<String, Object>> getEntityOgels(Response response) {
-    return response.readEntity(new GenericType<List<Map<String, Object>>>(){});
+    return response.readEntity(new GenericType<List<Map<String, Object>>>() {});
   }
 }

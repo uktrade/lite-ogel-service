@@ -1,11 +1,9 @@
 package uk.gov.bis.lite.ogel.resource;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-
 import com.google.inject.Inject;
 import io.dropwizard.auth.Auth;
 import io.dropwizard.auth.PrincipalImpl;
-import io.dropwizard.jersey.errors.ErrorMessage;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
@@ -90,15 +88,14 @@ public class ControlCodeConditionsResource {
 
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response insertOgelConditionsArray(@Auth PrincipalImpl user, @CheckLocalControlCodeConditionList List<LocalControlCodeCondition> ogelConditionsList)
-  throws OgelNotFoundException {
-    if (ogelConditionsList.isEmpty()) {
-      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, "Empty OGEL Conditions List")).build();
-    }
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response insertOgelConditionsArray(@Auth PrincipalImpl user,
+                                            @NotEmpty @CheckLocalControlCodeConditionList List<LocalControlCodeCondition> ogelConditionsList)
+      throws OgelNotFoundException {
 
     // Check OGEL IDs exist on SPIRE too or throw OgelNotFoundException
     ogelConditionsList.forEach(o -> {
-      if(!ogelService.findSpireOgelById(o.getOgelID()).isPresent()) {
+      if (!ogelService.findSpireOgelById(o.getOgelID()).isPresent()) {
         throw new OgelNotFoundException(o.getOgelID());
       }
     });
@@ -108,7 +105,7 @@ public class ControlCodeConditionsResource {
     List<String> insertedOgelIDs = ogelConditionsList.stream().map(LocalControlCodeCondition::getOgelID).collect(Collectors.toList());
     return Response.status(Status.CREATED).entity(
         getAllControlCodeConditions().stream().filter(ccc -> insertedOgelIDs.contains(ccc.getOgelID())).collect(Collectors.toList()))
-        .type(MediaType.APPLICATION_JSON).build();
+        .build();
   }
 
   @DELETE

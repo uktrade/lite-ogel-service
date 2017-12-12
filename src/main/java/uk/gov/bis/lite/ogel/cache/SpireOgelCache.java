@@ -21,7 +21,7 @@ public class SpireOgelCache {
   private static final Logger LOGGER = LoggerFactory.getLogger(SpireOgelCache.class);
   private volatile Map<String, SpireOgel> cache = new HashMap<>();
   private SpireHealthStatus healthStatus = SpireHealthStatus.unhealthy("Cache not initialised");
-  private SpireOgelClient ogelClient;
+  private final SpireOgelClient ogelClient;
 
   @Inject
   public SpireOgelCache(SpireOgelClient ogelClient) {
@@ -31,7 +31,7 @@ public class SpireOgelCache {
   public void load() {
     try {
       List<SpireOgel> ogelList = getAllOgelsFromSpire();
-      Map<String, SpireOgel> spireOgelCacheMap = ogelList.stream().collect(Collectors.toMap(e -> e.getId(), e -> e));
+      Map<String, SpireOgel> spireOgelCacheMap = ogelList.stream().collect(Collectors.toMap(SpireOgel::getId, e -> e));
 
       if (spireOgelCacheMap.size() > 0) {
         cache = Collections.unmodifiableMap(spireOgelCacheMap);

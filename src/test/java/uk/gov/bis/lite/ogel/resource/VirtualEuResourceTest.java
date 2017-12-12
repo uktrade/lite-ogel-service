@@ -23,6 +23,7 @@ import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
@@ -50,7 +51,7 @@ public class VirtualEuResourceTest {
   }
 
   @After
-  public void tearDown(){
+  public void tearDown() {
     reset(localOgelService);
   }
 
@@ -60,7 +61,7 @@ public class VirtualEuResourceTest {
 
   @Test
   public void controllerReturnsVirtualEuTrue() throws JSONException {
-    when(applicableOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class))).thenReturn(euOgels);
+    when(applicableOgelService.findOgel(anyString(), Collections.singletonList(anyString()), anyListOf(ActivityType.class))).thenReturn(euOgels);
     Response response = resources.client().target("/virtual-eu")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
         .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
@@ -72,7 +73,7 @@ public class VirtualEuResourceTest {
 
   @Test
   public void controllerReturnsVirtualEuFalse() throws JSONException {
-    when(applicableOgelService.findOgel(anyString(), Arrays.asList(anyString()), anyListOf(ActivityType.class))).thenReturn(noEuOgels);
+    when(applicableOgelService.findOgel(anyString(), Collections.singletonList(anyString()), anyListOf(ActivityType.class))).thenReturn(noEuOgels);
     Response response = resources.client().target("/virtual-eu")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
         .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)

@@ -11,6 +11,7 @@ import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -31,7 +32,7 @@ public class ControlCodeClientTest extends JerseyTest {
   @Before
   public void setUp() throws Exception {
     super.setUp();
-   controlCodeClient = new ControlCodeClient(getClient(), "");
+    controlCodeClient = new ControlCodeClient(getClient(), "");
   }
 
   @Produces({MediaType.APPLICATION_JSON})
@@ -66,7 +67,7 @@ public class ControlCodeClientTest extends JerseyTest {
   public void shouldGetBulkControlCodes() throws Exception {
     BulkControlCodes bulkControlCodes = controlCodeClient.bulkControlCodes(Arrays.asList("C1", "C2", "C3"));
     assertThat(bulkControlCodes).isNotNull();
-    assertThat(bulkControlCodes.getControlCodeFullViews()).extracting(e -> e.getControlCode()).containsOnly("C1", "C2");
+    assertThat(bulkControlCodes.getControlCodeFullViews()).extracting(ControlCodeFullView::getControlCode).containsOnly("C1", "C2");
     assertThat(bulkControlCodes.getMissingControlCodes().get(0)).isEqualTo("C3");
   }
 
@@ -89,7 +90,7 @@ public class ControlCodeClientTest extends JerseyTest {
 
     BulkControlCodes bulkControlCodes = new BulkControlCodes();
     bulkControlCodes.setControlCodeFullViews(Arrays.asList(controlCodeFullView, controlCodeFullView2));
-    bulkControlCodes.setMissingControlCodes(Arrays.asList("C3"));
+    bulkControlCodes.setMissingControlCodes(Collections.singletonList("C3"));
     return bulkControlCodes;
   }
 

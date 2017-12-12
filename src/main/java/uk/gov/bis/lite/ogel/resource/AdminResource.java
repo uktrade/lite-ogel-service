@@ -37,12 +37,13 @@ public class AdminResource {
   private final SpireOgelService spireOgelService;
   private final LocalControlCodeConditionService controlCodeConditionService;
   private final ControlCodeClient controlCodeClient;
-  private String virtualEuOgelId;
+  private final String virtualEuOgelId;
 
   @Inject
   public AdminResource(LocalOgelService localOgelService, SpireOgelService spireOgelService,
                        LocalControlCodeConditionService controlCodeConditionService,
-                       ControlCodeClient controlCodeClient, @Named("virtualEuOgelId") String virtualEuOgelId) {
+                       ControlCodeClient controlCodeClient,
+                       @Named("virtualEuOgelId") String virtualEuOgelId) {
     this.localOgelService = localOgelService;
     this.spireOgelService = spireOgelService;
     this.controlCodeConditionService = controlCodeConditionService;

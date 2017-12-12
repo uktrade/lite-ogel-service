@@ -17,37 +17,37 @@ import java.util.Map;
 
 public class TestUtil {
 
-  public static String OGLW = "OGLW";
-  public static String OGLX = "OGLX";
-  public static String OGLY = "OGLY";
-  public static String OGLZ = "OGLZ";
-  public static String OGLMIX = "OGLMIX";
-  public static String OGLEU = "OGL61"; // Virtual EU ogel
-  public static String OGL_ = "OGL_"; // This Ogel does not exist
-  public static String OGLTEMP = "OGLTEMP";
-  public static String OGL_NF = "OGL_NF";
+  public static final String OGLW = "OGLW";
+  public static final String OGLX = "OGLX";
+  public static final String OGLY = "OGLY";
+  public static final String OGLZ = "OGLZ";
+  public static final String OGLMIX = "OGLMIX";
+  public static final String OGLEU = "OGL61"; // Virtual EU ogel
+  public static final String OGL_ = "OGL_"; // This Ogel does not exist
+  public static final String OGLTEMP = "OGLTEMP";
+  public static final String OGL_NF = "OGL_NF";
 
-  public static String RAT1 = "rat1";
-  public static String RAT2 = "rat2";
-  public static String RAT3 = "rat3";
-  public static String RAT4 = "rat4";
-  public static String RAT5 = "rat5";
-  public static String RATA = "ratA";
-  public static String RATB = "ratB";
-  public static String RATX = "ratx";
+  public static final String RAT1 = "rat1";
+  public static final String RAT2 = "rat2";
+  public static final String RAT3 = "rat3";
+  public static final String RAT4 = "rat4";
+  public static final String RAT5 = "rat5";
+  public static final String RATA = "ratA";
+  public static final String RATB = "ratB";
+  public static final String RATX = "ratx";
 
-  private static ActivityType TECH = ActivityType.TECH;
-  private static ActivityType REPAIR = ActivityType.REPAIR;
+  private static final ActivityType TECH = ActivityType.TECH;
+  private static final ActivityType REPAIR = ActivityType.REPAIR;
 
-  private static Map<Integer, Country> countryMap = new HashMap<>();
+  private static final Map<Integer, Country> COUNTRY_MAP = new HashMap<>();
 
   static {
-    countryMap.put(1, new Country("1", "11", "Country1"));
-    countryMap.put(2, new Country("2", "22", "Country2"));
-    countryMap.put(3, new Country("3", "33", "Country3"));
-    countryMap.put(4, new Country("4", "44", "Country4"));
-    countryMap.put(5, new Country("5", "55", "Country5"));
-    countryMap.put(6, new Country("6", "66", "Country6"));
+    COUNTRY_MAP.put(1, new Country("1", "11", "Country1"));
+    COUNTRY_MAP.put(2, new Country("2", "22", "Country2"));
+    COUNTRY_MAP.put(3, new Country("3", "33", "Country3"));
+    COUNTRY_MAP.put(4, new Country("4", "44", "Country4"));
+    COUNTRY_MAP.put(5, new Country("5", "55", "Country5"));
+    COUNTRY_MAP.put(6, new Country("6", "66", "Country6"));
   }
 
   public static SpireOgel ogelW() {
@@ -193,7 +193,7 @@ public class TestUtil {
   private static List<Country> countries(int... countryMapKeys) {
     List<Country> countries = new ArrayList<>();
     for (int key : countryMapKeys) {
-      countries.add(countryMap.get(key));
+      countries.add(COUNTRY_MAP.get(key));
     }
     return countries;
   }

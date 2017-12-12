@@ -17,11 +17,11 @@ import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegrationTest {
@@ -82,7 +82,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
 
     assertEquals(206, response.getStatus());
     ControlCodeConditionFullView actualResponse = response.readEntity(ControlCodeConditionFullView.class);
-    assertThat(actualResponse.getConditionDescriptionControlCodes().getMissingControlCodes()).isEqualTo(Arrays.asList(CONTROL_CODE));
+    assertThat(actualResponse.getConditionDescriptionControlCodes().getMissingControlCodes()).isEqualTo(Collections.singletonList(CONTROL_CODE));
     assertThat(actualResponse.getConditionDescriptionControlCodes().getControlCodes().isEmpty()).isTrue();
   }
 
@@ -106,11 +106,11 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
 
     List<LocalControlCodeCondition> actualResponseBefore = responseBefore.readEntity(new GenericType<List<LocalControlCodeCondition>>() {});
     assertThat(actualResponseBefore.size()).isEqualTo(3);
-    assertThat(actualResponseBefore).extracting(controlCodeCondition -> controlCodeCondition.getOgelID())
+    assertThat(actualResponseBefore).extracting(LocalControlCodeCondition::getOgelID)
         .containsOnly("OGLX", "OGLY", "OGLZ");
-    assertThat(actualResponseBefore).extracting(controlCodeCondition -> controlCodeCondition.getControlCode())
+    assertThat(actualResponseBefore).extracting(LocalControlCodeCondition::getControlCode)
         .containsOnly("11", "22", "33");
-    assertThat(actualResponseBefore).extracting(controlCodeCondition -> controlCodeCondition.getConditionDescription())
+    assertThat(actualResponseBefore).extracting(LocalControlCodeCondition::getConditionDescription)
         .containsOnly("ConditionDesc for OGLX", "ConditionDesc for OGLY", "ConditionDesc for OGLZ");
 
     LocalControlCodeCondition localControlCodeCondition = new LocalControlCodeCondition();
@@ -123,23 +123,23 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
         .target(CONTROL_CODE_CONDITIONS_URL)
         .request()
         .header("Authorization", "Basic dXNlcjpwYXNz")
-        .put(Entity.entity(Arrays.asList(localControlCodeCondition), MediaType.APPLICATION_JSON));
+        .put(Entity.json(Collections.singletonList(localControlCodeCondition)));
 
     assertThat(response.getStatus()).isEqualTo(201);
     List<LocalControlCodeCondition> actual = response.readEntity(new GenericType<List<LocalControlCodeCondition>>() {});
-    assertThat(actual).extracting(controlCodeCondition -> controlCodeCondition.getControlCode()).contains("55");
-    assertThat(actual).extracting(controlCodeCondition -> controlCodeCondition.getOgelID()).contains(OGEL_ID);
-    assertThat(actual).extracting(controlCodeCondition -> controlCodeCondition.getConditionDescription()).contains("New ConditionDesc for OGLZ");
+    assertThat(actual).extracting(LocalControlCodeCondition::getControlCode).contains("55");
+    assertThat(actual).extracting(LocalControlCodeCondition::getOgelID).contains(OGEL_ID);
+    assertThat(actual).extracting(LocalControlCodeCondition::getConditionDescription).contains("New ConditionDesc for OGLZ");
 
     Response responseAfter = getControlCodeConditionsRequest.get();
 
     List<LocalControlCodeCondition> actualResponseAfter = responseAfter.readEntity(new GenericType<List<LocalControlCodeCondition>>() {});
     assertThat(actualResponseAfter.size()).isEqualTo(4);
-    assertThat(actualResponseAfter).extracting(controlCodeCondition -> controlCodeCondition.getOgelID())
+    assertThat(actualResponseAfter).extracting(LocalControlCodeCondition::getOgelID)
         .containsOnly("OGLX", "OGLY", "OGLZ");
-    assertThat(actualResponseAfter).extracting(controlCodeCondition -> controlCodeCondition.getControlCode())
+    assertThat(actualResponseAfter).extracting(LocalControlCodeCondition::getControlCode)
         .containsOnly("11", "22", "33", "55");
-    assertThat(actualResponseAfter).extracting(controlCodeCondition -> controlCodeCondition.getConditionDescription())
+    assertThat(actualResponseAfter).extracting(LocalControlCodeCondition::getConditionDescription)
         .containsOnly("ConditionDesc for OGLX", "ConditionDesc for OGLY", "ConditionDesc for OGLZ", "New ConditionDesc for OGLZ");
   }
 
@@ -153,7 +153,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
         .target(CONTROL_CODE_CONDITIONS_URL)
         .request()
         .header("Authorization", "Basic dXNlcjpwYXNz")
-        .put(Entity.entity(Arrays.asList(controlCodeCondition), MediaType.APPLICATION_JSON));
+        .put(Entity.json(Collections.singletonList(controlCodeCondition)));
 
     assertThat(response.getStatus()).isEqualTo(404);
     String expectedErrorString = "{\"code\":404,\"message\":\"No Ogel Found With Given Ogel ID: OGL_\"}";
@@ -169,7 +169,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
         .target(CONTROL_CODE_CONDITIONS_URL)
         .request()
         .header("Authorization", "Basic dXNlcjpwYXNz")
-        .put(Entity.entity(Arrays.asList(controlCodeCondition), MediaType.APPLICATION_JSON));
+        .put(Entity.json(Collections.singletonList(controlCodeCondition)));
 
     assertThat(response.getStatus()).isEqualTo(422);
     String expectedErrorString = "{\"errors\":[\"The request body OGEL Control Code Condition without OGEL ID is not allowed, Index: 0\"]}";
@@ -185,7 +185,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
         .target(CONTROL_CODE_CONDITIONS_URL)
         .request()
         .header("Authorization", "Basic dXNlcjpwYXNz")
-        .put(Entity.entity(Arrays.asList(controlCodeCondition), MediaType.APPLICATION_JSON));
+        .put(Entity.json(Collections.singletonList(controlCodeCondition)));
 
     assertThat(response.getStatus()).isEqualTo(422);
     String expectedErrorString = "{\"errors\":[\"The request body OGEL Control Code Condition without Control Code is not allowed, Index: 0\"]}";
@@ -205,7 +205,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
         .target(CONTROL_CODE_CONDITIONS_URL)
         .request()
         .header("Authorization", "Basic dXNlcjpwYXNz")
-        .put(Entity.entity(Arrays.asList(controlCodeCondition1,controlCodeCondition2), MediaType.APPLICATION_JSON));
+        .put(Entity.json(Arrays.asList(controlCodeCondition1, controlCodeCondition2)));
 
     assertThat(response.getStatus()).isEqualTo(422);
     String expectedErrorString = "{\"errors\":[\"The request body Duplicate OGEL Control Code Conditions found in bulk update data: OGLX/55\"]}";
@@ -223,7 +223,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
     List<LocalControlCodeCondition> actualResponse1 = response1.readEntity(new GenericType<List<LocalControlCodeCondition>>() {
     });
     assertThat(actualResponse1.size()).isEqualTo(3);
-    assertThat(actualResponse1).extracting(controlCodeCondition -> controlCodeCondition.getOgelID())
+    assertThat(actualResponse1).extracting(LocalControlCodeCondition::getOgelID)
         .containsOnly("OGLX", "OGLY", "OGLZ");
 
     // delete all local ControlCodeConditions

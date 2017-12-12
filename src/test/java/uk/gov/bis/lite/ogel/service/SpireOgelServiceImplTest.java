@@ -38,8 +38,7 @@ public class SpireOgelServiceImplTest {
     ogel2.setId("OGL2");
     ogels.add(ogel2);
 
-    Map<String, SpireOgel> spireOgelCacheMap = ogels.stream().collect(Collectors.toMap(e -> e.getId(), e -> e));
-    return spireOgelCacheMap;
+    return ogels.stream().collect(Collectors.toMap(SpireOgel::getId, e -> e));
   }
 
   @Before
@@ -64,7 +63,7 @@ public class SpireOgelServiceImplTest {
 
   @Test
   public void testGetAll() {
-    assertThat(spireOgelService.getAllOgels()).extracting(e -> e.getId()).containsOnly("OGL1", "OGL2");
+    assertThat(spireOgelService.getAllOgels()).extracting(SpireOgel::getId).containsOnly("OGL1", "OGL2");
   }
 
   @Test
@@ -74,7 +73,7 @@ public class SpireOgelServiceImplTest {
     //empty cache
     SpireOgelService emptySpireOgelService = new SpireOgelServiceImpl(spireOgelCache);
 
-    assertThatThrownBy(() -> emptySpireOgelService.getAllOgels()).isInstanceOf(CacheNotPopulatedException.class);
+    assertThatThrownBy(emptySpireOgelService::getAllOgels).isInstanceOf(CacheNotPopulatedException.class);
     assertThatThrownBy(() -> emptySpireOgelService.findSpireOgelById("OGL1")).isInstanceOf(CacheNotPopulatedException.class);
     assertThat(emptySpireOgelService.getHealthStatus().isHealthy()).isFalse();
     assertThat(emptySpireOgelService.getHealthStatus().getErrorMessage()).contains("Cache not initialised");

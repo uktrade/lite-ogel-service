@@ -15,17 +15,16 @@ public enum ConditionType {
 
   @Override
   public String toString() {
-    return this.type;
+    return type;
   }
 
-  public static ConditionType fromString(String text) {
-    if (text != null) {
-      for (ConditionType type : ConditionType.values()) {
-        if (text.equalsIgnoreCase(type.type)) {
-          return type;
-        }
+  public static ConditionType fromString(String str) {
+    for (ConditionType conditionType : values()) {
+      if (conditionType.toString().equals(str)) {
+        return conditionType;
       }
     }
-    throw new IllegalArgumentException("No condition type " + text + " is found");
+    return null;
   }
+
 }

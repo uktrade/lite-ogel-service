@@ -26,6 +26,7 @@ import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,31 +43,31 @@ public class AdminResourceTest {
 
   @Rule
   public final ResourceTestRule resources = ResourceTestRule.builder()
-    .addResource(new AdminResource(localOgelService, spireOgelService, controlCodeConditionService, controlCodeClient, "testUrl"))
-    .addProvider(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
-      .setAuthenticator(new SimpleAuthenticator("user", "password"))
-      .setRealm("SUPER SECRET STUFF")
-      .buildAuthFilter()))
-    .addProvider(CacheNotPopulatedException.CacheNotPopulatedExceptionHandler.class)
-    .addResource(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class))
-    .build();
+      .addResource(new AdminResource(localOgelService, spireOgelService, controlCodeConditionService, controlCodeClient, "testUrl"))
+      .addProvider(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
+          .setAuthenticator(new SimpleAuthenticator("user", "password"))
+          .setRealm("SUPER SECRET STUFF")
+          .buildAuthFilter()))
+      .addProvider(CacheNotPopulatedException.CacheNotPopulatedExceptionHandler.class)
+      .addResource(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class))
+      .build();
 
   @Test
   public void validateShouldReturnOkStatus() throws Exception {
     when(localOgelService.getAllLocalOgels()).thenReturn(localOgels("OG1", "OG2", "OG3", "OG4"));
     when(spireOgelService.getAllOgels()).thenReturn(spireOgels("OG1", "OG2", "OG3", "OG4"));
     when(controlCodeConditionService.getAllControlCodeConditions())
-      .thenReturn(controlCodeConditions(ImmutableMap.of(
-        "C1", new ArrayList<>(),
-        "C2", new ArrayList<>(),
-        "C3", Arrays.asList("C1"),
-        "C4", new ArrayList<>())));
+        .thenReturn(controlCodeConditions(ImmutableMap.of(
+            "C1", new ArrayList<>(),
+            "C2", new ArrayList<>(),
+            "C3", Collections.singletonList("C1"),
+            "C4", new ArrayList<>())));
     when(controlCodeClient.getAllControlCodes()).thenReturn(controlCodes("C1", "C2", "C3", "C4"));
 
-    Response result  = resources.getJerseyTest().target("/admin/validate")
-      .request(MediaType.APPLICATION_JSON_TYPE)
-      .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
-      .get();
+    Response result = resources.getJerseyTest().target("/admin/validate")
+        .request(MediaType.APPLICATION_JSON)
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .get();
 
     assertThat(result.getStatus()).isEqualTo(200);
     ValidateView validateView = result.readEntity(ValidateView.class);
@@ -81,22 +82,22 @@ public class AdminResourceTest {
     when(localOgelService.getAllLocalOgels()).thenReturn(localOgels("OG1", "OG30", "OG31", "OG32"));
     when(spireOgelService.getAllOgels()).thenReturn(spireOgels("OG1", "OG2", "OG3", "OG4"));
     when(controlCodeConditionService.getAllControlCodeConditions())
-      .thenReturn(controlCodeConditions(ImmutableMap.of(
-        "C1", new ArrayList<>(),
-        "C2", new ArrayList<>(),
-        "C3", Arrays.asList("C1", "C100"),
-        "C4", new ArrayList<>())));
+        .thenReturn(controlCodeConditions(ImmutableMap.of(
+            "C1", new ArrayList<>(),
+            "C2", new ArrayList<>(),
+            "C3", Arrays.asList("C1", "C100"),
+            "C4", new ArrayList<>())));
     when(controlCodeClient.getAllControlCodes()).thenReturn(controlCodes("C1", "C2", "C3", "C4"));
 
-    Response result  = resources.getJerseyTest().target("/admin/validate")
-      .request(MediaType.APPLICATION_JSON_TYPE)
-      .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
-      .get();
+    Response result = resources.getJerseyTest().target("/admin/validate")
+        .request(MediaType.APPLICATION_JSON)
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .get();
 
     assertThat(result.getStatus()).isEqualTo(500);
     ValidateView validateView = result.readEntity(ValidateView.class);
     assertThat(validateView).isNotNull();
-    assertThat(validateView.getUnmatchedControlCodes()).isEqualTo(ImmutableMap.of("OG1", Arrays.asList("C100")));
+    assertThat(validateView.getUnmatchedControlCodes()).isEqualTo(ImmutableMap.of("OG1", Collections.singletonList("C100")));
     assertThat(validateView.getUnmatchedLocalOgelIds()).isEqualTo(Arrays.asList("OG30", "OG31", "OG32"));
     assertThat(validateView.getUnmatchedSpireOgelIds()).isEqualTo(Arrays.asList("OG2", "OG3", "OG4"));
   }
@@ -105,10 +106,10 @@ public class AdminResourceTest {
   public void validateShouldReturnInternalServerErrorStatusForAnyErrors() throws Exception {
 
     when(spireOgelService.getAllOgels()).thenThrow(new CacheNotPopulatedException(null));
-    Response result  = resources.getJerseyTest().target("/admin/validate")
-      .request(MediaType.APPLICATION_JSON_TYPE)
-      .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
-      .get();
+    Response result = resources.getJerseyTest().target("/admin/validate")
+        .request(MediaType.APPLICATION_JSON)
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .get();
 
     assertThat(result.getStatus()).isEqualTo(500);
   }
@@ -117,9 +118,9 @@ public class AdminResourceTest {
   public void validateShouldReturnUnauthorisedStatus() throws Exception {
 
     Response result = resources.getJerseyTest().target("/admin/validate")
-      .request(MediaType.APPLICATION_JSON_TYPE)
-      .header("Authorization", "blah")
-      .get();
+        .request(MediaType.APPLICATION_JSON)
+        .header("Authorization", "blah")
+        .get();
 
     assertThat(result.getStatus()).isEqualTo(401);
   }
@@ -140,7 +141,7 @@ public class AdminResourceTest {
     }).collect(Collectors.toList());
   }
 
-  private List<LocalControlCodeCondition> controlCodeConditions(Map<String,List<String>> controlCodes) {
+  private List<LocalControlCodeCondition> controlCodeConditions(Map<String, List<String>> controlCodes) {
     return controlCodes.entrySet().stream().map(i -> {
       LocalControlCodeCondition controlCodeCondition = new LocalControlCodeCondition();
       controlCodeCondition.setOgelID("OG1");
