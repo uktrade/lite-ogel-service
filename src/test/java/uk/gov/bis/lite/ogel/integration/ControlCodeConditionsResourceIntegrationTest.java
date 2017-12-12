@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
+import uk.gov.bis.lite.ogel.util.AuthUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +36,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
     Response response = JerseyClientBuilder.createClient()
         .target(CONTROL_CODE_CONDITIONS_URL + "OGLY" + "/22")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertEquals(200, response.getStatus());
@@ -55,6 +57,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
     Response response = JerseyClientBuilder.createClient()
         .target(CONTROL_CODE_CONDITIONS_URL + OGEL_ID + "/" + CONTROL_CODE)
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertEquals(200, response.getStatus());
@@ -78,6 +81,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
     Response response = JerseyClientBuilder.createClient()
         .target(CONTROL_CODE_CONDITIONS_URL + OGEL_ID + "/" + CONTROL_CODE)
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertEquals(206, response.getStatus());
@@ -91,6 +95,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
     Response response = JerseyClientBuilder.createClient()
         .target(CONTROL_CODE_CONDITIONS_URL + OGEL_ID + "/32")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertEquals(204, response.getStatus());
@@ -100,7 +105,8 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
   public void insertOgelConditionsArraySuccess() {
     JerseyInvocation.Builder getControlCodeConditionsRequest = JerseyClientBuilder.createClient()
         .target(CONTROL_CODE_CONDITIONS_URL)
-        .request();
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER);
 
     Response responseBefore = getControlCodeConditionsRequest.get();
 
@@ -122,7 +128,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
     Response response = JerseyClientBuilder.createClient()
         .target(CONTROL_CODE_CONDITIONS_URL)
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(Collections.singletonList(localControlCodeCondition)));
 
     assertThat(response.getStatus()).isEqualTo(201);
@@ -152,7 +158,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
     Response response = JerseyClientBuilder.createClient()
         .target(CONTROL_CODE_CONDITIONS_URL)
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(Collections.singletonList(controlCodeCondition)));
 
     assertThat(response.getStatus()).isEqualTo(404);
@@ -168,7 +174,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
     Response response = JerseyClientBuilder.createClient()
         .target(CONTROL_CODE_CONDITIONS_URL)
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(Collections.singletonList(controlCodeCondition)));
 
     assertThat(response.getStatus()).isEqualTo(422);
@@ -184,7 +190,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
     Response response = JerseyClientBuilder.createClient()
         .target(CONTROL_CODE_CONDITIONS_URL)
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(Collections.singletonList(controlCodeCondition)));
 
     assertThat(response.getStatus()).isEqualTo(422);
@@ -204,7 +210,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
     Response response = JerseyClientBuilder.createClient()
         .target(CONTROL_CODE_CONDITIONS_URL)
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(Arrays.asList(controlCodeCondition1, controlCodeCondition2)));
 
     assertThat(response.getStatus()).isEqualTo(422);
@@ -218,6 +224,7 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
     Response response1 = JerseyClientBuilder.createClient()
         .target(CONTROL_CODE_CONDITIONS_URL)
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     List<LocalControlCodeCondition> actualResponse1 = response1.readEntity(new GenericType<List<LocalControlCodeCondition>>() {
@@ -230,13 +237,14 @@ public class ControlCodeConditionsResourceIntegrationTest extends BaseIntegratio
     JerseyClientBuilder.createClient()
         .target(CONTROL_CODE_CONDITIONS_URL)
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .delete();
 
     //after delete
     Response response2 = JerseyClientBuilder.createClient()
         .target(CONTROL_CODE_CONDITIONS_URL)
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     List<LocalControlCodeCondition> actualResponse2 = response2.readEntity(new GenericType<List<LocalControlCodeCondition>>() {

@@ -6,10 +6,11 @@ import static org.junit.Assert.assertEquals;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Test;
 import uk.gov.bis.lite.ogel.api.view.VirtualEuView;
+import uk.gov.bis.lite.ogel.util.AuthUtil;
 
 import javax.ws.rs.core.Response;
 
-public class VitualEuResourceIntegrationTest extends BaseIntegrationTest {
+public class VirtualEuResourceIntegrationTest extends BaseIntegrationTest {
 
   @Test
   public void getVirtualEuTrue() {
@@ -19,6 +20,7 @@ public class VitualEuResourceIntegrationTest extends BaseIntegrationTest {
         .queryParam("sourceCountry", "39")
         .queryParam("destinationCountry", "3399")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertEquals(200, response.getStatus());
@@ -35,6 +37,7 @@ public class VitualEuResourceIntegrationTest extends BaseIntegrationTest {
         .queryParam("sourceCountry", "39")
         .queryParam("destinationCountry", "4499")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertEquals(200, response.getStatus());

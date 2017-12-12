@@ -3,10 +3,13 @@ package uk.gov.bis.lite.ogel.resource;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import io.dropwizard.auth.Auth;
 import io.dropwizard.jersey.caching.CacheControl;
 import org.apache.commons.lang3.EnumUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
+import uk.gov.bis.lite.ogel.auth.Roles;
+import uk.gov.bis.lite.ogel.auth.User;
 import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -44,10 +48,13 @@ public class ApplicableOgelResource {
     this.virtualEuOgelId = virtualEuOgelId;
   }
 
+  @RolesAllowed(Roles.SERVICE)
   @GET
   @Timed
   @CacheControl(maxAge = 1, maxAgeUnit = TimeUnit.DAYS)
-  public Response getOgelList(@NotNull @QueryParam("controlCode") String controlCode,
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getOgelList(@Auth User user,
+                              @NotNull @QueryParam("controlCode") String controlCode,
                               @NotNull @QueryParam("sourceCountry") String sourceCountry,
                               @NotEmpty @QueryParam("destinationCountry") List<String> destinationCountries,
                               @NotEmpty @QueryParam("activityType") List<String> activityTypesParam) {

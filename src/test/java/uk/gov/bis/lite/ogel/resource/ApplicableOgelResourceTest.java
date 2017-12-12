@@ -20,6 +20,7 @@ import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
+import uk.gov.bis.lite.ogel.util.AuthUtil;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class ApplicableOgelResourceTest {
   }
 
   @ClassRule
-  public static final ResourceTestRule resources = ResourceTestRule.builder()
+  public static final ResourceTestRule resources = AuthUtil.authBuilder()
       .addResource(new ApplicableOgelResource(applicableOgelService, localOgelService, TestUtil.OGLEU))
       .build();
 
@@ -76,7 +77,9 @@ public class ApplicableOgelResourceTest {
         .queryParam(DEST_COUNTRY_NAME, DEST1_COUNTRY_PARAM)
         .queryParam(DEST_COUNTRY_NAME, DEST2_COUNTRY_PARAM)
         .queryParam(ACTIVITY_NAME, ACTIVITY_PARAM)
-        .request().get();
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
+        .get();
 
     assertEquals(200, response.getStatus());
     assertEquals(3, getEntityOgels(response).size());
@@ -92,7 +95,9 @@ public class ApplicableOgelResourceTest {
         .queryParam(DEST_COUNTRY_NAME, DEST1_COUNTRY_PARAM)
         .queryParam(DEST_COUNTRY_NAME, DEST2_COUNTRY_PARAM)
         .queryParam(ACTIVITY_NAME, ACTIVITY_PARAM)
-        .request().get();
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
+        .get();
 
     assertEquals(200, response.getStatus());
     assertEquals(0, getEntityOgels(response).size());
@@ -112,7 +117,9 @@ public class ApplicableOgelResourceTest {
         .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
         .queryParam(DEST_COUNTRY_NAME, DEST1_COUNTRY_PARAM)
         .queryParam(ACTIVITY_NAME, ACTIVITY_PARAM)
-        .request().get();
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
+        .get();
 
     assertEquals(200, response.getStatus());
 
@@ -129,7 +136,9 @@ public class ApplicableOgelResourceTest {
         .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
         .queryParam(DEST_COUNTRY_NAME, DEST1_COUNTRY_PARAM)
         .queryParam(ACTIVITY_NAME, ACTIVITY_PARAM + "X")
-        .request().get();
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
+        .get();
     assertNotNull(response);
     assertEquals(response.getStatus(), 400);
   }
@@ -140,7 +149,9 @@ public class ApplicableOgelResourceTest {
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
         .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
         .queryParam(DEST_COUNTRY_NAME, DEST1_COUNTRY_PARAM)
-        .request().get();
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
+        .get();
     assertNotNull(response);
     assertEquals(response.getStatus(), 400);
   }
@@ -151,7 +162,9 @@ public class ApplicableOgelResourceTest {
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
         .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
         .queryParam(ACTIVITY_NAME, ACTIVITY_PARAM)
-        .request().get();
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
+        .get();
     assertNotNull(response);
     assertEquals(response.getStatus(), 400);
   }
@@ -168,7 +181,9 @@ public class ApplicableOgelResourceTest {
         .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
         .queryParam(DEST_COUNTRY_NAME, DEST1_COUNTRY_PARAM)
         .queryParam(ACTIVITY_NAME, ACTIVITY_PARAM)
-        .request().get();
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
+        .get();
 
     assertEquals(200, response.getStatus());
 
@@ -188,7 +203,9 @@ public class ApplicableOgelResourceTest {
         .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
         .queryParam(DEST_COUNTRY_NAME, DEST1_COUNTRY_PARAM)
         .queryParam(ACTIVITY_NAME, ACTIVITY_PARAM)
-        .request().get();
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
+        .get();
 
     assertEquals(200, response.getStatus());
 

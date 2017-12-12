@@ -3,15 +3,10 @@ package uk.gov.bis.lite.ogel.resource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
-import io.dropwizard.auth.AuthDynamicFeature;
-import io.dropwizard.auth.AuthValueFactoryProvider;
-import io.dropwizard.auth.PrincipalImpl;
-import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,11 +18,11 @@ import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
-import uk.gov.bis.lite.ogel.resource.auth.SimpleAuthenticator;
 import uk.gov.bis.lite.ogel.service.ControlCodeConditionsService;
 import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
+import uk.gov.bis.lite.ogel.util.AuthUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,14 +46,9 @@ public class ControlCodeConditionsResourceTest {
   private final ControlCodeConditionsService controlCodeConditionsService = mock(ControlCodeConditionsService.class);
 
   @Rule
-  public final ResourceTestRule resources = ResourceTestRule.builder()
+  public final ResourceTestRule resources = AuthUtil.authBuilder()
       .addResource(new ControlCodeConditionsResource(spireOgelService, localOgelService, localControlCodeConditionService, controlCodeConditionsService))
-      .addProvider(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
-          .setAuthenticator(new SimpleAuthenticator("user", "password"))
-          .setRealm("SUPER SECRET STUFF")
-          .buildAuthFilter()))
       .addProvider(CacheNotPopulatedException.CacheNotPopulatedExceptionHandler.class)
-      .addResource(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class))
       .build();
 
   @Test
@@ -66,8 +56,9 @@ public class ControlCodeConditionsResourceTest {
     LocalControlCodeCondition controlCodeCondition = buildControlCodeCondition();
     when(localControlCodeConditionService.getAllControlCodeConditions()).thenReturn(Collections.singletonList(controlCodeCondition));
 
-    Response result = resources.getJerseyTest().target("/control-code-conditions")
+    Response result = resources.client().target("/control-code-conditions")
         .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(result.getStatus()).isEqualTo(200);
@@ -87,8 +78,9 @@ public class ControlCodeConditionsResourceTest {
         .thenReturn(Optional.of(controlCodeConditionFullView));
     when(localOgelService.findLocalOgelById(anyString())).thenReturn(Optional.of(localOgel));
 
-    Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")
+    Response result = resources.client().target("/control-code-conditions/OGL01/ML1a")
         .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(result.getStatus()).isEqualTo(200);
@@ -115,8 +107,9 @@ public class ControlCodeConditionsResourceTest {
     when(controlCodeConditionsService.findControlCodeConditions(OGEL_ID, CONTROL_CODE))
         .thenReturn(Optional.of(controlCodeConditionFullView));
 
-    Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")
+    Response result = resources.client().target("/control-code-conditions/OGL01/ML1a")
         .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(result.getStatus()).isEqualTo(200);
@@ -131,8 +124,9 @@ public class ControlCodeConditionsResourceTest {
         .thenReturn(Optional.empty());
     when(localOgelService.findLocalOgelById(anyString())).thenReturn(Optional.empty());
 
-    Response result = resources.getJerseyTest().target("/control-code-conditions/OGL01/ML1a")
+    Response result = resources.client().target("/control-code-conditions/OGL01/ML1a")
         .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(result.getStatus()).isEqualTo(204);
@@ -146,9 +140,9 @@ public class ControlCodeConditionsResourceTest {
 
     LocalControlCodeCondition controlCodeCondition = buildControlCodeCondition();
 
-    Response result = resources.getJerseyTest().target("/control-code-conditions")
+    Response result = resources.client().target("/control-code-conditions")
         .request(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(Collections.singletonList(controlCodeCondition)));
 
     assertThat(result.getStatus()).isEqualTo(201);
@@ -162,9 +156,9 @@ public class ControlCodeConditionsResourceTest {
 
     LocalControlCodeCondition controlCodeCondition = buildControlCodeCondition();
 
-    Response result = resources.getJerseyTest().target("/control-code-conditions")
+    Response result = resources.client().target("/control-code-conditions")
         .request(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(Collections.singletonList(controlCodeCondition)));
 
     assertThat(result.getStatus()).isEqualTo(404);
@@ -172,24 +166,13 @@ public class ControlCodeConditionsResourceTest {
 
   @Test
   public void deleteControlCodeConditions() throws Exception {
-    Response result = resources.getJerseyTest().target("/control-code-conditions")
+    Response result = resources.client().target("/control-code-conditions")
         .request(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .delete();
 
     assertThat(result.getStatus()).isEqualTo(204);
     verify(localControlCodeConditionService).deleteControlCodeConditions();
-  }
-
-  @Test
-  public void deleteShouldReturnUnauthorisedStatus() throws Exception {
-    Response result = resources.getJerseyTest().target("/control-code-conditions")
-        .request(MediaType.APPLICATION_JSON)
-        .header("Authorization", "blah")
-        .delete();
-
-    assertThat(result.getStatus()).isEqualTo(401);
-    verify(localControlCodeConditionService, never()).deleteControlCodeConditions();
   }
 
   private LocalControlCodeCondition buildControlCodeCondition() {

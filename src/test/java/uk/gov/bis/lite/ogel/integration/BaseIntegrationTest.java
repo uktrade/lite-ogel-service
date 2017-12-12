@@ -54,7 +54,7 @@ public class BaseIntegrationTest {
     appRule.getTestSupport().before();
 
     // Setup database
-    DataSourceFactory f = appRule.getConfiguration().getDataSourceFactory();
+    DataSourceFactory f = appRule.getConfiguration().getDatabase();
     Flyway flyway = new Flyway();
     flyway.setDataSource(f.getUrl(), f.getUser(), f.getPassword());
     flyway.migrate();

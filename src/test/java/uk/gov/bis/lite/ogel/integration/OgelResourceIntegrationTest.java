@@ -10,6 +10,7 @@ import org.glassfish.jersey.client.JerseyInvocation;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
+import uk.gov.bis.lite.ogel.util.AuthUtil;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
 import java.io.IOException;
@@ -36,6 +37,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(OGEL_URL)
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(response.getStatus()).isEqualTo(200);
@@ -55,6 +57,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(OGEL_URL + "OGLX")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(response.getStatus()).isEqualTo(200);
@@ -73,6 +76,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(OGEL_URL + "OGL_")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(response.getStatus()).isEqualTo(404);
@@ -85,7 +89,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(OGEL_URL + "OGLX" + "/summary/canList")
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(fixture("fixture/integration/updateOgelConditionRequest.json")));
 
     assertThat(response.getStatus()).isEqualTo(202);
@@ -100,7 +104,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target("http://localhost:8080/ogels/OGL_" + "/summary/canList")
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(fixture("fixture/integration/updateOgelConditionRequest.json")));
 
     assertThat(response.getStatus()).isEqualTo(404);
@@ -112,7 +116,8 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
   public void insertOrUpdateOgelSuccess() throws IOException {
     JerseyInvocation.Builder getOgelByIdRequest = JerseyClientBuilder.createClient()
         .target(OGEL_URL + "OGLX")
-        .request();
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER);
 
     Response responseBefore = getOgelByIdRequest.get();
 
@@ -127,7 +132,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(OGEL_URL + "OGLX")
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(TestUtil.localX()));
 
     assertThat(response.getStatus()).isEqualTo(201);
@@ -155,7 +160,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(OGEL_URL + "OGL_")
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(TestUtil.localX()));
 
     assertThat(response.getStatus()).isEqualTo(404);
@@ -168,6 +173,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     Response responseBefore = JerseyClientBuilder.createClient()
         .target(OGEL_URL)
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     List<OgelFullView> actualResponseBefore = Arrays.asList(MAPPER.readValue(responseBefore.readEntity(String.class), OgelFullView[].class));
@@ -180,7 +186,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(OGEL_URL)
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(TestUtil.getLocalOgels()));
 
     assertThat(response.getStatus()).isEqualTo(201);
@@ -190,6 +196,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     Response responseAfter = JerseyClientBuilder.createClient()
         .target(OGEL_URL)
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     List<OgelFullView> actualResponseAfter = Arrays.asList(MAPPER.readValue(responseAfter.readEntity(String.class), OgelFullView[].class));
@@ -205,7 +212,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(OGEL_URL)
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(TestUtil.getLocalOgelsMissingOgelId()));
 
     assertThat(response.getStatus()).isEqualTo(422);
@@ -218,7 +225,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(OGEL_URL)
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(Collections.emptyList()));
 
     assertThat(response.getStatus()).isEqualTo(422);
@@ -232,6 +239,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     Response response1 = JerseyClientBuilder.createClient()
         .target(OGEL_URL)
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(response1.getStatus()).isEqualTo(200);
@@ -245,13 +253,14 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     JerseyClientBuilder.createClient()
         .target(OGEL_URL)
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .delete();
 
     //after delete
     Response response2 = JerseyClientBuilder.createClient()
         .target(OGEL_URL)
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(response2.getStatus()).isEqualTo(200);
@@ -268,6 +277,7 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     Response response1 = JerseyClientBuilder.createClient()
         .target(OGEL_URL + "OGLX")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(response1.getStatus()).isEqualTo(200);
@@ -281,13 +291,14 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     JerseyClientBuilder.createClient()
         .target(OGEL_URL + "OGLX")
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .delete();
 
     //after delete
     Response response2 = JerseyClientBuilder.createClient()
         .target(OGEL_URL + "OGLX")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(response2.getStatus()).isEqualTo(200);

@@ -7,7 +7,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 import io.dropwizard.testing.junit.ResourceTestRule;
-import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -20,6 +19,7 @@ import uk.gov.bis.lite.ogel.model.ActivityType;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
+import uk.gov.bis.lite.ogel.util.AuthUtil;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
 import java.util.Arrays;
@@ -56,29 +56,33 @@ public class VirtualEuResourceTest {
   }
 
   @ClassRule
-  public static final ResourceTestRule resources = ResourceTestRule.builder()
+  public static final ResourceTestRule resources = AuthUtil.authBuilder()
       .addResource(new VirtualEuResource(applicableOgelService, TestUtil.OGLEU)).build();
 
   @Test
-  public void controllerReturnsVirtualEuTrue() throws JSONException {
+  public void controllerReturnsVirtualEuTrue() {
     when(applicableOgelService.findOgel(anyString(), Collections.singletonList(anyString()), anyListOf(ActivityType.class))).thenReturn(euOgels);
     Response response = resources.client().target("/virtual-eu")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
         .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
         .queryParam(DESTINATION_COUNTRY_NAME, DESTINATION_COUNTRY_PARAM)
-        .request().get();
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
+        .get();
     assertEquals(200, response.getStatus());
     JSONAssert.assertEquals("{\"ogelId\": \"" + TestUtil.OGLEU + "\", \"virtualEu\": true}", response.readEntity(String.class), true);
   }
 
   @Test
-  public void controllerReturnsVirtualEuFalse() throws JSONException {
+  public void controllerReturnsVirtualEuFalse() {
     when(applicableOgelService.findOgel(anyString(), Collections.singletonList(anyString()), anyListOf(ActivityType.class))).thenReturn(noEuOgels);
     Response response = resources.client().target("/virtual-eu")
         .queryParam(CONTROL_CODE_NAME, CONTROL_CODE_PARAM)
         .queryParam(SOURCE_COUNTRY_NAME, SOURCE_COUNTRY_PARAM)
         .queryParam(DESTINATION_COUNTRY_NAME, DESTINATION_COUNTRY_PARAM)
-        .request().get();
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
+        .get();
     assertEquals(200, response.getStatus());
     JSONAssert.assertEquals("{\"virtualEu\": false}", response.readEntity(String.class), true);
   }

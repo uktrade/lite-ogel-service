@@ -1,8 +1,12 @@
 spireOgelCacheJobCron: 0 0 0 * * ?
 
 cacheTimeout: 1000
-login: user
-password: pass
+
+adminLogin: admin
+adminPassword: pass
+
+serviceLogin: service
+servicePassword: password
 
 jerseyClient:
   timeout: 10000ms
