@@ -1,17 +1,17 @@
 package uk.gov.bis.lite.ogel.resource;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.inject.Inject;
 import io.dropwizard.auth.Auth;
-import io.dropwizard.auth.PrincipalImpl;
-import io.dropwizard.jersey.errors.ErrorMessage;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
+import uk.gov.bis.lite.ogel.auth.Roles;
+import uk.gov.bis.lite.ogel.auth.User;
+import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.factory.ViewFactory;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.ConditionType;
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -34,6 +35,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -41,6 +43,8 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 public class OgelResource {
   private static final Logger LOGGER = LoggerFactory.getLogger(OgelResource.class);
+  private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static final CollectionType LIST_STRING_TYPE = TypeFactory.defaultInstance().constructCollectionType(List.class, String.class);
 
   private final SpireOgelService spireOgelService;
   private final LocalOgelService localOgelService;
@@ -51,21 +55,24 @@ public class OgelResource {
     this.localOgelService = localOgelService;
   }
 
+  @RolesAllowed(Roles.SERVICE)
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<OgelFullView> getAllOgels() throws OgelNotFoundException {
+  public List<OgelFullView> getAllOgels(@Auth User user) {
     List<SpireOgel> allSpireOgels = spireOgelService.getAllOgels();
     return allSpireOgels
         .stream().map(so -> ViewFactory.createOgel(so, localOgelService.findLocalOgelById(so.getId()).orElse(null)))
         .collect(Collectors.toList());
   }
 
+  @RolesAllowed(Roles.SERVICE)
   @GET
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public OgelFullView getOgelByOgelID(@NotNull @PathParam("id") String ogelId) {
+  public OgelFullView getOgelByOgelID(@Auth User user,
+                                      @NotNull @PathParam("id") String ogelId) {
     Optional<SpireOgel> foundSpireOgelOptional = spireOgelService.findSpireOgelById(ogelId);
-    if(!foundSpireOgelOptional.isPresent()) {
+    if (!foundSpireOgelOptional.isPresent()) {
       throw new OgelNotFoundException(ogelId);
     }
     Optional<LocalOgel> localOgelFound = localOgelService.findLocalOgelById(ogelId);
@@ -75,59 +82,62 @@ public class OgelResource {
     return ViewFactory.createOgel(foundSpireOgelOptional.get(), localOgelFound.orElse(null));
   }
 
+  @RolesAllowed(Roles.ADMIN)
   @PUT
   @Path("{id}/summary/{conditionFieldName}")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response updateOgelCondition(@Auth PrincipalImpl user,
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response updateOgelCondition(@Auth User user,
                                       @NotNull @PathParam("id") String ogelId,
                                       @NotNull @PathParam("conditionFieldName") String conditionFieldName,
                                       String message) {
-    try {
-      ConditionType.fromString(conditionFieldName);
-    } catch (IllegalArgumentException e) {
-      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
+
+    if (ConditionType.fromString(conditionFieldName) == null) {
+      throw new WebApplicationException("Unknown conditionFieldName " + conditionFieldName, Response.Status.BAD_REQUEST);
     }
-    if(!spireOgelService.findSpireOgelById(ogelId).isPresent()) {
+
+    if (!spireOgelService.findSpireOgelById(ogelId).isPresent()) {
       throw new OgelNotFoundException(ogelId);
     }
-    ObjectMapper mapper = new ObjectMapper();
+
+    List<String> updateConditionDataList;
     try {
-      List<String> updateConditionDataList = mapper.readValue(message,
-          mapper.getTypeFactory().constructCollectionType(List.class, String.class));
-      localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName);
-      return Response.accepted(getOgelByOgelID(ogelId)).build();
-    } catch (JsonProcessingException e) {
-      LOGGER.error("Badly formed Json request body {}", message, e);
-      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, e.getMessage())).build();
-    } catch (IOException e) {
-      LOGGER.error("An error occurred processing the PUT request for ogel with ID {}", ogelId, e);
-      throw new RuntimeException("An error occurred updating the Ogel.", e);
+      updateConditionDataList = MAPPER.readValue(message, LIST_STRING_TYPE);
+    } catch (IOException exception) {
+      LOGGER.error("Badly formed json request body {}", message, exception);
+      throw new WebApplicationException("Badly formed json request body", Response.Status.BAD_REQUEST);
     }
+
+    localOgelService.updateSpireOgelCondition(ogelId, updateConditionDataList, conditionFieldName);
+    return Response.accepted(getOgelByOgelID(user, ogelId)).build();
   }
 
+  @RolesAllowed(Roles.ADMIN)
   @PUT
   @Path("/{id}")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response insertOrUpdateOgel(@Auth PrincipalImpl user,
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response insertOrUpdateOgel(@Auth User user,
                                      @NotNull @PathParam("id") String ogelId,
                                      @CheckLocalOgel LocalOgel localOgel) {
-    if(!spireOgelService.findSpireOgelById(ogelId).isPresent()) {
+    if (!spireOgelService.findSpireOgelById(ogelId).isPresent()) {
       throw new OgelNotFoundException(ogelId);
     }
 
     localOgel.setId(ogelId);
     localOgelService.insertOrUpdateOgel(localOgel);
-    return Response.status(Response.Status.CREATED).entity(getOgelByOgelID(ogelId)).type(MediaType.APPLICATION_JSON).build();
+    return Response.status(Response.Status.CREATED).entity(getOgelByOgelID(user, ogelId)).build();
   }
 
+  @RolesAllowed(Roles.ADMIN)
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response insertOgelArray(@Auth PrincipalImpl user, @CheckLocalOgelList List<LocalOgel> ogelList) {
-    if (ogelList.isEmpty()) {
-      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, "Empty Ogel List")).build();
-    }
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response insertOgelArray(@Auth User user,
+                                  @NotEmpty @CheckLocalOgelList List<LocalOgel> ogelList) {
+
     ogelList.forEach(o -> {
-      if(!spireOgelService.findSpireOgelById(o.getId()).isPresent()) {
+      if (!spireOgelService.findSpireOgelById(o.getId()).isPresent()) {
         throw new OgelNotFoundException(o.getId());
       }
     });
@@ -135,18 +145,21 @@ public class OgelResource {
     localOgelService.insertOgelList(ogelList);
     List<String> updatedOgelIds = ogelList.stream().map(LocalOgel::getId).collect(Collectors.toList());
     return Response.status(Response.Status.CREATED).entity(
-        getAllOgels().stream().filter(o -> updatedOgelIds.contains(o.getId())).collect(Collectors.toList()))
-        .type(MediaType.APPLICATION_JSON).build();
+        getAllOgels(user).stream().filter(o -> updatedOgelIds.contains(o.getId())).collect(Collectors.toList()))
+        .build();
   }
 
+  @RolesAllowed(Roles.ADMIN)
   @DELETE
-  public void deleteAllOgels(@Auth PrincipalImpl user) {
+  public void deleteAllOgels(@Auth User user) {
     localOgelService.deleteAllOgels();
   }
 
+  @RolesAllowed(Roles.ADMIN)
   @DELETE
   @Path("{id}")
-  public void deleteOgelById(@Auth PrincipalImpl user, @NotNull @PathParam("id") String ogelId) {
+  public void deleteOgelById(@Auth User user,
+                             @NotNull @PathParam("id") String ogelId) {
     localOgelService.deleteOgelById(ogelId);
   }
 

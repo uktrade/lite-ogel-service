@@ -7,6 +7,7 @@ import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
+import uk.gov.bis.lite.ogel.util.AuthUtil;
 
 import java.util.List;
 
@@ -26,15 +27,16 @@ public class ApplicableOgelResourceIntegrationTest extends BaseIntegrationTest {
         .queryParam("destinationCountry", "TestDestination")
         .queryParam("activityType", "TECH")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertEquals(200, response.getStatus());
     List<ApplicableOgelView> actualResponse = response.readEntity(new GenericType<List<ApplicableOgelView>>() {
     });
     assertEquals(1, actualResponse.size());
-    assertThat(actualResponse).extracting(ogel -> ogel.getId()).containsOnly("OGLX");
-    assertThat(actualResponse).extracting(ogel -> ogel.getName()).containsOnly("NameOGLX");;
-    assertThat(actualResponse).flatExtracting(ogel -> ogel.getUsageSummary()).containsOnly("CanList for OGLX");
+    assertThat(actualResponse).extracting(ApplicableOgelView::getId).containsOnly("OGLX");
+    assertThat(actualResponse).extracting(ApplicableOgelView::getName).containsOnly("NameOGLX");
+    assertThat(actualResponse).flatExtracting(ApplicableOgelView::getUsageSummary).containsOnly("CanList for OGLX");
   }
 
   @Test
@@ -46,8 +48,8 @@ public class ApplicableOgelResourceIntegrationTest extends BaseIntegrationTest {
         .queryParam("destinationCountry", "TestCountry")
         .queryParam("activityType", "TECH_")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
-
     assertEquals(400, response.getStatus());
     String expectedJson = "{\"code\":400,\"message\":\"Invalid activityType: TECH_\"}";
     JSONAssert.assertEquals(expectedJson, response.readEntity(String.class), false);
@@ -61,10 +63,11 @@ public class ApplicableOgelResourceIntegrationTest extends BaseIntegrationTest {
         .queryParam("sourceCountry", "39")
         .queryParam("activityType", "TECH_")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertEquals(400, response.getStatus());
-    String expectedJson = "{\"code\":400,\"message\":\"At least one destinationCountry must be provided\"}";
+    String expectedJson = "{\"errors\":[\"query param destinationCountry may not be empty\"]}";
     JSONAssert.assertEquals(expectedJson, response.readEntity(String.class), false);
   }
 
@@ -76,10 +79,10 @@ public class ApplicableOgelResourceIntegrationTest extends BaseIntegrationTest {
         .queryParam("sourceCountry", "39")
         .queryParam("destinationCountry", "TestCountry")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
-
     assertEquals(400, response.getStatus());
-    String expectedJson = "{\"code\":400,\"message\":\"At least one activityType must be provided\"}";
+    String expectedJson = "{\"errors\":[\"query param activityType may not be empty\"]}";
     JSONAssert.assertEquals(expectedJson, response.readEntity(String.class), false);
   }
 }

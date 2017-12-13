@@ -14,7 +14,6 @@ import uk.gov.bis.lite.ogel.cache.SpireOgelCache;
 public class SpireOgelCacheJob implements Job {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SpireOgelCacheJob.class);
-  private SpireOgelCache spireOgelCache;
 
   @Override
   public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -22,7 +21,7 @@ public class SpireOgelCacheJob implements Job {
     Scheduler scheduler = jobExecutionContext.getScheduler();
 
     try {
-      spireOgelCache = (SpireOgelCache) scheduler.getContext().get(SPIRE_OGEL_CACHE);
+      SpireOgelCache spireOgelCache = (SpireOgelCache) scheduler.getContext().get(SPIRE_OGEL_CACHE);
       spireOgelCache.load();
     } catch (SchedulerException e) {
       LOGGER.error("Failed to load spire ogel cache.", e);

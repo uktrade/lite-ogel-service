@@ -86,7 +86,7 @@ public class GuiceModule extends AbstractModule {
   @Named("jdbi")
   public DBI provideDataSourceJdbi(Environment environment, MainApplicationConfiguration configuration) {
     final DBIFactory factory = new DBIFactory();
-    return factory.build(environment, configuration.getDataSourceFactory(), "sqlite");
+    return factory.build(environment, configuration.getDatabase(), "sqlite");
   }
 
   @Provides

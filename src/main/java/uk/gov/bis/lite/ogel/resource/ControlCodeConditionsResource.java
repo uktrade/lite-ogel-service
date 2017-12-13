@@ -1,15 +1,14 @@
 package uk.gov.bis.lite.ogel.resource;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-
 import com.google.inject.Inject;
 import io.dropwizard.auth.Auth;
-import io.dropwizard.auth.PrincipalImpl;
-import io.dropwizard.jersey.errors.ErrorMessage;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView.ConditionDescriptionControlCodes;
+import uk.gov.bis.lite.ogel.auth.Roles;
+import uk.gov.bis.lite.ogel.auth.User;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -55,16 +55,19 @@ public class ControlCodeConditionsResource {
     this.controlCodeConditionsService = controlCodeConditionsService;
   }
 
+  @RolesAllowed(Roles.SERVICE)
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<LocalControlCodeCondition> getAllControlCodeConditions() throws OgelNotFoundException {
+  public List<LocalControlCodeCondition> getAllControlCodeConditions(@Auth User user) {
     return localControlCodeConditionService.getAllControlCodeConditions();
   }
 
+  @RolesAllowed(Roles.SERVICE)
   @GET
   @Path("{ogelID}/{controlCode}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getControlCodeConditionById(@NotNull @PathParam("ogelID") String ogelID,
+  public Response getControlCodeConditionById(@Auth User user,
+                                              @NotNull @PathParam("ogelID") String ogelID,
                                               @NotNull @PathParam("controlCode") String controlCode) {
     Optional<LocalOgel> localOgelFound = localOgelService.findLocalOgelById(ogelID);
     if (!localOgelFound.isPresent()) {
@@ -88,17 +91,16 @@ public class ControlCodeConditionsResource {
     }
   }
 
+  @RolesAllowed(Roles.ADMIN)
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response insertOgelConditionsArray(@Auth PrincipalImpl user, @CheckLocalControlCodeConditionList List<LocalControlCodeCondition> ogelConditionsList)
-  throws OgelNotFoundException {
-    if (ogelConditionsList.isEmpty()) {
-      return Response.status(BAD_REQUEST.getStatusCode()).entity(new ErrorMessage(400, "Empty OGEL Conditions List")).build();
-    }
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response insertOgelConditionsArray(@Auth User user,
+                                            @NotEmpty @CheckLocalControlCodeConditionList List<LocalControlCodeCondition> ogelConditionsList) {
 
     // Check OGEL IDs exist on SPIRE too or throw OgelNotFoundException
     ogelConditionsList.forEach(o -> {
-      if(!ogelService.findSpireOgelById(o.getOgelID()).isPresent()) {
+      if (!ogelService.findSpireOgelById(o.getOgelID()).isPresent()) {
         throw new OgelNotFoundException(o.getOgelID());
       }
     });
@@ -107,12 +109,13 @@ public class ControlCodeConditionsResource {
 
     List<String> insertedOgelIDs = ogelConditionsList.stream().map(LocalControlCodeCondition::getOgelID).collect(Collectors.toList());
     return Response.status(Status.CREATED).entity(
-        getAllControlCodeConditions().stream().filter(ccc -> insertedOgelIDs.contains(ccc.getOgelID())).collect(Collectors.toList()))
-        .type(MediaType.APPLICATION_JSON).build();
+        getAllControlCodeConditions(user).stream().filter(ccc -> insertedOgelIDs.contains(ccc.getOgelID())).collect(Collectors.toList()))
+        .build();
   }
 
+  @RolesAllowed(Roles.ADMIN)
   @DELETE
-  public void deleteControlCodeConditions(@Auth PrincipalImpl user) {
+  public void deleteControlCodeConditions(@Auth User user) {
     localControlCodeConditionService.deleteControlCodeConditions();
   }
 }

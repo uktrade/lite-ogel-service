@@ -14,11 +14,7 @@ public class MainApplicationConfiguration extends Configuration {
   @Valid
   @NotNull
   @JsonProperty
-  private DataSourceFactory database = new DataSourceFactory();
-
-  public DataSourceFactory getDataSourceFactory() {
-    return database;
-  }
+  private DataSourceFactory database;
 
   @NotEmpty
   @JsonProperty
@@ -26,11 +22,19 @@ public class MainApplicationConfiguration extends Configuration {
 
   @NotEmpty
   @JsonProperty
-  private String login;
+  private String adminLogin;
 
   @NotEmpty
   @JsonProperty
-  private String password;
+  private String adminPassword;
+
+  @NotEmpty
+  @JsonProperty
+  private String serviceLogin;
+
+  @NotEmpty
+  @JsonProperty
+  private String servicePassword;
 
   @NotEmpty
   @JsonProperty
@@ -52,30 +56,6 @@ public class MainApplicationConfiguration extends Configuration {
   @JsonProperty
   private String spireOgelCacheJobCron;
 
-  public String getSpireClientUserName() {
-    return spireClientUserName;
-  }
-
-  public String getSpireClientPassword() {
-    return spireClientPassword;
-  }
-
-  public String getSpireClientUrl() {
-    return spireClientUrl;
-  }
-
-  public String getCacheTimeout() {
-    return cacheTimeout;
-  }
-
-  public String getLogin() {
-    return login;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
   @Valid
   @NotNull
   @JsonProperty("jerseyClient")
@@ -91,15 +71,56 @@ public class MainApplicationConfiguration extends Configuration {
   @JsonProperty
   private String controlCodeServiceUrl;
 
-  public String getControlCodeServiceUrl() {
-    return controlCodeServiceUrl;
+  public DataSourceFactory getDatabase() {
+    return database;
+  }
+
+  public String getCacheTimeout() {
+    return cacheTimeout;
+  }
+
+  public String getAdminLogin() {
+    return adminLogin;
+  }
+
+  public String getAdminPassword() {
+    return adminPassword;
+  }
+
+  public String getServiceLogin() {
+    return serviceLogin;
+  }
+
+  public String getServicePassword() {
+    return servicePassword;
   }
 
   public String getVirtualEuOgelId() {
     return virtualEuOgelId;
   }
 
+  public String getSpireClientUserName() {
+    return spireClientUserName;
+  }
+
+  public String getSpireClientPassword() {
+    return spireClientPassword;
+  }
+
+  public String getSpireClientUrl() {
+    return spireClientUrl;
+  }
+
   public String getSpireOgelCacheJobCron() {
     return spireOgelCacheJobCron;
   }
+
+  public JerseyClientConfiguration getJerseyClient() {
+    return jerseyClient;
+  }
+
+  public String getControlCodeServiceUrl() {
+    return controlCodeServiceUrl;
+  }
+
 }

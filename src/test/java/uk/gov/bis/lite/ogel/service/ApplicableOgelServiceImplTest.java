@@ -18,7 +18,7 @@ import java.util.List;
 
 public class ApplicableOgelServiceImplTest {
 
-  private SpireOgelService mockedSpireOgelService = mock(SpireOgelService.class);
+  private final SpireOgelService mockedSpireOgelService = mock(SpireOgelService.class);
   private ApplicableOgelServiceImpl applicableOgelService;
 
   @Before

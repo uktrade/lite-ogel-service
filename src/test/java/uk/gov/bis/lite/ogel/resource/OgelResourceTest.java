@@ -4,22 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.dropwizard.auth.AuthDynamicFeature;
-import io.dropwizard.auth.AuthValueFactoryProvider;
-import io.dropwizard.auth.AuthenticationException;
-import io.dropwizard.auth.Authenticator;
-import io.dropwizard.auth.PrincipalImpl;
-import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
-import io.dropwizard.auth.basic.BasicCredentials;
 import io.dropwizard.testing.junit.ResourceTestRule;
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -29,77 +19,72 @@ import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
+import uk.gov.bis.lite.ogel.util.AuthUtil;
 import uk.gov.bis.lite.ogel.util.TestUtil;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.soap.SOAPException;
 import javax.xml.xpath.XPathExpressionException;
 
 public class OgelResourceTest {
-  private SpireOgelService spireService = Mockito.mock(SpireOgelService.class);
-  private LocalOgelService localService = Mockito.mock(LocalOgelService.class);
+  private final SpireOgelService spireService = Mockito.mock(SpireOgelService.class);
+  private final LocalOgelService localService = Mockito.mock(LocalOgelService.class);
 
-  private LocalOgel logel;
-  private SpireOgel ogel;
-  private List<LocalOgel> localOgelsMissingOgelId;
-
-  private HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic("username", "password");
+  private final LocalOgel logel = TestUtil.localX();
+  private final SpireOgel ogel = TestUtil.ogelX();
 
   @Rule
-  public ResourceTestRule resources = ResourceTestRule.builder()
+  public final ResourceTestRule resources = AuthUtil.authBuilder()
       .addResource(new OgelResource(spireService, localService))
-      .addResource(new AuthDynamicFeature(
-          new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
-              .setAuthenticator(new TestAuthenticator())
-              .setRealm("Basic Dropwizard Http Authentication")
-              .buildAuthFilter()))
-      .addResource(new AuthValueFactoryProvider.Binder<>(PrincipalImpl.class))
       .build();
-
-  @Before
-  public void setUp() {
-    this.ogel = TestUtil.ogelX();
-    this.logel = TestUtil.localX();
-  }
 
   @Test
   public void putOgelsSuccess() {
     when(spireService.findSpireOgelById(anyString())).thenReturn(Optional.of(ogel));
 
-    Response response = resources.client().register(feature).target("/ogels")
-        .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.getLocalOgels(), MediaType.APPLICATION_JSON));
+    Response response = resources.client().target("/ogels")
+        .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
+        .put(Entity.json(TestUtil.getLocalOgels()));
     assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
   }
 
   @Test
   public void putOgelsMissingOgelId() {
-    Response response = resources.client().register(feature).target("/ogels")
-        .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.getLocalOgelsMissingOgelId()
-            , MediaType.APPLICATION_JSON));
+    Response response = resources.client()
+        .target("/ogels")
+        .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
+        .put(Entity.json(TestUtil.getLocalOgelsMissingOgelId()));
     assertEquals(422, response.getStatus());
   }
 
   @Test()
   public void putOgelsDuplicate() {
-    Response response = resources.client().register(feature).target("/ogels")
-        .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.getLocalOgelsDuplicate(), MediaType.APPLICATION_JSON));
+    Response response = resources.client()
+        .target("/ogels")
+        .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
+        .put(Entity.json(TestUtil.getLocalOgelsDuplicate()));
     assertEquals(422, response.getStatus());
   }
 
   @Test
   public void putOgelsInvalidData() {
-    Response response = resources.client().register(feature).target("/ogels")
-        .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.getLocalOgelsInvalid(), MediaType.APPLICATION_JSON));
+    Response response = resources.client()
+        .target("/ogels")
+        .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
+        .put(Entity.json(TestUtil.getLocalOgelsInvalid()));
     assertEquals(422, response.getStatus());
   }
 
@@ -107,8 +92,11 @@ public class OgelResourceTest {
   public void putOgelNotFoundException() {
     when(spireService.findSpireOgelById(anyString())).thenReturn(Optional.empty());
 
-    Response response = resources.client().register(feature).target("/ogels")
-        .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.getOgelsNotFound(), MediaType.APPLICATION_JSON));
+    Response response = resources.client()
+        .target("/ogels")
+        .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
+        .put(Entity.json(TestUtil.getOgelsNotFound()));
 
     assertEquals(404, response.getStatus());
   }
@@ -118,12 +106,15 @@ public class OgelResourceTest {
     when(localService.findLocalOgelById(anyString())).thenReturn(Optional.empty());
     when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
 
-    Response response = resources.client().target("/ogels").request().get();
+    Response response = resources.client().target("/ogels")
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
+        .get();
 
     assertEquals(200, response.getStatus());
     List<OgelFullView> views = getOgelFullViews(response);
     assertEquals(1, views.size());
-    assertEquals(TestUtil.OGLX, getMapped(views).get("id"));
+    assertEquals(TestUtil.OGLX, views.get(0).getId());
   }
 
   @Test
@@ -132,9 +123,12 @@ public class OgelResourceTest {
     when(spireService.findSpireOgelById(anyString())).thenReturn(Optional.of(ogel));
     when(localService.findLocalOgelById(anyString())).thenReturn(Optional.of(logel));
 
-    final Response response = resources.client().target("/ogels/" + TestUtil.OGLX).request().get();
+    final Response response = resources.client().target("/ogels/" + TestUtil.OGLX)
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
+        .get();
 
-    JsonNode node = getResponseNode(response);
+    JsonNode node = new ObjectMapper().readTree(response.readEntity(String.class));
     assertEquals(TestUtil.OGLX, node.get("id").asText());
     assertEquals(3, node.get("summary").get("canList").size());
     assertEquals("can2", node.get("summary").get("canList").get(1).asText());
@@ -147,7 +141,10 @@ public class OgelResourceTest {
     when(spireService.getAllOgels()).thenReturn(Collections.singletonList(ogel));
     when(spireService.findSpireOgelById(anyString())).thenThrow(new OgelNotFoundException(TestUtil.OGL_));
 
-    final Response response = resources.client().target("/ogels/" + TestUtil.OGL_).request().get();
+    final Response response = resources.client().target("/ogels/" + TestUtil.OGL_)
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
+        .get();
 
     assertEquals(404, response.getStatus());
   }
@@ -157,7 +154,10 @@ public class OgelResourceTest {
     when(spireService.findSpireOgelById(anyString())).thenReturn(Optional.of(TestUtil.ogelX()));
     when(localService.findLocalOgelById((anyString()))).thenReturn(Optional.empty());
 
-    Response response = resources.client().target("/ogels/" + TestUtil.OGL_).request().get();
+    Response response = resources.client().target("/ogels/" + TestUtil.OGL_)
+        .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
+        .get();
 
     assertEquals(200, response.getStatus());
   }
@@ -167,8 +167,10 @@ public class OgelResourceTest {
     when(spireService.findSpireOgelById(TestUtil.OGL_NF)).thenReturn(Optional.empty());
     when(localService.findLocalOgelById((TestUtil.OGL_NF))).thenReturn(Optional.empty());
 
-    Response response = resources.client().register(feature).target("/ogels/" + TestUtil.OGL_NF + "/summary/canList")
-        .request(MediaType.APPLICATION_JSON).put(Entity.json(Arrays.asList("update canList with some text")));
+    Response response = resources.client().target("/ogels/" + TestUtil.OGL_NF + "/summary/canList")
+        .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
+        .put(Entity.json(Collections.singletonList("update canList with some text")));
 
     assertEquals(404, response.getStatus());
   }
@@ -179,8 +181,10 @@ public class OgelResourceTest {
     when(spireService.findSpireOgelById(anyString())).thenReturn(Optional.of(ogel));
     when(localService.findLocalOgelById(anyString())).thenReturn(Optional.of(logel));
 
-    Response response = resources.client().register(feature).target("/ogels/" + TestUtil.OGLX + "/summary/canList")
-        .request(MediaType.APPLICATION_JSON).put(Entity.json(Arrays.asList("update canList with some text")));
+    Response response = resources.client().target("/ogels/" + TestUtil.OGLX + "/summary/canList")
+        .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
+        .put(Entity.json(Collections.singletonList("update canList with some text")));
 
     assertEquals(202, response.getStatus());
   }
@@ -188,55 +192,33 @@ public class OgelResourceTest {
   @Test
   public void deleteAllOgels() throws Exception {
 
-    Response result = resources.getJerseyTest().target("/ogels")
-      .request(MediaType.APPLICATION_JSON_TYPE)
-      .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
-      .delete();
+    Response result = resources.client().target("/ogels")
+        .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
+        .delete();
 
     assertThat(result.getStatus()).isEqualTo(204);
     verify(localService).deleteAllOgels();
   }
 
   @Test
-  public void deleteShouldReturnUnauthorisedStatus() throws Exception {
-
-    Response result = resources.getJerseyTest().target("/ogels")
-      .request(MediaType.APPLICATION_JSON_TYPE)
-      .header("Authorization", "blah")
-      .delete();
-
-    assertThat(result.getStatus()).isEqualTo(401);
-    verify(localService, never()).deleteAllOgels();
-  }
-
-  @Test
   public void deleteOgelById() throws Exception {
 
-    Response result = resources.getJerseyTest().target("/ogels/OGL1")
-      .request(MediaType.APPLICATION_JSON_TYPE)
-      .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
-      .delete();
+    Response result = resources.client().target("/ogels/OGL1")
+        .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
+        .delete();
 
     assertThat(result.getStatus()).isEqualTo(204);
     verify(localService).deleteOgelById("OGL1");
   }
 
   @Test
-  public void deleteOgelByIdShouldReturnUnauthorisedStatus() throws Exception {
-
-    Response result = resources.getJerseyTest().target("/ogels/OGL1")
-      .request(MediaType.APPLICATION_JSON_TYPE)
-      .header("Authorization", "blah")
-      .delete();
-
-    assertThat(result.getStatus()).isEqualTo(401);
-    verify(localService, never()).deleteAllOgels();
-  }
-
-  @Test
   public void insertInvalidOgel() {
-    Response response = resources.client().register(feature).target("/ogels/" + TestUtil.OGLTEMP)
-        .request(MediaType.APPLICATION_JSON).put(Entity.entity(TestUtil.invalidOgel(), MediaType.APPLICATION_JSON));
+    Response response = resources.client().target("/ogels/" + TestUtil.OGLTEMP)
+        .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
+        .put(Entity.json(TestUtil.invalidOgel()));
 
     assertEquals(422, response.getStatus());
   }
@@ -248,34 +230,16 @@ public class OgelResourceTest {
     when(localService.insertOrUpdateOgel(any(LocalOgel.class))).thenReturn(logel);
     when(localService.findLocalOgelById(anyString())).thenReturn(Optional.of(logel));
 
-    Response response = resources.client().register(feature).target("/ogels/" + TestUtil.OGLX)
-        .request(MediaType.APPLICATION_JSON).put(Entity.entity(logel, MediaType.APPLICATION_JSON));
+    Response response = resources.client().target("/ogels/" + TestUtil.OGLX)
+        .request(MediaType.APPLICATION_JSON)
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
+        .put(Entity.json(logel));
 
     assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
   }
 
-  private JsonNode getResponseNode(Response response) {
-    JsonNode node = null;
-    ObjectMapper objectMapper = new ObjectMapper();
-    try {
-      node = objectMapper.readTree(response.readEntity(String.class));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return node;
-  }
-
-  private Map getMapped(List<OgelFullView> views) {
-    return (Map) views.get(0);
-  }
   private List<OgelFullView> getOgelFullViews(Response response) {
-    return (List<OgelFullView>) response.readEntity(List.class);
+    return response.readEntity(new GenericType<List<OgelFullView>>() {});
   }
 
-  private static class TestAuthenticator implements Authenticator<BasicCredentials, PrincipalImpl> {
-    @Override
-    public Optional<PrincipalImpl> authenticate(BasicCredentials credentials) throws AuthenticationException {
-      return Optional.of(new PrincipalImpl("testAuth"));
-    }
-  }
 }

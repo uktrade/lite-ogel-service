@@ -13,7 +13,7 @@ public class OgelCondition implements Serializable {
   private List<Rating> secondaryRatingList;
 
   public enum CountryStatus {
-    INCLUDED, EXCLUDED;
+    INCLUDED, EXCLUDED
   }
 
   public int getId() {
@@ -42,7 +42,7 @@ public class OgelCondition implements Serializable {
   }
 
   public List<Country> getCountries(CountryStatus countryStatus) {
-    if(countryStatus.equals(this.countryStatus)) {
+    if (countryStatus.equals(this.countryStatus)) {
       return countries;
     }
     return new ArrayList<>();

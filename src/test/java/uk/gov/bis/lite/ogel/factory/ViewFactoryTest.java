@@ -143,10 +143,12 @@ public class ViewFactoryTest {
     assertThat(conditionFullView.getControlCode()).isEqualTo("CC1");
     assertThat(conditionFullView.getConditionDescription()).isEqualTo("CC description");
     assertThat(conditionFullView.isItemsAllowed()).isTrue();
-    assertThat(conditionFullView.getConditionDescriptionControlCodes().getControlCodes()).extracting(e -> e.getId()).containsExactly("CCID1", "CCID2");
-    assertThat(conditionFullView.getConditionDescriptionControlCodes().getControlCodes()).extracting(e -> e.getControlCode()).containsExactly("CC1", "CC2");
-    assertThat(conditionFullView.getConditionDescriptionControlCodes().getControlCodes()).extracting(e -> e.getFriendlyDescription()).containsExactly("Friendly 1", "Friendly 2");
-    assertThat(conditionFullView.getConditionDescriptionControlCodes().getMissingControlCodes()).containsExactly("MISSING1", "MISSING2");
+
+    ControlCodeConditionFullView.ConditionDescriptionControlCodes codes = conditionFullView.getConditionDescriptionControlCodes();
+    assertThat(codes.getControlCodes()).extracting(ControlCodeConditionFullView.ControlCode::getId).containsExactly("CCID1", "CCID2");
+    assertThat(codes.getControlCodes()).extracting(ControlCodeConditionFullView.ControlCode::getControlCode).containsExactly("CC1", "CC2");
+    assertThat(codes.getControlCodes()).extracting(ControlCodeConditionFullView.ControlCode::getFriendlyDescription).containsExactly("Friendly 1", "Friendly 2");
+    assertThat(codes.getMissingControlCodes()).containsExactly("MISSING1", "MISSING2");
   }
 
 }

@@ -12,6 +12,7 @@ import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.bis.lite.ogel.api.view.ValidateView;
+import uk.gov.bis.lite.ogel.util.AuthUtil;
 
 import java.util.Collections;
 
@@ -33,7 +34,7 @@ public class AdminResourceIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(ADMIN_VALIDATE_URL)
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .get();
 
     assertThat(response.getStatus()).isEqualTo(200);
@@ -55,23 +56,12 @@ public class AdminResourceIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(ADMIN_VALIDATE_URL)
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .get();
 
     assertThat(response.getStatus()).isEqualTo(500);
     ValidateView actualResponse = response.readEntity(ValidateView.class);
     assertThat(actualResponse.getUnmatchedControlCodes()).containsExactly(entry("OGLZ", Collections.singletonList("33")));
-  }
-
-  @Test
-  public void validateUnauthorisedStatus() throws Exception {
-    Response response = JerseyClientBuilder.createClient()
-        .target(ADMIN_VALIDATE_URL)
-        .request()
-        .get();
-
-    assertThat(response.getStatus()).isEqualTo(401);
-    assertThat(response.readEntity(String.class)).isEqualTo("Credentials are required to access this resource.");
   }
 
   @Test
@@ -84,7 +74,7 @@ public class AdminResourceIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(ADMIN_VALIDATE_URL)
         .request()
-        .header("Authorization", "Basic dXNlcjpwYXNz")
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .get();
 
     assertThat(response.getStatus()).isEqualTo(500);
