@@ -12,6 +12,7 @@ jerseyClient:
   timeout: 10000ms
 
 controlCodeServiceUrl: http://control-code-service.svc.dev.licensing.service.trade.gov.uk.test
+controlCodeServiceCredentials: "service:password"
 
 virtualEuOgelId: OGL61
 

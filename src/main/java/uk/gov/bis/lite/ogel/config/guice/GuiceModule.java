@@ -63,6 +63,12 @@ public class GuiceModule extends AbstractModule {
   }
 
   @Provides
+  @Named("controlCodeServiceCredentials")
+  public String provideControlCodeServiceCredentials(MainApplicationConfiguration configuration) {
+    return configuration.getControlCodeServiceCredentials();
+  }
+
+  @Provides
   @Named("virtualEuOgelId")
   public String provideVirtualEuOgelId(MainApplicationConfiguration configuration) {
     return configuration.getVirtualEuOgelId();

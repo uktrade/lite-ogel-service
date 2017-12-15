@@ -10,6 +10,7 @@ servicePassword: password
 
 #controlCodeServiceUrl: http://control-code-service.svc.licensing.service.trade.gov.uk.test
 controlCodeServiceUrl: http://localhost:9000/
+controlCodeServiceCredentials: "service:password"
 virtualEuOgelId: OGL61
 
 spireClientUserName: spireuser

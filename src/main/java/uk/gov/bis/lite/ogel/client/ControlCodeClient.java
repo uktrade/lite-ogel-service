@@ -5,9 +5,9 @@ import com.google.inject.name.Named;
 import uk.gov.bis.lite.controlcode.api.view.BulkControlCodes;
 import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 
+import java.util.Base64;
 import java.util.List;
 
-import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -19,38 +19,45 @@ public class ControlCodeClient {
   private static final String CONTROL_CODES_PATH = "/control-codes";
 
   private final Client client;
-  private final String controlCodeServiceUrl;
+  private final String url;
+  private final String credentials;
 
   @Inject
-  public ControlCodeClient(Client client, @Named("controlCodeServiceUrl") String controlCodeServiceUrl) {
+  public ControlCodeClient(Client client,
+                           @Named("controlCodeServiceUrl") String url,
+                           @Named("controlCodeServiceCredentials") String credentials) {
     this.client = client;
-    this.controlCodeServiceUrl = controlCodeServiceUrl;
+    this.url = url;
+    this.credentials = credentials;
   }
 
   public List<ControlCodeFullView> getAllControlCodes() {
-    WebTarget webTarget = client.target(controlCodeServiceUrl).path(CONTROL_CODES_PATH);
-    Response response = webTarget.request().get();
+    Response response = client.target(url)
+        .path(CONTROL_CODES_PATH)
+        .request()
+        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes()))
+        .get();
 
     if (response.getStatus() == Response.Status.OK.getStatusCode()) {
-      return response.readEntity(new GenericType<List<ControlCodeFullView>>() {
-      });
+      return response.readEntity(new GenericType<List<ControlCodeFullView>>() {});
     } else {
       throw new WebApplicationException("Unable to get control code details from the control code service",
-        Response.Status.INTERNAL_SERVER_ERROR);
+          Response.Status.INTERNAL_SERVER_ERROR);
     }
   }
 
   public BulkControlCodes bulkControlCodes(List<String> controlCodes) {
-    WebTarget controlCodeServiceTarget = client.target(controlCodeServiceUrl).path("/bulk-control-codes");
+    WebTarget controlCodeServiceTarget = client.target(url).path("/bulk-control-codes");
     for (String controlCode : controlCodes) {
       controlCodeServiceTarget = controlCodeServiceTarget.queryParam("controlCode", controlCode);
     }
-    try {
-      Response response = controlCodeServiceTarget.request().get();
+    Response response = controlCodeServiceTarget.request()
+        .header("Authorization", "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes()))
+        .get();
+    if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
       return response.readEntity(BulkControlCodes.class);
-    }
-    catch (ProcessingException e) {
-      throw new WebApplicationException("Unable to get control code details from the control code service", e, Response.Status.INTERNAL_SERVER_ERROR);
+    } else {
+      throw new WebApplicationException("Unable to get control code details from the control code service", Response.Status.INTERNAL_SERVER_ERROR);
     }
   }
 

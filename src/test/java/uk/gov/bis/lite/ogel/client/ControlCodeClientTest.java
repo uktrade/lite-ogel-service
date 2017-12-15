@@ -32,7 +32,7 @@ public class ControlCodeClientTest extends JerseyTest {
   @Before
   public void setUp() throws Exception {
     super.setUp();
-    controlCodeClient = new ControlCodeClient(getClient(), "");
+    controlCodeClient = new ControlCodeClient(getClient(), "", "service:password");
   }
 
   @Produces({MediaType.APPLICATION_JSON})
@@ -57,10 +57,10 @@ public class ControlCodeClientTest extends JerseyTest {
   }
 
   @Test
-  public void shouleGetAllControlCodes() {
+  public void shouldGetAllControlCodes() {
     List<ControlCodeFullView> result = controlCodeClient.getAllControlCodes();
 
-    assertThat(result).isEqualTo(result);
+    assertThat(result).extracting(ControlCodeFullView::getControlCode).containsExactly("C1", "C2");
   }
 
   @Test
