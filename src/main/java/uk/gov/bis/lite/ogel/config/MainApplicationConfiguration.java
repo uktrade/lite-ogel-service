@@ -71,6 +71,10 @@ public class MainApplicationConfiguration extends Configuration {
   @JsonProperty
   private String controlCodeServiceUrl;
 
+  @NotEmpty
+  @JsonProperty
+  private String controlCodeServiceCredentials;
+
   public DataSourceFactory getDatabase() {
     return database;
   }
@@ -121,6 +125,10 @@ public class MainApplicationConfiguration extends Configuration {
 
   public String getControlCodeServiceUrl() {
     return controlCodeServiceUrl;
+  }
+
+  public String getControlCodeServiceCredentials() {
+    return controlCodeServiceCredentials;
   }
 
 }

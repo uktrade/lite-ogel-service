@@ -17,6 +17,7 @@ import org.junit.Test;
 import uk.gov.bis.lite.controlcode.api.view.BulkControlCodes;
 import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.client.ControlCodeClient;
+import uk.gov.bis.lite.ogel.util.AuthUtil;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class ControlCodePactTest {
 
   @Before
   public void before() {
-    controlCodeClient = new ControlCodeClient(ClientBuilder.newClient(), mockProvider.getConfig().url());
+    controlCodeClient = new ControlCodeClient(ClientBuilder.newClient(), mockProvider.getConfig().url(), "service:password");
   }
 
   @Pact(provider = PROVIDER, consumer = CONSUMER)
@@ -48,6 +49,7 @@ public class ControlCodePactTest {
     return builder
         .given("control codes exist")
         .uponReceiving("request to get all control codes")
+        .headers(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .path("/control-codes")
         .method("GET")
         .willRespondWith()
@@ -63,6 +65,7 @@ public class ControlCodePactTest {
     return builder
         .given("control codes exist")
         .uponReceiving("request to get bulk control codes")
+        .headers(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .path("/bulk-control-codes")
         .method("GET")
         .query("controlCode=C1&controlCode=C2")
@@ -79,6 +82,7 @@ public class ControlCodePactTest {
     return builder
         .given("some control codes exist")
         .uponReceiving("request to get bulk control codes")
+        .headers(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .path("/bulk-control-codes")
         .method("GET")
         .query("controlCode=EXISTING_CODE&controlCode=MISSING_CODE")
@@ -95,6 +99,7 @@ public class ControlCodePactTest {
     return builder
         .given("control codes do not exist")
         .uponReceiving("request to get bulk control codes")
+        .headers(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .path("/bulk-control-codes")
         .method("GET")
         .query("controlCode=C1&controlCode=C2")
