@@ -5,9 +5,9 @@ import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-import uk.gov.bis.lite.ogel.auth.SimpleAuthenticator;
-import uk.gov.bis.lite.ogel.auth.SimpleAuthorizer;
-import uk.gov.bis.lite.ogel.auth.User;
+import uk.gov.bis.lite.common.auth.basic.SimpleAuthenticator;
+import uk.gov.bis.lite.common.auth.basic.SimpleAuthorizer;
+import uk.gov.bis.lite.common.auth.basic.User;
 
 import java.util.Arrays;
 import java.util.Base64;
