@@ -140,7 +140,7 @@ publishing {
   publications {
     api(MavenPublication) {
       artifactId 'lite-ogel-service-api'
-      version '1.1'
+      version '1.2'
       artifact apiJar
       artifact apiJarWithSources {
         classifier "sources"
