@@ -1,4 +1,4 @@
-spireOgelCacheJobCron: 0 0 0 * * ?
+spireOgelCacheJobCron: 0 0 0 * * ? # run at midnight everyday
 
 cacheTimeout: 1000
 
@@ -8,17 +8,18 @@ adminPassword: pass
 serviceLogin: service
 servicePassword: password
 
-jerseyClient:
-  timeout: 10000ms
-
-controlCodeServiceUrl: http://control-code-service.svc.dev.licensing.service.trade.gov.uk.test
+#controlCodeServiceUrl: http://control-code-service.svc.licensing.service.trade.gov.uk.test
+controlCodeServiceUrl: http://localhost:9000/
 controlCodeServiceCredentials: "service:password"
-
 virtualEuOgelId: OGL61
 
 spireClientUserName: spireuser
 spireClientPassword: spirepass
-spireClientUrl: http://service-mocking.svc.dev.licensing.service.trade.gov.uk.test/spire/fox/ispire/
+spireClientUrl: http://localhost:9000/spire/fox/ispire/
+#spireClientUrl: http://service-mocking.svc.dev.licensing.service.trade.gov.uk.test/spire/fox/ispire/
+
+jerseyClient:
+  timeout: 10000ms
 
 logging:
   level: INFO
@@ -28,8 +29,8 @@ logging:
         logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"
 
 database:
-  driverClass: org.postgresql.Driver
-  url: jdbc:postgresql://localhost:5432/postgres?currentSchema=ogelsvc
+  driverClass: org.h2.Driver
+  url: "jdbc:h2:mem:"
   user: postgres
   password: password
   properties:
@@ -41,5 +42,3 @@ database:
   checkConnectionWhileIdle: false
   evictionInterval: 10s
   minIdleTime: 1 minute
-
-

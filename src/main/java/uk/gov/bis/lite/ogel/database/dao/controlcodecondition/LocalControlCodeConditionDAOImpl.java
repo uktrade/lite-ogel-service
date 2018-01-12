@@ -10,11 +10,11 @@ import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
 
 import java.util.List;
 
-public class SqliteLocalControlCodeConditionDAOImpl implements LocalControlCodeConditionDAO {
+public class LocalControlCodeConditionDAOImpl implements LocalControlCodeConditionDAO {
   private final DBI jdbi;
 
   @Inject
-  public SqliteLocalControlCodeConditionDAOImpl(@Named("jdbi") DBI jdbi) {
+  public LocalControlCodeConditionDAOImpl(@Named("jdbi") DBI jdbi) {
     this.jdbi = jdbi;
   }
 

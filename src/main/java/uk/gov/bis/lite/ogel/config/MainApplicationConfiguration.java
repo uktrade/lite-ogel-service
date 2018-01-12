@@ -5,6 +5,7 @@ import io.dropwizard.Configuration;
 import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.db.DataSourceFactory;
 import org.hibernate.validator.constraints.NotEmpty;
+import uk.gov.bis.lite.common.paas.db.SchemaAwareDataSourceFactory;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -14,7 +15,7 @@ public class MainApplicationConfiguration extends Configuration {
   @Valid
   @NotNull
   @JsonProperty
-  private DataSourceFactory database;
+  private SchemaAwareDataSourceFactory database;
 
   @NotEmpty
   @JsonProperty

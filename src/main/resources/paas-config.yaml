@@ -1,0 +1,48 @@
+spireOgelCacheJobCron: 0 0 0 * * ?
+
+cacheTimeout: 1000
+
+adminLogin: ${ADMIN_LOGIN}
+adminPassword: ${ADMIN_PASSWORD}
+
+serviceLogin: ${SERVICE_LOGIN}
+servicePassword: ${SERVICE_PASSWORD}
+
+jerseyClient:
+  timeout: 10000ms
+
+controlCodeServiceUrl: ${CONTROL_CODE_SERVICE_URL}
+controlCodeServiceCredentials: ${CONTROL_CODE_SERVICE_CREDENTIALS}
+
+virtualEuOgelId: ${VIRTUAL_EU_OGEL_ID}
+
+spireClientUserName: ${SPIRE_CLIENT_USERNAME}
+spireClientPassword: ${SPIRE_CLIENT_PASSWORD}
+spireClientUrl: ${SPIRE_CLIENT_URL}
+
+server:
+  type: default
+  applicationConnectors:
+    - type: http
+      port: ${PORT}
+
+logging:
+  level: INFO
+  appenders:
+      - type: console
+        includeCallerData : true
+        logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"
+
+database:
+  driverClass: org.postgresql.Driver
+  url: ${VCAP_JDBC_URL}
+  schema: ${DATABASE_SCHEMA}
+  properties:
+    charSet: UTF-8
+  maxWaitForConnection: 30s
+  validationQuery: "/* MyService Health Check */ SELECT 1"
+  minSize: 8
+  maxSize: 32
+  checkConnectionWhileIdle: false
+  evictionInterval: 10s
+  minIdleTime: 1 minute

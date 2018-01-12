@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
-public class SqliteLocalOgelDAOImpl implements LocalOgelDAO {
+public class LocalOgelDAOImpl implements LocalOgelDAO {
   private final DBI jdbi;
 
   @Inject
-  public SqliteLocalOgelDAOImpl(@Named("jdbi") DBI jdbi) {
+  public LocalOgelDAOImpl(@Named("jdbi") DBI jdbi) {
     this.jdbi = jdbi;
   }
 

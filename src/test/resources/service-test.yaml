@@ -29,8 +29,11 @@ logging:
         logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"
 
 database:
-  driverClass: org.sqlite.JDBC
-  url: jdbc:sqlite:file::memory:?cache=shared
+  driverClass: org.postgresql.Driver
+  url: jdbc:postgresql://localhost:5432/postgres?currentSchema=ogelsvc
+  user: postgres
+  password: password
+  schema: ogelsvc
   properties:
     charSet: UTF-8
   maxWaitForConnection: 30s

@@ -1,5 +1,3 @@
-import java.text.SimpleDateFormat
-
 plugins {
   id "java"
   id "application"
@@ -23,19 +21,18 @@ group 'uk.gov.bis.lite'
 if (project.hasProperty('projVersion')) {
   project.version = project.projVersion
 } else {
-  SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd.HHmmss")
-  sdf.setTimeZone(new SimpleTimeZone(SimpleTimeZone.UTC_TIME, "UTC"))
-  project.version = sdf.format(new Date()) + "-SNAPSHOT"
+  project.version = "1.0-SNAPSHOT"
 }
 
 sourceCompatibility = 1.8
 
 mainClassName = "uk.gov.bis.lite.ogel.OgelApplication"
 
-ext.dropwizardVersion = '1.0.5'
+ext.dropwizardVersion = '1.2.2'
 
 repositories {
   mavenCentral()
+  jcenter()
   maven {
     name "snapshots"
     url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-snapshots"
@@ -54,7 +51,6 @@ dependencies {
       "io.dropwizard:dropwizard-client:$dropwizardVersion",
       'ru.vyarus:dropwizard-guicey:3.2.0',
       'com.fiestacabin.dropwizard.quartz:dropwizard-quartz:0.7.2',
-      'org.xerial:sqlite-jdbc:3.8.11.2',
       'org.flywaydb:flyway-core:4.0.1',
       'net.logstash.logback:logstash-logback-encoder:4.10',
       'ch.qos.logback.contrib:logback-jackson:0.1.5',
@@ -63,14 +59,19 @@ dependencies {
       'uk.gov.bis.lite:spire-client:1.6',
       'uk.gov.bis.lite:lite-control-code-service-api:1.0',
       'uk.gov.bis.lite:readiness-metric:1.0',
-      'uk.gov.bis.lite:basic-auth:1.0'
+      'uk.gov.bis.lite:basic-auth:1.0',
+      'org.postgresql:postgresql:42.1.4',
+      'uk.gov.bis.lite:paas-utils:1.0',
+      'org.apache.commons:commons-collections4:4.1'
 
   testCompile 'junit:junit:4.12',
       'org.mockito:mockito-all:1.9.5',
       "io.dropwizard:dropwizard-testing:$dropwizardVersion",
-      'org.skyscreamer:jsonassert:1.3.0'
-  testCompile 'com.github.tomakehurst:wiremock:2.7.1'
-  testCompile 'org.awaitility:awaitility-groovy:3.0.0'
+      'org.skyscreamer:jsonassert:1.3.0',
+      'com.github.tomakehurst:wiremock:2.7.1',
+      'org.awaitility:awaitility-groovy:3.0.0',
+      'ru.yandex.qatools.embed:postgresql-embedded:2.6',
+      'com.h2database:h2:1.4.196'
 
   //Pact
   testCompile 'au.com.dius:pact-jvm-provider-junit_2.11:3.3.10'
@@ -83,10 +84,6 @@ pact {
     pactBrokerUrl = 'http://pact-broker.mgmt.licensing.service.trade.gov.uk.test/'
     version = '1.0.0'
   }
-}
-
-flyway {
-  url = 'jdbc:sqlite:localOgel.db'
 }
 
 shadowJar {
@@ -104,8 +101,7 @@ build {
   dependsOn shadowJar
 }
 
-run { args 'server', 'src/main/resources/config.yaml' }
-
+run { args 'server', 'config.yaml' }
 
 apply plugin: 'maven-publish'
 
