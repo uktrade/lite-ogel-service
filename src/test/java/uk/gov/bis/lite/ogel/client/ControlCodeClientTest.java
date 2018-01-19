@@ -75,9 +75,11 @@ public class ControlCodeClientTest extends JerseyTest {
     List<ControlCodeFullView> controlCodes = new ArrayList<>();
     ControlCodeFullView controlCodeFullView = new ControlCodeFullView();
     controlCodeFullView.setControlCode("C1");
+    controlCodeFullView.setShowInHierarchy(true);
     controlCodes.add(controlCodeFullView);
     controlCodeFullView = new ControlCodeFullView();
     controlCodeFullView.setControlCode("C2");
+    controlCodeFullView.setShowInHierarchy(true);
     controlCodes.add(controlCodeFullView);
     return controlCodes;
   }
@@ -85,8 +87,10 @@ public class ControlCodeClientTest extends JerseyTest {
   private static BulkControlCodes getBulkControlCodes() {
     ControlCodeFullView controlCodeFullView = new ControlCodeFullView();
     controlCodeFullView.setControlCode("C1");
+    controlCodeFullView.setShowInHierarchy(true);
     ControlCodeFullView controlCodeFullView2 = new ControlCodeFullView();
     controlCodeFullView2.setControlCode("C2");
+    controlCodeFullView2.setShowInHierarchy(true);
 
     BulkControlCodes bulkControlCodes = new BulkControlCodes();
     bulkControlCodes.setControlCodeFullViews(Arrays.asList(controlCodeFullView, controlCodeFullView2));
