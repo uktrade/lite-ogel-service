@@ -9,7 +9,7 @@ Maintains and provides information about OGELs (Open General Export Licences) fo
 * `cp src/main/resources/sample-config.yaml src/main/resources/config.yaml`
 * `./gradlew run`
 
-A SQLite database file called `localOgel.db` will be created in the root directory. To populate it, you can use bootstrap
+A PostgreSQL database is used. To populate it, you can use bootstrap
 data from the `lite-infrastructure-config` repo:
 
 * `git clone git@github.com:uktrade/lite-infrastructure-config.git`
@@ -20,7 +20,7 @@ data from the `lite-infrastructure-config` repo:
 ## Service overview
 
 This service combines OGEL data retrieved from SPIRE (`SpireOgel`) with locally maintained content data (`LocalOgel`) 
-for display in a frontend application (see `OgelFullView`). The local data is stored in a SQLite database and maintained
+for display in a frontend application (see `OgelFullView`). The local data is stored in a PostgreSQL database and maintained
 using REST endpoints.
  
 The service also provides OGEL matching logic for the permissions finder, based on the SPIRE OGEL specifications.

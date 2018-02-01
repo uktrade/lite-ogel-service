@@ -1,10 +1,8 @@
-import java.text.SimpleDateFormat
-
 plugins {
   id "java"
   id "application"
   id "org.flywaydb.flyway" version "4.0.1"
-  id 'com.github.johnrengelman.shadow' version '1.2.3'
+  id 'com.github.johnrengelman.shadow' version '2.0.2'
   id "au.com.dius.pact" version "3.3.10"
 }
 
@@ -20,29 +18,24 @@ idea {
 
 group 'uk.gov.bis.lite'
 
-if (project.hasProperty('projVersion')) {
-  project.version = project.projVersion
-} else {
-  SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd.HHmmss")
-  sdf.setTimeZone(new SimpleTimeZone(SimpleTimeZone.UTC_TIME, "UTC"))
-  project.version = sdf.format(new Date()) + "-SNAPSHOT"
-}
+project.version = project.hasProperty('projVersion') ? project.projVersion : '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
 mainClassName = "uk.gov.bis.lite.ogel.OgelApplication"
 
-ext.dropwizardVersion = '1.0.5'
+ext.dropwizardVersion = '1.2.2'
 
 repositories {
   mavenCentral()
+  jcenter()
   maven {
     name "snapshots"
-    url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-snapshots"
+    url "https://nexus.ci.uktrade.io/repository/maven-snapshots"
   }
   maven {
     name "releases"
-    url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases"
+    url "https://nexus.ci.uktrade.io/repository/maven-releases"
   }
 }
 
@@ -54,23 +47,27 @@ dependencies {
       "io.dropwizard:dropwizard-client:$dropwizardVersion",
       'ru.vyarus:dropwizard-guicey:3.2.0',
       'com.fiestacabin.dropwizard.quartz:dropwizard-quartz:0.7.2',
-      'org.xerial:sqlite-jdbc:3.8.11.2',
       'org.flywaydb:flyway-core:4.0.1',
       'net.logstash.logback:logstash-logback-encoder:4.10',
       'ch.qos.logback.contrib:logback-jackson:0.1.5',
       'uk.gov.bis.lite:json-console-appender:1.1',
       'uk.gov.bis.lite:jersey-correlation-id:1.0',
       'uk.gov.bis.lite:spire-client:1.6',
-      'uk.gov.bis.lite:lite-control-code-service-api:1.0',
+      'uk.gov.bis.lite:lite-control-code-service-api:1.3',
       'uk.gov.bis.lite:readiness-metric:1.0',
-      'uk.gov.bis.lite:basic-auth:1.0'
+      'uk.gov.bis.lite:basic-auth:1.0',
+      'org.postgresql:postgresql:42.1.4',
+      'uk.gov.bis.lite:paas-utils:1.0',
+      'org.apache.commons:commons-collections4:4.1'
 
   testCompile 'junit:junit:4.12',
       'org.mockito:mockito-all:1.9.5',
       "io.dropwizard:dropwizard-testing:$dropwizardVersion",
-      'org.skyscreamer:jsonassert:1.3.0'
-  testCompile 'com.github.tomakehurst:wiremock:2.7.1'
-  testCompile 'org.awaitility:awaitility-groovy:3.0.0'
+      'org.skyscreamer:jsonassert:1.3.0',
+      'com.github.tomakehurst:wiremock:2.7.1',
+      'org.awaitility:awaitility-groovy:3.0.0',
+      'ru.yandex.qatools.embed:postgresql-embedded:2.6',
+      'com.h2database:h2:1.4.196'
 
   //Pact
   testCompile 'au.com.dius:pact-jvm-provider-junit_2.11:3.3.10'
@@ -80,13 +77,9 @@ dependencies {
 pact {
   publish {
     pactDirectory = 'target/pacts'
-    pactBrokerUrl = 'http://pact-broker.mgmt.licensing.service.trade.gov.uk.test/'
+    pactBrokerUrl = 'https://pact-broker.ci.uktrade.io/'
     version = '1.0.0'
   }
-}
-
-flyway {
-  url = 'jdbc:sqlite:localOgel.db'
 }
 
 shadowJar {
@@ -104,24 +97,38 @@ build {
   dependsOn shadowJar
 }
 
-run { args 'server', 'src/main/resources/config.yaml' }
-
+run { args 'server', 'config.yaml' }
 
 apply plugin: 'maven-publish'
+
+def nexusUsername = project.hasProperty('nexusUsername') ? project.nexusUsername : ''
+def nexusPassword = project.hasProperty('nexusPassword') ? project.nexusPassword : ''
 
 publishing {
   repositories {
     maven {
       name "snapshots"
-      url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-snapshots/"
+      url "https://nexus.ci.uktrade.io/repository/maven-snapshots/"
+      credentials {
+        username nexusUsername
+        password nexusPassword
+      }
     }
     maven {
       name "releases"
-      url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+      url "https://nexus.ci.uktrade.io/repository/maven-releases/"
+      credentials {
+        username nexusUsername
+        password nexusPassword
+      }
     }
     maven {
       name "lite-builds"
-      url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/lite-builds/"
+      url "https://nexus.ci.uktrade.io/repository/lite-builds/"
+      credentials {
+        username nexusUsername
+        password nexusPassword
+      }
     }
   }
 }
@@ -146,9 +153,8 @@ publishing {
         classifier "sources"
       }
     }
-    service(MavenPublication) {
-      artifactId 'ogel-service'
-      from components.shadow
+    shadow(MavenPublication) { publication ->
+      project.shadow.component(publication)
     }
   }
 }

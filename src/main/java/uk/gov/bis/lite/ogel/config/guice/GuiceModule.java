@@ -21,9 +21,9 @@ import uk.gov.bis.lite.common.spire.client.SpireRequestConfig;
 import uk.gov.bis.lite.ogel.cache.SpireOgelCache;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.LocalControlCodeConditionDAO;
-import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.SqliteLocalControlCodeConditionDAOImpl;
+import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.LocalControlCodeConditionDAOImpl;
 import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAO;
-import uk.gov.bis.lite.ogel.database.dao.ogel.SqliteLocalOgelDAOImpl;
+import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAOImpl;
 import uk.gov.bis.lite.ogel.healthcheck.SpireOgelReadinessService;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelServiceImpl;
@@ -77,8 +77,8 @@ public class GuiceModule extends AbstractModule {
   @Override
   protected void configure() {
     bind(SchedulerConfiguration.class).toInstance(new SchedulerConfiguration("uk.gov.bis.lite.ogel"));
-    bind(LocalOgelDAO.class).to(SqliteLocalOgelDAOImpl.class);
-    bind(LocalControlCodeConditionDAO.class).to(SqliteLocalControlCodeConditionDAOImpl.class);
+    bind(LocalOgelDAO.class).to(LocalOgelDAOImpl.class);
+    bind(LocalControlCodeConditionDAO.class).to(LocalControlCodeConditionDAOImpl.class);
     bind(LocalControlCodeConditionService.class).to(LocalControlCodeConditionServiceImpl.class);
     bind(LocalOgelService.class).to(LocalOgelServiceImpl.class);
     bind(SpireOgelService.class).to(SpireOgelServiceImpl.class);
@@ -92,7 +92,7 @@ public class GuiceModule extends AbstractModule {
   @Named("jdbi")
   public DBI provideDataSourceJdbi(Environment environment, MainApplicationConfiguration configuration) {
     final DBIFactory factory = new DBIFactory();
-    return factory.build(environment, configuration.getDatabase(), "sqlite");
+    return factory.build(environment, configuration.getDatabase(), "postgres");
   }
 
   @Provides

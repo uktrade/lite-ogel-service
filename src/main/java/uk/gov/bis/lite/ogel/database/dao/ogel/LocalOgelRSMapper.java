@@ -1,6 +1,8 @@
 package uk.gov.bis.lite.ogel.database.dao.ogel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import org.apache.commons.collections4.ListUtils;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import org.slf4j.Logger;
@@ -15,7 +17,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class LocalOgelRSMapper implements ResultSetMapper<LocalOgel> {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalOgelRSMapper.class);
+
+  private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static final CollectionType STRING_LIST_COLLECTION_TYPE = MAPPER.getTypeFactory()
+      .constructCollectionType(List.class, String.class);
 
   @Override
   public LocalOgel map(int index, ResultSet r, StatementContext ctx) throws SQLException {
@@ -38,11 +45,12 @@ public class LocalOgelRSMapper implements ResultSetMapper<LocalOgel> {
   }
 
   private List<String> getConditionList(String conditionType, ResultSet r) throws SQLException, IOException {
-    ObjectMapper mapper = new ObjectMapper();
-    if (r.getString(conditionType) != null) {
-      return mapper.readValue(r.getString(conditionType),
-          mapper.getTypeFactory().constructCollectionType(List.class, String.class));
+    String json = r.getString(conditionType);
+    if (json == null) {
+      return Collections.emptyList();
+    } else {
+      List<String> conditionList = MAPPER.readValue(r.getString(conditionType), STRING_LIST_COLLECTION_TYPE);
+      return ListUtils.emptyIfNull(conditionList);
     }
-    return Collections.emptyList();
   }
 }

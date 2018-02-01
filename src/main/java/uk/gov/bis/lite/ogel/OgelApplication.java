@@ -7,6 +7,8 @@ import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
+import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
+import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -21,6 +23,7 @@ import uk.gov.bis.lite.common.auth.basic.SimpleAuthorizer;
 import uk.gov.bis.lite.common.auth.basic.User;
 import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
 import uk.gov.bis.lite.common.metrics.readiness.ReadinessServlet;
+import uk.gov.bis.lite.common.paas.db.CloudFoundryEnvironmentSubstitutor;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
@@ -59,7 +62,7 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     ReadinessServlet readinessServlet = injector.getInstance(ReadinessServlet.class);
     environment.admin().addServlet("ready", readinessServlet).addMapping("/ready");
 
-    //Authorization and authentication handlers
+    // Authorization and authentication handlers
     SimpleAuthenticator simpleAuthenticator = new SimpleAuthenticator(configuration.getAdminLogin(),
         configuration.getAdminPassword(),
         configuration.getServiceLogin(),
@@ -76,7 +79,11 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     environment.jersey().register(CheckLocalOgelExceptionMapper.class);
     environment.jersey().register(ContainerCorrelationIdFilter.class);
 
-    //Perform/validate flyway migration on startup
+    flywayMigrate(configuration);
+  }
+
+  protected void flywayMigrate(MainApplicationConfiguration configuration) {
+    // Perform/validate flyway migration on startup
     DataSourceFactory dataSourceFactory = configuration.getDatabase();
     Flyway flyway = new Flyway();
     flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());
@@ -85,6 +92,10 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
 
   @Override
   public void initialize(Bootstrap<MainApplicationConfiguration> bootstrap) {
+    // Load config from a resource (i.e. file within the JAR), and substitute environment variables into it
+    bootstrap.setConfigurationSourceProvider(new SubstitutingSourceProvider(
+        new ResourceConfigurationSourceProvider(), new CloudFoundryEnvironmentSubstitutor()));
+
     guiceBundle = GuiceBundle.<MainApplicationConfiguration>builder()
         .modules(module)
         .installers(ResourceInstaller.class, HealthCheckInstaller.class, ManagedInstaller.class)
@@ -95,3 +106,4 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     bootstrap.addBundle(guiceBundle);
   }
 }
+

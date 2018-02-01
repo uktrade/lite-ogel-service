@@ -67,8 +67,8 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     assertThat(actualResponse.getLastUpdatedDate()).isEqualTo(LocalDate.of(2015, 7, 1));
     assertThat(actualResponse.getSummary().getCanList()).containsOnly("CanList for OGLX");
     assertThat(actualResponse.getSummary().getCantList()).containsOnly("CantList for OGLX");
-    assertThat(actualResponse.getSummary().getHowToUseList()).isNull();
-    assertThat(actualResponse.getSummary().getMustList()).isNull();
+    assertThat(actualResponse.getSummary().getHowToUseList()).isEmpty();
+    assertThat(actualResponse.getSummary().getMustList()).isEmpty();
   }
 
   @Test
@@ -126,8 +126,8 @@ public class OgelResourceIntegrationTest extends BaseIntegrationTest {
     assertThat(actualResponseBefore.getName()).isEqualTo("NameOGLX");
     assertThat(actualResponseBefore.getSummary().getCanList()).containsOnly("CanList for OGLX");
     assertThat(actualResponseBefore.getSummary().getCantList()).containsOnly("CantList for OGLX");
-    assertThat(actualResponseBefore.getSummary().getHowToUseList()).isNull();
-    assertThat(actualResponseBefore.getSummary().getMustList()).isNull();
+    assertThat(actualResponseBefore.getSummary().getHowToUseList()).isEmpty();
+    assertThat(actualResponseBefore.getSummary().getMustList()).isEmpty();
 
     Response response = JerseyClientBuilder.createClient()
         .target(OGEL_URL + "OGLX")
