@@ -77,7 +77,7 @@ dependencies {
 pact {
   publish {
     pactDirectory = 'target/pacts'
-    pactBrokerUrl = 'https://pact-broker.ci.uktrade.io/'
+    pactBrokerUrl = 'http://pact-broker.ci.uktrade.io/'
     version = '1.0.0'
   }
 }
