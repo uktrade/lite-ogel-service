@@ -3,14 +3,14 @@ package uk.gov.bis.lite.ogel.pact.consumer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.PactProviderRule;
+import au.com.dius.pact.consumer.PactProviderRuleMk2;
 import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslJsonRootValue;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
-import au.com.dius.pact.model.PactFragment;
+import au.com.dius.pact.model.RequestResponsePact;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,15 +36,15 @@ public class ControlCodePactTest {
   private static final List<String> CONTROL_CODES = Arrays.asList("C1","C2");
 
   @Rule
-  public final PactProviderRule mockProvider = new PactProviderRule(PROVIDER, this);
+  public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2(PROVIDER, this);
 
   @Before
   public void before() {
-    controlCodeClient = new ControlCodeClient(ClientBuilder.newClient(), mockProvider.getConfig().url(), "service:password");
+    controlCodeClient = new ControlCodeClient(ClientBuilder.newClient(), mockProvider.getUrl(), "service:password");
   }
 
   @Pact(provider = PROVIDER, consumer = CONSUMER)
-  public PactFragment getAllControlCodesSuccess(PactDslWithProvider builder) {
+  public RequestResponsePact getAllControlCodesSuccess(PactDslWithProvider builder) {
 
     return builder
         .given("control codes exist")
@@ -56,11 +56,11 @@ public class ControlCodePactTest {
           .status(200)
           .headers(headers())
           .body(controlCodeFullViewPactDsl())
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PROVIDER, consumer = CONSUMER)
-  public PactFragment getBulkCCAllMatch(PactDslWithProvider builder) {
+  public RequestResponsePact getBulkCCAllMatch(PactDslWithProvider builder) {
 
     return builder
         .given("control codes exist")
@@ -73,11 +73,11 @@ public class ControlCodePactTest {
           .status(200)
           .headers(headers())
           .body(bulkControlCodeAllMatchResponsePactDsl())
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PROVIDER, consumer = CONSUMER)
-  public PactFragment getBulkCCMatchAndNoMatchSuccess(PactDslWithProvider builder) {
+  public RequestResponsePact getBulkCCMatchAndNoMatchSuccess(PactDslWithProvider builder) {
 
     return builder
         .given("some control codes exist")
@@ -90,11 +90,11 @@ public class ControlCodePactTest {
           .status(206)
           .headers(headers())
           .body(bulkCCMatchAndNoMatchResponsePactDsl())
-        .toFragment();
+        .toPact();
   }
 
   @Pact(provider = PROVIDER, consumer = CONSUMER)
-  public PactFragment getBulkCCNoneMatch(PactDslWithProvider builder) {
+  public RequestResponsePact getBulkCCNoneMatch(PactDslWithProvider builder) {
 
     return builder
         .given("control codes do not exist")
@@ -107,7 +107,7 @@ public class ControlCodePactTest {
           .status(206)
           .headers(headers())
           .body(getBulkCCNoneMatchResponsePactDsl())
-        .toFragment();
+        .toPact();
   }
 
   @Test
