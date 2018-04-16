@@ -25,13 +25,14 @@ server:
   applicationConnectors:
     - type: http
       port: ${PORT}
+  requestLog:
+    appenders:
+      - type: json-console-access
 
 logging:
   level: INFO
   appenders:
-      - type: console
-        includeCallerData : true
-        logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"
+    - type: json-console
 
 database:
   driverClass: org.postgresql.Driver
