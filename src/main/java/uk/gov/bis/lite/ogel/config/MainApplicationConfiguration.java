@@ -62,12 +62,6 @@ public class MainApplicationConfiguration extends Configuration {
   @JsonProperty("jerseyClient")
   private JerseyClientConfiguration jerseyClient = new JerseyClientConfiguration();
 
-  @Valid
-  @NotNull
-  public JerseyClientConfiguration getJerseyClientConfiguration() {
-    return jerseyClient;
-  }
-
   @NotEmpty
   @JsonProperty
   private String controlCodeServiceUrl;

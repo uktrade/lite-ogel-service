@@ -19,15 +19,16 @@ public class ApplicableOgelServiceImpl implements ApplicableOgelService {
   }
 
   @Override
-  public List<SpireOgel> findOgel(String controlCode, List<String> destinationCountries, List<ActivityType> activityTypes) {
+  public List<SpireOgel> findOgel(String controlCode, List<String> destinationCountries,
+                                  List<ActivityType> activityTypes) {
     return spireOgelService.getAllOgels().stream()
         .filter(
-          ogel -> applyActivityTypes(ogel, activityTypes) &&
-              ogel.getOgelConditions().stream()
-                  .anyMatch(condition -> applyRatingIsIncluded(condition, controlCode)
-                      && !applyExcludedCountriesIfPresent(condition, destinationCountries)
-                      && applyIncludedCountriesIfPresent(condition, destinationCountries)
-                  )
+            ogel -> applyActivityTypes(ogel, activityTypes) &&
+                ogel.getOgelConditions().stream()
+                    .anyMatch(condition -> applyRatingIsIncluded(condition, controlCode)
+                        && !applyExcludedCountriesIfPresent(condition, destinationCountries)
+                        && applyIncludedCountriesIfPresent(condition, destinationCountries)
+                    )
         )
         .collect(Collectors.toList());
   }
@@ -46,10 +47,11 @@ public class ApplicableOgelServiceImpl implements ApplicableOgelService {
         .anyMatch(country -> countryMatchesDestination(country, destinationCountries));
   }
 
-  private static boolean applyIncludedCountriesIfPresent(OgelCondition ogelCondition, List<String> destinationCountries) {
+  private static boolean applyIncludedCountriesIfPresent(OgelCondition ogelCondition,
+                                                         List<String> destinationCountries) {
     return ogelCondition.getCountries(OgelCondition.CountryStatus.INCLUDED).isEmpty() || destinationCountries.stream()
         .allMatch(country -> ogelCondition.getCountries(OgelCondition.CountryStatus.INCLUDED)
-            .stream().anyMatch(c -> c.getId().toLowerCase().equals(country)));
+            .stream().anyMatch(c -> c.getId().equalsIgnoreCase(country)));
   }
 
   private static boolean applyActivityTypes(SpireOgel ogel, List<ActivityType> activityTypes) {

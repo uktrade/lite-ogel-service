@@ -4,7 +4,7 @@ import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalControlCodeCondition;
 
 import java.util.List;
 

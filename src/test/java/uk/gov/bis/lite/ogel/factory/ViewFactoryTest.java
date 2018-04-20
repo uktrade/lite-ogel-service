@@ -10,9 +10,9 @@ import uk.gov.bis.lite.ogel.api.view.ApplicableOgelView;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalOgelConditionSummary;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalControlCodeCondition;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalOgel;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalOgelConditionSummary;
 
 import java.util.Arrays;
 import java.util.Collections;

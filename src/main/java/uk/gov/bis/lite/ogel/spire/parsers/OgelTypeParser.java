@@ -1,6 +1,7 @@
 package uk.gov.bis.lite.ogel.spire.parsers;
 
 import com.google.common.base.Stopwatch;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class OgelTypeParser implements SpireParser<List<SpireOgel>> {
     Stopwatch stopwatch = Stopwatch.createStarted();
     List<SpireOgel> ogels = parseSoapBody(nodes, xpath);
     stopwatch.stop();
-    LOGGER.info("The unmarshalling of the Spire Response took " + stopwatch.elapsed(TimeUnit.SECONDS) + " seconds ");
+    LOGGER.info("The unmarshalling of the Spire Response took {} seconds", stopwatch.elapsed(TimeUnit.SECONDS));
     return ogels;
   }
 
@@ -88,15 +89,15 @@ public class OgelTypeParser implements SpireParser<List<SpireOgel>> {
         try {
           return Integer.parseInt(rankingNode.getTextContent());
         } catch (NumberFormatException ex) {
-          LOGGER.info(String.format("%s element for %s contains an invalid number, using %d instead", elementName, ogelId, defaultValue));
+          LOGGER.info("{} element for {} contains an invalid number, using {} instead", elementName, ogelId, defaultValue);
           return defaultValue;
         }
       } else {
-        LOGGER.info(String.format("%s element for %s is empty, using %d instead", elementName, ogelId, defaultValue));
+        LOGGER.info("{} element for {} is empty, using {} instead", elementName, ogelId, defaultValue);
         return defaultValue;
       }
     } else {
-      LOGGER.info(String.format("%s element not found for %s, using %d instead", elementName, ogelId, defaultValue));
+      LOGGER.info("{} element not found for {}, using {} instead", elementName, ogelId, defaultValue);
       return defaultValue;
     }
   }
@@ -109,27 +110,26 @@ public class OgelTypeParser implements SpireParser<List<SpireOgel>> {
       for (int j = 0; j < nodeList.getLength(); j++) {
         OgelCondition condition = new OgelCondition();
         Node node = nodeList.item(j);
-        if (node != null) {
-          if (node.getNodeType() == Node.ELEMENT_NODE) {
-            int conditionNo = Integer.parseInt(((Node) xpath.evaluate("CONDITION_NO", node, XPathConstants.NODE)).getTextContent());
-            condition.setRatingList(unmarshallRatings(xpath, node, "RATINGS_LIST"));
+        if (node != null && node.getNodeType() == Node.ELEMENT_NODE) {
 
-            // Included and excluded countries
-            List<Country> included = unmarshallCountries(xpath, node, "DEST_COUNTRY_INCLUDE_LIST");
-            List<Country> excluded = unmarshallCountries(xpath, node, "DEST_COUNTRY_EXCLUDE_LIST");
+          int conditionNo = Integer.parseInt(((Node) xpath.evaluate("CONDITION_NO", node, XPathConstants.NODE)).getTextContent());
+          condition.setRatingList(unmarshallRatings(xpath, node, "RATINGS_LIST"));
 
-            // We expect either a list of included countries or a list of excluded countries, not both
-            if (included != null && !included.isEmpty()) {
-              condition.setCountries(included, OgelCondition.CountryStatus.INCLUDED);
-            } else if (excluded != null && !excluded.isEmpty()) {
-              condition.setCountries(excluded, OgelCondition.CountryStatus.EXCLUDED);
-            }
-            // Logs data if both includedCountries list and excludedCountries list are populated
-            logUnexpectedData(conditionNo, included, excluded);
+          // Included and excluded countries
+          List<Country> included = unmarshallCountries(xpath, node, "DEST_COUNTRY_INCLUDE_LIST");
+          List<Country> excluded = unmarshallCountries(xpath, node, "DEST_COUNTRY_EXCLUDE_LIST");
 
-            condition.setId(conditionNo);
-            conditions.add(condition);
+          // We expect either a list of included countries or a list of excluded countries, not both
+          if (included != null && !included.isEmpty()) {
+            condition.setCountries(included, OgelCondition.CountryStatus.INCLUDED);
+          } else if (excluded != null && !excluded.isEmpty()) {
+            condition.setCountries(excluded, OgelCondition.CountryStatus.EXCLUDED);
           }
+          // Logs data if both includedCountries list and excludedCountries list are populated
+          logUnexpectedData(conditionNo, included, excluded);
+
+          condition.setId(conditionNo);
+          conditions.add(condition);
         }
       }
       return conditions;
@@ -137,25 +137,25 @@ public class OgelTypeParser implements SpireParser<List<SpireOgel>> {
     return null;
   }
 
-  private List<Rating> unmarshallRatings(XPath xpath, Node ogelNode, String xPathExpression) throws XPathExpressionException {
+  private List<Rating> unmarshallRatings(XPath xpath, Node ogelNode,
+                                         String xPathExpression) throws XPathExpressionException {
     List<Rating> ratings = new ArrayList<>();
     final Node ratingListNode = (Node) xpath.evaluate(xPathExpression, ogelNode, XPathConstants.NODE);
     NodeList conditionsNodeList = ratingListNode.getChildNodes();
     for (int j = 0; j < conditionsNodeList.getLength(); j++) {
       Node ratingNode = conditionsNodeList.item(j).cloneNode(true);
-      if (ratingNode != null) {
-        if (ratingNode.getNodeType() == Node.ELEMENT_NODE) {
-          Rating rating = new Rating();
-          rating.setRatingCode(((Node) xpath.evaluate("RATING_NAME", ratingNode, XPathConstants.NODE)).getTextContent());
-          rating.setConditionalRating(Boolean.parseBoolean(((Node) xpath.evaluate("CONDITIONAL_RATING", ratingNode, XPathConstants.NODE)).getTextContent()));
-          ratings.add(rating);
-        }
+      if (ratingNode != null && ratingNode.getNodeType() == Node.ELEMENT_NODE) {
+        Rating rating = new Rating();
+        rating.setRatingCode(((Node) xpath.evaluate("RATING_NAME", ratingNode, XPathConstants.NODE)).getTextContent());
+        rating.setConditionalRating(Boolean.parseBoolean(((Node) xpath.evaluate("CONDITIONAL_RATING", ratingNode, XPathConstants.NODE)).getTextContent()));
+        ratings.add(rating);
       }
     }
     return ratings;
   }
 
-  private List<Country> unmarshallCountries(XPath xpath, Node ogelNode, String xPathExpression) throws XPathExpressionException {
+  private List<Country> unmarshallCountries(XPath xpath, Node ogelNode,
+                                            String xPathExpression) throws XPathExpressionException {
     Node countriesNode = (Node) xpath.evaluate(xPathExpression, ogelNode, XPathConstants.NODE);
     NodeList countriesNodeList = countriesNode.getChildNodes();
     if (countriesNodeList != null) {
@@ -178,10 +178,12 @@ public class OgelTypeParser implements SpireParser<List<SpireOgel>> {
   }
 
   private void logUnexpectedData(int conditionNo, List<Country> included, List<Country> excluded) {
-    if (!included.isEmpty() && !excluded.isEmpty()) {
-      LOGGER.warn("Retrieved condition from Spire with both included and excluded country lists: " + conditionNo);
-      LOGGER.warn("Included: " + included.stream().map(Country::getId).reduce(", ", String::concat));
-      LOGGER.warn("Excluded: " + excluded.stream().map(Country::getId).reduce(", ", String::concat));
+    if (!CollectionUtils.isEmpty(included) && !CollectionUtils.isEmpty(excluded)) {
+      if (LOGGER.isWarnEnabled()) {
+        LOGGER.warn("Retrieved condition from Spire with both included and excluded country lists: {}", conditionNo);
+        LOGGER.warn("Included: {}", included.stream().map(Country::getId).reduce(", ", String::concat));
+        LOGGER.warn("Excluded: {}", excluded.stream().map(Country::getId).reduce(", ", String::concat));
+      }
     }
   }
 }

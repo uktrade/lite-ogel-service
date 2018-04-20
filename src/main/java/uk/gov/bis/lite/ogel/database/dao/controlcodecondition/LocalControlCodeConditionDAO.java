@@ -1,6 +1,6 @@
 package uk.gov.bis.lite.ogel.database.dao.controlcodecondition;
 
-import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalControlCodeCondition;
 
 import java.util.List;
 

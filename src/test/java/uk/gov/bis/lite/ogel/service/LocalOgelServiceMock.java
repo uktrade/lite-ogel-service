@@ -2,8 +2,8 @@ package uk.gov.bis.lite.ogel.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalOgelConditionSummary;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalOgel;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalOgelConditionSummary;
 
 import java.util.Collections;
 import java.util.List;
