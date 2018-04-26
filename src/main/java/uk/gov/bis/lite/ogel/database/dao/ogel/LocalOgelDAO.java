@@ -1,6 +1,6 @@
 package uk.gov.bis.lite.ogel.database.dao.ogel;
 
-import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalOgel;
 
 import java.util.List;
 

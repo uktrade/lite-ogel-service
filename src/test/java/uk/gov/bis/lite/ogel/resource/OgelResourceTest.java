@@ -16,7 +16,7 @@ import org.mockito.Mockito;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import uk.gov.bis.lite.ogel.exception.OgelNotFoundException;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalOgel;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import uk.gov.bis.lite.ogel.util.AuthUtil;

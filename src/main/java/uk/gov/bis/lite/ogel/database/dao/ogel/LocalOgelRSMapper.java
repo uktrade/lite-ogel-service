@@ -7,8 +7,8 @@ import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalOgelConditionSummary;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalOgel;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalOgelConditionSummary;
 
 import java.io.IOException;
 import java.sql.ResultSet;

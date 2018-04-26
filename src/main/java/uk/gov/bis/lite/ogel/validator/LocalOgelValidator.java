@@ -1,6 +1,6 @@
 package uk.gov.bis.lite.ogel.validator;
 
-import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalOgel;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -20,7 +20,8 @@ public class LocalOgelValidator implements ConstraintValidator<CheckLocalOgel, L
       context.disableDefaultConstraintViolation();
       errorMessage.append("Both Name and Summary fields are empty. ");
       if (value.getId() != null) {
-        errorMessage.append("Ogel ID " + value.getId());
+        errorMessage.append("Ogel ID ");
+        errorMessage.append(value.getId());
       }
       context.buildConstraintViolationWithTemplate(errorMessage.toString())
           .addConstraintViolation();
@@ -49,7 +50,8 @@ public class LocalOgelValidator implements ConstraintValidator<CheckLocalOgel, L
       if (missingField) {
         context.disableDefaultConstraintViolation();
         if (value.getId() != null) {
-          errorMessage.append("Ogel ID" + value.getId());
+          errorMessage.append("Ogel ID ");
+          errorMessage.append(value.getId());
         }
         context.buildConstraintViolationWithTemplate(errorMessage.toString())
             .addConstraintViolation();

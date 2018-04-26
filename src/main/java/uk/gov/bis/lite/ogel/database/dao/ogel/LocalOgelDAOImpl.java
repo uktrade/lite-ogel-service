@@ -7,7 +7,7 @@ import com.google.inject.name.Named;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
 import org.skife.jdbi.v2.Update;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalOgel;
 
 import java.util.HashMap;
 import java.util.List;

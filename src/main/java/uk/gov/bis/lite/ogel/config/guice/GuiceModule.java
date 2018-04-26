@@ -106,7 +106,7 @@ public class GuiceModule extends AbstractModule {
   @Provides
   @Singleton
   Client provideHttpClient(Environment environment, MainApplicationConfiguration configuration) {
-    final Client client = new JerseyClientBuilder(environment).using(configuration.getJerseyClientConfiguration())
+    final Client client = new JerseyClientBuilder(environment).using(configuration.getJerseyClient())
         .build("jerseyClient");
     client.register(ClientCorrelationIdFilter.class);
     return client;

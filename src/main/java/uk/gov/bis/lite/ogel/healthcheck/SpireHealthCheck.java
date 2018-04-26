@@ -8,10 +8,15 @@ import uk.gov.bis.lite.ogel.model.job.SpireHealthStatus;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 
 public class SpireHealthCheck extends NamedHealthCheck {
-  @Inject
-  private SpireOgelService spireOgelService;
 
-  private final Logger LOGGER = LoggerFactory.getLogger(SpireHealthCheck.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SpireHealthCheck.class);
+
+  private final SpireOgelService spireOgelService;
+
+  @Inject
+  public SpireHealthCheck(SpireOgelService spireOgelService) {
+    this.spireOgelService = spireOgelService;
+  }
 
   @Override
   protected Result check() throws Exception {

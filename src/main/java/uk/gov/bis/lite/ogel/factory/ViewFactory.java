@@ -9,8 +9,8 @@ import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView.ConditionDescriptionControlCodes;
 import uk.gov.bis.lite.ogel.api.view.OgelFullView;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalControlCodeCondition;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalOgel;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

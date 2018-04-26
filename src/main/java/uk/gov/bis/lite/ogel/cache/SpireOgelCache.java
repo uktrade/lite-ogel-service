@@ -41,9 +41,9 @@ public class SpireOgelCache {
         healthStatus = SpireHealthStatus.unhealthy("SPIRE returned 0 OGELs");
         LOGGER.warn("Cache refresh job failed to retrieve new data from SPIRE.");
       }
-    } catch (Throwable th) {
-      LOGGER.warn("An unexpected error occurred getting OGEL data from SPIRE", th);
-      healthStatus = SpireHealthStatus.unhealthy(th.getMessage());
+    } catch (Exception exception) {
+      LOGGER.warn("An unexpected error occurred getting OGEL data from SPIRE", exception);
+      healthStatus = SpireHealthStatus.unhealthy(exception.getMessage());
     }
   }
 

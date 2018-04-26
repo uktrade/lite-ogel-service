@@ -5,8 +5,8 @@ import uk.gov.bis.lite.ogel.model.Country;
 import uk.gov.bis.lite.ogel.model.OgelCondition;
 import uk.gov.bis.lite.ogel.model.Rating;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalOgel;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalOgelConditionSummary;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalOgel;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalOgelConditionSummary;
 
 import java.util.ArrayList;
 import java.util.Arrays;

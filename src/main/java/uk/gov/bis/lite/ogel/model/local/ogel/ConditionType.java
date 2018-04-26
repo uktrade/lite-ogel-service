@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.ogel.model.localOgel;
+package uk.gov.bis.lite.ogel.model.local.ogel;
 
 public enum ConditionType {
 

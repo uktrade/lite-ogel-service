@@ -3,7 +3,7 @@ package uk.gov.bis.lite.ogel.service;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.LocalControlCodeConditionDAO;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalControlCodeCondition;
 
 import java.util.List;
 

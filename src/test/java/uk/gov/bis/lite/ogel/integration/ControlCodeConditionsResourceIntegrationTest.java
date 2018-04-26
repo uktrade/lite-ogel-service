@@ -13,7 +13,7 @@ import org.glassfish.jersey.client.JerseyInvocation;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.util.AuthUtil;
 
 import java.util.ArrayList;

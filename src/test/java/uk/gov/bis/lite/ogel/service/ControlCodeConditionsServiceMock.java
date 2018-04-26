@@ -6,7 +6,7 @@ import uk.gov.bis.lite.controlcode.api.view.BulkControlCodes;
 import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.api.view.ControlCodeConditionFullView;
 import uk.gov.bis.lite.ogel.factory.ViewFactory;
-import uk.gov.bis.lite.ogel.model.localOgel.LocalControlCodeCondition;
+import uk.gov.bis.lite.ogel.model.local.ogel.LocalControlCodeCondition;
 
 import java.util.Collections;
 import java.util.Optional;
