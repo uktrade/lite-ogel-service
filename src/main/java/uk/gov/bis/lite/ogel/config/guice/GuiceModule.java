@@ -20,17 +20,11 @@ import uk.gov.bis.lite.common.spire.client.SpireClientConfig;
 import uk.gov.bis.lite.common.spire.client.SpireRequestConfig;
 import uk.gov.bis.lite.ogel.cache.SpireOgelCache;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
-import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.LocalControlCodeConditionDAO;
-import uk.gov.bis.lite.ogel.database.dao.controlcodecondition.LocalControlCodeConditionDAOImpl;
 import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAO;
 import uk.gov.bis.lite.ogel.database.dao.ogel.LocalOgelDAOImpl;
 import uk.gov.bis.lite.ogel.healthcheck.SpireOgelReadinessService;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelService;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelServiceImpl;
-import uk.gov.bis.lite.ogel.service.ControlCodeConditionsService;
-import uk.gov.bis.lite.ogel.service.ControlCodeConditionsServiceImpl;
-import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
-import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionServiceImpl;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.LocalOgelServiceImpl;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
@@ -57,18 +51,6 @@ public class GuiceModule extends AbstractModule {
   }
 
   @Provides
-  @Named("controlCodeServiceUrl")
-  public String provideControlCodeServiceUrl(MainApplicationConfiguration configuration) {
-    return configuration.getControlCodeServiceUrl();
-  }
-
-  @Provides
-  @Named("controlCodeServiceCredentials")
-  public String provideControlCodeServiceCredentials(MainApplicationConfiguration configuration) {
-    return configuration.getControlCodeServiceCredentials();
-  }
-
-  @Provides
   @Named("virtualEuOgelId")
   public String provideVirtualEuOgelId(MainApplicationConfiguration configuration) {
     return configuration.getVirtualEuOgelId();
@@ -78,12 +60,9 @@ public class GuiceModule extends AbstractModule {
   protected void configure() {
     bind(SchedulerConfiguration.class).toInstance(new SchedulerConfiguration("uk.gov.bis.lite.ogel"));
     bind(LocalOgelDAO.class).to(LocalOgelDAOImpl.class);
-    bind(LocalControlCodeConditionDAO.class).to(LocalControlCodeConditionDAOImpl.class);
-    bind(LocalControlCodeConditionService.class).to(LocalControlCodeConditionServiceImpl.class);
     bind(LocalOgelService.class).to(LocalOgelServiceImpl.class);
     bind(SpireOgelService.class).to(SpireOgelServiceImpl.class);
     bind(ApplicableOgelService.class).to(ApplicableOgelServiceImpl.class);
-    bind(ControlCodeConditionsService.class).to(ControlCodeConditionsServiceImpl.class);
     bind(ReadinessService.class).to(SpireOgelReadinessService.class);
   }
 
