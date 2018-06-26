@@ -37,13 +37,6 @@ SPIRE data.
 Retrieves a list of OGELs which can be used with the given parameters (goods' control code, source/destination countries, etc).
 Used by the permissions finder to find a list of OGELs to offer to a user.
 
-* `/control-code-conditions` (`ControlCodeConditionResource`)
-
-Maintains data about "control code specific conditions" for OGELs. Some OGELs have restrictions on their usage, which may
-include references to other control codes (e.g. "you may use this OGEL to export a weapon, but not a weapon as defined by ML2a or ML3b").
-This resource exposes a GET endpoint which materialises this data into a JSON format which can be easily displayed within a frontend
-application.
-
 * `/ogels` (`OgelResource`)
 
 Maintains and exposes additional content data about an OGEL - namely the plain English "can/can't/must/how to use" lists 
@@ -60,6 +53,5 @@ in the `SpireOgelService`. The `RefreshCacheJob` refreshes this data on a daily 
 
 ## Local database
 
-OGEL control code conditions and plain English descriptions are maintained in the `LocalControCodeConditionDAO` and
-`LocalOgelDAO`, respectively.
+OGEL plain English descriptions are maintained in the `LocalOgelDAO`.
 

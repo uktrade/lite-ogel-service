@@ -31,7 +31,6 @@ import uk.gov.bis.lite.ogel.exception.CheckLocalOgelExceptionMapper;
 import uk.gov.bis.lite.ogel.healthcheck.SpireHealthCheck;
 import uk.gov.bis.lite.ogel.resource.AdminResource;
 import uk.gov.bis.lite.ogel.resource.ApplicableOgelResource;
-import uk.gov.bis.lite.ogel.resource.ControlCodeConditionsResource;
 import uk.gov.bis.lite.ogel.resource.OgelResource;
 import uk.gov.bis.lite.ogel.resource.VirtualEuResource;
 import uk.gov.bis.lite.ogel.scheduler.SpireOgelCacheScheduler;
@@ -100,7 +99,7 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
         .modules(module)
         .installers(ResourceInstaller.class, HealthCheckInstaller.class, ManagedInstaller.class)
         .extensions(AdminResource.class, ApplicableOgelResource.class, OgelResource.class,
-            ControlCodeConditionsResource.class, SpireHealthCheck.class, VirtualEuResource.class, SpireOgelCacheScheduler.class)
+            SpireHealthCheck.class, VirtualEuResource.class, SpireOgelCacheScheduler.class)
         .build(Stage.PRODUCTION);
 
     bootstrap.addBundle(guiceBundle);

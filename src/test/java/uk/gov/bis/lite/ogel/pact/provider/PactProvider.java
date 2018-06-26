@@ -14,7 +14,6 @@ import ru.vyarus.dropwizard.guice.injector.lookup.InjectorLookup;
 import uk.gov.bis.lite.ogel.TestOgelApplication;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
 import uk.gov.bis.lite.ogel.service.ApplicableOgelServiceMock;
-import uk.gov.bis.lite.ogel.service.ControlCodeConditionsServiceMock;
 import uk.gov.bis.lite.ogel.service.LocalOgelServiceMock;
 import uk.gov.bis.lite.ogel.service.SpireOgelServiceMock;
 
@@ -39,10 +38,6 @@ public class PactProvider {
     getApplicableOgelServiceMock()
         .setOgelFound(true)
         .setValidActivityType(true);
-    getControlCodeConditionsServiceMock()
-        .setConditionsFound(true)
-        .setControlCodeDescriptionsFound(true)
-        .setControlCodeDescriptionsMissingControlCodes(false);
   }
 
   private LocalOgelServiceMock getLocalOgelServiceMock() {
@@ -55,10 +50,6 @@ public class PactProvider {
 
   private ApplicableOgelServiceMock getApplicableOgelServiceMock() {
     return InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(ApplicableOgelServiceMock.class);
-  }
-
-  private ControlCodeConditionsServiceMock getControlCodeConditionsServiceMock() {
-    return InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(ControlCodeConditionsServiceMock.class);
   }
 
   @State("provided OGEL exists")
@@ -93,30 +84,6 @@ public class PactProvider {
   public void applicableOgelActivityTypeDoesNotExist() {
     resetMockState();
     getApplicableOgelServiceMock().setValidActivityType(false);
-  }
-
-  @State("conditions exist with related control codes for given ogel and control code")
-  public void conditionsExistWithRelatedControlsForOgelAndControlCode() {
-    resetMockState();
-  }
-
-  @State("conditions exist for given ogel and control code")
-  public void conditionsExistForOgelAndControlCode() {
-    resetMockState();
-    getControlCodeConditionsServiceMock().setControlCodeDescriptionsFound(false);
-  }
-
-
-  @State("conditions exist with missing related control codes for given ogel and control code")
-  public void conditionsExistWithMissingControlCodeForOgelAndControlCode() {
-    resetMockState();
-    getControlCodeConditionsServiceMock().setControlCodeDescriptionsMissingControlCodes(true);
-  }
-
-  @State("no conditions exist for given ogel and control code")
-  public void conditionsDoNotExistForOgelAndControlCode() {
-    resetMockState();
-    getControlCodeConditionsServiceMock().setConditionsFound(false);
   }
 
   @State("parameters match virtual EU ogel")

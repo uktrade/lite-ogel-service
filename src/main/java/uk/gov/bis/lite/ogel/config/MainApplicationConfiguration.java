@@ -62,14 +62,6 @@ public class MainApplicationConfiguration extends Configuration {
   @JsonProperty("jerseyClient")
   private JerseyClientConfiguration jerseyClient = new JerseyClientConfiguration();
 
-  @NotEmpty
-  @JsonProperty
-  private String controlCodeServiceUrl;
-
-  @NotEmpty
-  @JsonProperty
-  private String controlCodeServiceCredentials;
-
   public DataSourceFactory getDatabase() {
     return database;
   }
@@ -116,14 +108,6 @@ public class MainApplicationConfiguration extends Configuration {
 
   public JerseyClientConfiguration getJerseyClient() {
     return jerseyClient;
-  }
-
-  public String getControlCodeServiceUrl() {
-    return controlCodeServiceUrl;
-  }
-
-  public String getControlCodeServiceCredentials() {
-    return controlCodeServiceCredentials;
   }
 
 }
