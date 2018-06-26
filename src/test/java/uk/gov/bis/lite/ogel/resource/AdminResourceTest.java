@@ -4,27 +4,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.ImmutableMap;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Rule;
 import org.junit.Test;
-import uk.gov.bis.lite.controlcode.api.view.ControlCodeFullView;
 import uk.gov.bis.lite.ogel.api.view.ValidateView;
-import uk.gov.bis.lite.ogel.client.ControlCodeClient;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
-import uk.gov.bis.lite.ogel.model.local.ogel.LocalControlCodeCondition;
 import uk.gov.bis.lite.ogel.model.local.ogel.LocalOgel;
-import uk.gov.bis.lite.ogel.service.LocalControlCodeConditionService;
 import uk.gov.bis.lite.ogel.service.LocalOgelService;
 import uk.gov.bis.lite.ogel.service.SpireOgelService;
 import uk.gov.bis.lite.ogel.util.AuthUtil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
@@ -34,26 +26,17 @@ public class AdminResourceTest {
 
   private final LocalOgelService localOgelService = mock(LocalOgelService.class);
   private final SpireOgelService spireOgelService = mock(SpireOgelService.class);
-  private final LocalControlCodeConditionService controlCodeConditionService = mock(LocalControlCodeConditionService.class);
-  private final ControlCodeClient controlCodeClient = mock(ControlCodeClient.class);
 
   @Rule
   public final ResourceTestRule resources = AuthUtil.authBuilder()
-      .addResource(new AdminResource(localOgelService, spireOgelService, controlCodeConditionService, controlCodeClient, "testUrl"))
+      .addResource(new AdminResource(localOgelService, spireOgelService, "testUrl"))
       .addProvider(CacheNotPopulatedException.CacheNotPopulatedExceptionHandler.class)
       .build();
 
   @Test
-  public void validateShouldReturnOkStatus() throws Exception {
+  public void validateShouldReturnOkStatus() {
     when(localOgelService.getAllLocalOgels()).thenReturn(localOgels("OG1", "OG2", "OG3", "OG4"));
     when(spireOgelService.getAllOgels()).thenReturn(spireOgels("OG1", "OG2", "OG3", "OG4"));
-    when(controlCodeConditionService.getAllControlCodeConditions())
-        .thenReturn(controlCodeConditions(ImmutableMap.of(
-            "C1", new ArrayList<>(),
-            "C2", new ArrayList<>(),
-            "C3", Collections.singletonList("C1"),
-            "C4", new ArrayList<>())));
-    when(controlCodeClient.getAllControlCodes()).thenReturn(controlCodes("C1", "C2", "C3", "C4"));
 
     Response result = resources.client().target("/admin/validate")
         .request(MediaType.APPLICATION_JSON)
@@ -63,22 +46,14 @@ public class AdminResourceTest {
     assertThat(result.getStatus()).isEqualTo(200);
     ValidateView validateView = result.readEntity(ValidateView.class);
     assertThat(validateView).isNotNull();
-    assertThat(validateView.getUnmatchedControlCodes()).isEmpty();
     assertThat(validateView.getUnmatchedLocalOgelIds()).isEmpty();
     assertThat(validateView.getUnmatchedSpireOgelIds()).isEmpty();
   }
 
   @Test
-  public void validateShouldReturnErrors() throws Exception {
+  public void validateShouldReturnErrors() {
     when(localOgelService.getAllLocalOgels()).thenReturn(localOgels("OG1", "OG30", "OG31", "OG32"));
     when(spireOgelService.getAllOgels()).thenReturn(spireOgels("OG1", "OG2", "OG3", "OG4"));
-    when(controlCodeConditionService.getAllControlCodeConditions())
-        .thenReturn(controlCodeConditions(ImmutableMap.of(
-            "C1", new ArrayList<>(),
-            "C2", new ArrayList<>(),
-            "C3", Arrays.asList("C1", "C100"),
-            "C4", new ArrayList<>())));
-    when(controlCodeClient.getAllControlCodes()).thenReturn(controlCodes("C1", "C2", "C3", "C4"));
 
     Response result = resources.client().target("/admin/validate")
         .request(MediaType.APPLICATION_JSON)
@@ -88,14 +63,12 @@ public class AdminResourceTest {
     assertThat(result.getStatus()).isEqualTo(500);
     ValidateView validateView = result.readEntity(ValidateView.class);
     assertThat(validateView).isNotNull();
-    assertThat(validateView.getUnmatchedControlCodes()).isEqualTo(ImmutableMap.of("OG1", Collections.singletonList("C100")));
     assertThat(validateView.getUnmatchedLocalOgelIds()).isEqualTo(Arrays.asList("OG30", "OG31", "OG32"));
     assertThat(validateView.getUnmatchedSpireOgelIds()).isEqualTo(Arrays.asList("OG2", "OG3", "OG4"));
   }
 
   @Test
-  public void validateShouldReturnInternalServerErrorStatusForAnyErrors() throws Exception {
-
+  public void validateShouldReturnInternalServerErrorStatusForAnyErrors() {
     when(spireOgelService.getAllOgels()).thenThrow(new CacheNotPopulatedException(null));
     Response result = resources.client().target("/admin/validate")
         .request(MediaType.APPLICATION_JSON)
@@ -121,21 +94,4 @@ public class AdminResourceTest {
     }).collect(Collectors.toList());
   }
 
-  private List<LocalControlCodeCondition> controlCodeConditions(Map<String, List<String>> controlCodes) {
-    return controlCodes.entrySet().stream().map(i -> {
-      LocalControlCodeCondition controlCodeCondition = new LocalControlCodeCondition();
-      controlCodeCondition.setOgelID("OG1");
-      controlCodeCondition.setControlCode(i.getKey());
-      controlCodeCondition.setConditionDescriptionControlCodes(i.getValue());
-      return controlCodeCondition;
-    }).collect(Collectors.toList());
-  }
-
-  private List<ControlCodeFullView> controlCodes(String... controlCodes) {
-    return Arrays.stream(controlCodes).map(c -> {
-      ControlCodeFullView controlCodeFullView = new ControlCodeFullView();
-      controlCodeFullView.setControlCode(c);
-      return controlCodeFullView;
-    }).collect(Collectors.toList());
-  }
 }

@@ -62,7 +62,6 @@ public class BaseIntegrationTest {
 
     // Dropwizard setup overriding
     appRule = new DropwizardAppRule<>(OgelApplication.class, "service-test.yaml",
-        ConfigOverride.config("controlCodeServiceUrl", "http://localhost:" + wireMockRule.port() + "/"),
         ConfigOverride.config("spireClientUrl", "http://localhost:" + wireMockRule.port() + "/spire/fox/ispire/"));
     appRule.getTestSupport().before();
 
