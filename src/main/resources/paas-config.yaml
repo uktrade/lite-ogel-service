@@ -11,9 +11,6 @@ servicePassword: "${SERVICE_PASSWORD}"
 jerseyClient:
   timeout: 10000ms
 
-controlCodeServiceUrl: "${CONTROL_CODE_SERVICE_URL}"
-controlCodeServiceCredentials: "${CONTROL_CODE_SERVICE_CREDENTIALS}"
-
 virtualEuOgelId: "${VIRTUAL_EU_OGEL_ID}"
 
 spireClientUserName: "${SPIRE_CLIENT_USERNAME}"
