@@ -6,6 +6,8 @@ import static javax.ws.rs.core.Response.Status.OK;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import io.dropwizard.auth.Auth;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.common.auth.basic.Roles;
 import uk.gov.bis.lite.common.auth.basic.User;
 import uk.gov.bis.lite.ogel.api.view.ValidateView;
@@ -28,6 +30,8 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 public class AdminResource {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(AdminResource.class);
+
   private final LocalOgelService localOgelService;
   private final SpireOgelService spireOgelService;
   private final String virtualEuOgelId;
@@ -38,6 +42,14 @@ public class AdminResource {
     this.localOgelService = localOgelService;
     this.spireOgelService = spireOgelService;
     this.virtualEuOgelId = virtualEuOgelId;
+  }
+
+  @RolesAllowed(Roles.SERVICE)
+  @GET
+  @Path("/ping")
+  public Response ping(@Auth User user) {
+    LOGGER.info("Admin ping received, responding with 200 OK");
+    return Response.status(Response.Status.OK).build();
   }
 
   @RolesAllowed(Roles.ADMIN)
