@@ -55,22 +55,23 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
   }
 
   @Override
-  public void run(MainApplicationConfiguration configuration, Environment environment) {
-    final Injector injector = guiceBundle.getInjector();
-
-    ReadinessServlet readinessServlet = injector.getInstance(ReadinessServlet.class);
-    environment.admin().addServlet("ready", readinessServlet).addMapping("/ready");
+  public void run(MainApplicationConfiguration config, Environment environment) {
 
     // Authorization and authentication handlers
-    SimpleAuthenticator simpleAuthenticator = new SimpleAuthenticator(configuration.getAdminLogin(),
-        configuration.getAdminPassword(),
-        configuration.getServiceLogin(),
-        configuration.getServicePassword());
+    SimpleAuthenticator simpleAuthenticator = new SimpleAuthenticator(config.getAdminLogin(),
+        config.getAdminPassword(),
+        config.getServiceLogin(),
+        config.getServicePassword());
     environment.jersey().register(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<User>()
         .setAuthenticator(simpleAuthenticator)
         .setAuthorizer(new SimpleAuthorizer())
         .setRealm("OGEL Service Authentication")
         .buildAuthFilter()));
+
+    Injector injector = guiceBundle.getInjector();
+    ReadinessServlet readinessServlet = injector.getInstance(ReadinessServlet.class);
+    environment.admin().addServlet("ready", readinessServlet).addMapping("/ready");
+
     environment.jersey().register(RolesAllowedDynamicFeature.class);
     environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
 
@@ -78,7 +79,7 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     environment.jersey().register(CheckLocalOgelExceptionMapper.class);
     environment.jersey().register(ContainerCorrelationIdFilter.class);
 
-    flywayMigrate(configuration);
+    flywayMigrate(config);
   }
 
   protected void flywayMigrate(MainApplicationConfiguration configuration) {
