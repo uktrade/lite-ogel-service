@@ -1,5 +1,6 @@
 package uk.gov.bis.lite.ogel;
 
+import com.codahale.metrics.servlets.AdminServlet;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
@@ -18,6 +19,7 @@ import ru.vyarus.dropwizard.guice.GuiceBundle;
 import ru.vyarus.dropwizard.guice.module.installer.feature.ManagedInstaller;
 import ru.vyarus.dropwizard.guice.module.installer.feature.health.HealthCheckInstaller;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
+import uk.gov.bis.lite.common.auth.admin.AdminConstraintSecurityHandler;
 import uk.gov.bis.lite.common.auth.basic.SimpleAuthenticator;
 import uk.gov.bis.lite.common.auth.basic.SimpleAuthorizer;
 import uk.gov.bis.lite.common.auth.basic.User;
@@ -78,6 +80,10 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     environment.jersey().register(CacheNotPopulatedException.CacheNotPopulatedExceptionHandler.class);
     environment.jersey().register(CheckLocalOgelExceptionMapper.class);
     environment.jersey().register(ContainerCorrelationIdFilter.class);
+
+    environment.admin().addServlet("admin", new AdminServlet()).addMapping("/admin");
+    environment.admin().setSecurityHandler(new AdminConstraintSecurityHandler(config.getServiceLogin(), config.getServicePassword()));
+
 
     flywayMigrate(config);
   }

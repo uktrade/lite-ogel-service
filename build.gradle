@@ -53,7 +53,7 @@ dependencies {
       'uk.gov.bis.lite:jersey-correlation-id:1.0',
       'uk.gov.bis.lite:spire-client:1.8',
       'uk.gov.bis.lite:readiness-metric:1.0',
-      'uk.gov.bis.lite:basic-auth:1.0',
+      'uk.gov.bis.lite:basic-auth:1.1',
       'org.postgresql:postgresql:42.1.4',
       'uk.gov.bis.lite:paas-utils:1.0',
       'org.apache.commons:commons-collections4:4.1'
