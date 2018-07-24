@@ -31,7 +31,7 @@ import uk.gov.bis.lite.ogel.config.guice.GuiceModule;
 import uk.gov.bis.lite.ogel.exception.CacheNotPopulatedException;
 import uk.gov.bis.lite.ogel.exception.CheckLocalOgelExceptionMapper;
 import uk.gov.bis.lite.ogel.healthcheck.SpireHealthCheck;
-import uk.gov.bis.lite.ogel.resource.AdminResource;
+import uk.gov.bis.lite.ogel.resource.ValidateResource;
 import uk.gov.bis.lite.ogel.resource.ApplicableOgelResource;
 import uk.gov.bis.lite.ogel.resource.OgelResource;
 import uk.gov.bis.lite.ogel.resource.VirtualEuResource;
@@ -105,7 +105,7 @@ public class OgelApplication extends Application<MainApplicationConfiguration> {
     guiceBundle = GuiceBundle.<MainApplicationConfiguration>builder()
         .modules(module)
         .installers(ResourceInstaller.class, HealthCheckInstaller.class, ManagedInstaller.class)
-        .extensions(AdminResource.class, ApplicableOgelResource.class, OgelResource.class,
+        .extensions(ValidateResource.class, ApplicableOgelResource.class, OgelResource.class,
             SpireHealthCheck.class, VirtualEuResource.class, SpireOgelCacheScheduler.class)
         .build(Stage.PRODUCTION);
 
