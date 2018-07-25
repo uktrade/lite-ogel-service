@@ -29,7 +29,7 @@ public class AdminResourceTest {
 
   @Rule
   public final ResourceTestRule resources = AuthUtil.authBuilder()
-      .addResource(new AdminResource(localOgelService, spireOgelService, "testUrl"))
+      .addResource(new ValidateResource(localOgelService, spireOgelService, "testUrl"))
       .addProvider(CacheNotPopulatedException.CacheNotPopulatedExceptionHandler.class)
       .build();
 

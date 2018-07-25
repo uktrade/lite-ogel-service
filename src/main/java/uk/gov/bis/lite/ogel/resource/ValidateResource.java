@@ -24,17 +24,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/admin")
+@Path("/validate")
 @Produces(MediaType.APPLICATION_JSON)
-public class AdminResource {
+public class ValidateResource {
 
   private final LocalOgelService localOgelService;
   private final SpireOgelService spireOgelService;
   private final String virtualEuOgelId;
 
   @Inject
-  public AdminResource(LocalOgelService localOgelService, SpireOgelService spireOgelService,
-                       @Named("virtualEuOgelId") String virtualEuOgelId) {
+  public ValidateResource(LocalOgelService localOgelService, SpireOgelService spireOgelService,
+                          @Named("virtualEuOgelId") String virtualEuOgelId) {
     this.localOgelService = localOgelService;
     this.spireOgelService = spireOgelService;
     this.virtualEuOgelId = virtualEuOgelId;
@@ -42,7 +42,6 @@ public class AdminResource {
 
   @RolesAllowed(Roles.ADMIN)
   @GET
-  @Path("/validate")
   @Produces(MediaType.APPLICATION_JSON)
   public Response validate(@Auth User user) {
 
