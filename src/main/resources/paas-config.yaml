@@ -18,10 +18,12 @@ spireClientPassword: "${SPIRE_CLIENT_PASSWORD}"
 spireClientUrl: "${SPIRE_CLIENT_URL}"
 
 server:
-  type: default
-  applicationConnectors:
-    - type: http
-      port: ${PORT}
+  type: simple
+  applicationContextPath: /
+  adminContextPath: /admin
+  connector:
+    type: http
+    port: ${PORT}
   requestLog:
     appenders:
       - type: json-console-access

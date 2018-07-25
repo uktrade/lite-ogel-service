@@ -18,13 +18,12 @@ spireClientPassword: "ENTER_PASSWORD_HERE"
 spireClientUrl: "https://lite-service-mocking-dev.cloudapps.digital/spire/fox/ispire/"
 
 server:
-  type: default
-  applicationConnectors:
-    - type: http
-      port: 8080
-  requestLog:
-    appenders:
-      - type: json-console-access
+  type: simple
+  applicationContextPath: /
+  adminContextPath: /admin
+  connector:
+    type: http
+    port: 8080
 
 logging:
   level: INFO

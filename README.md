@@ -27,10 +27,9 @@ The service also provides OGEL matching logic for the permissions finder, based 
 
 ## Endpoint summary
 
-* `/admin` (`AdminResource`)
+* `/validate` (`ValidateResource`)
 
-Administrative endpoints for the service. Currently exposes `/validate` which checks that all local data correctly matches
-SPIRE data.
+Currently exposes `/validate` which checks that all local data correctly matches SPIRE data.
 
 * `/applicable-ogels` (`ApplicableOgelResource`)
 
