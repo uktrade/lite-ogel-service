@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
 
 public class AdminResourceIntegrationTest extends BaseIntegrationTest {
 
-  private static final String ADMIN_VALIDATE_URL = "http://localhost:8080/admin/validate";
+  private static final String ADMIN_VALIDATE_URL = "http://localhost:8080/validate";
 
   @Test
   public void validateSuccess() {

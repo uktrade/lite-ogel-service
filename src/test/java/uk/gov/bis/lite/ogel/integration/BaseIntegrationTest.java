@@ -24,6 +24,7 @@ import org.junit.BeforeClass;
 import ru.yandex.qatools.embed.postgresql.EmbeddedPostgres;
 import uk.gov.bis.lite.ogel.OgelApplication;
 import uk.gov.bis.lite.ogel.config.MainApplicationConfiguration;
+import uk.gov.bis.lite.ogel.util.AuthUtil;
 
 import java.io.IOException;
 
@@ -69,6 +70,7 @@ public class BaseIntegrationTest {
     await().with().pollInterval(1, SECONDS).atMost(20, SECONDS).until(() -> JerseyClientBuilder.createClient()
         .target("http://localhost:" + appRule.getAdminPort() + "/ready")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get()
         .getStatus() == 200);
   }

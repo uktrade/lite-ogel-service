@@ -38,7 +38,7 @@ public class AdminResourceTest {
     when(localOgelService.getAllLocalOgels()).thenReturn(localOgels("OG1", "OG2", "OG3", "OG4"));
     when(spireOgelService.getAllOgels()).thenReturn(spireOgels("OG1", "OG2", "OG3", "OG4"));
 
-    Response result = resources.client().target("/admin/validate")
+    Response result = resources.client().target("/validate")
         .request(MediaType.APPLICATION_JSON)
         .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .get();
@@ -55,7 +55,7 @@ public class AdminResourceTest {
     when(localOgelService.getAllLocalOgels()).thenReturn(localOgels("OG1", "OG30", "OG31", "OG32"));
     when(spireOgelService.getAllOgels()).thenReturn(spireOgels("OG1", "OG2", "OG3", "OG4"));
 
-    Response result = resources.client().target("/admin/validate")
+    Response result = resources.client().target("/validate")
         .request(MediaType.APPLICATION_JSON)
         .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .get();
@@ -70,7 +70,7 @@ public class AdminResourceTest {
   @Test
   public void validateShouldReturnInternalServerErrorStatusForAnyErrors() {
     when(spireOgelService.getAllOgels()).thenThrow(new CacheNotPopulatedException(null));
-    Response result = resources.client().target("/admin/validate")
+    Response result = resources.client().target("/validate")
         .request(MediaType.APPLICATION_JSON)
         .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .get();
