@@ -9,13 +9,11 @@ Maintains and provides information about OGELs (Open General Export Licences) fo
 * `cp src/main/resources/sample-config.yaml src/main/resources/config.yaml`
 * `./gradlew run`
 
-A PostgreSQL database is used. To populate it, you can use bootstrap
-data from the `lite-infrastructure-config` repo:
+A PostgreSQL database is used. To populate it, you can use bootstrap data from the `service-config` repo:
 
-* `git clone git@github.com:uktrade/lite-infrastructure-config.git`
-* `cd lite-infrastructure-config/service-bootstrap`
-* `curl -X PUT -T data/ogels.json -H "Content-Type: application/json" -u user:pass http://localhost:8080/ogels`
-* `curl -X PUT -T data/ogel-control-code-conditions.json -H "Content-Type: application/json" -u user:pass http://localhost:8080/control-code-conditions`
+* `git clone git@gitlab.ci.uktrade.io:lite/service-config.git`
+* `cd service-config`
+* `curl -X PUT -T data/ogel_service.json -H "Content-Type: application/json" -u admin:password http://localhost:8080/ogels`
 
 ## Service overview
 
