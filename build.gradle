@@ -25,7 +25,7 @@ sourceCompatibility = 1.8
 
 mainClassName = "uk.gov.bis.lite.ogel.OgelApplication"
 
-ext.dropwizardVersion = '1.2.2'
+ext.dropwizardVersion = '1.2.9'
 
 repositories {
   mavenCentral()
@@ -41,7 +41,8 @@ repositories {
 }
 
 dependencies {
-  compile "io.dropwizard:dropwizard-core:$dropwizardVersion",
+      compile "com.fasterxml.jackson.core:jackson-databind:2.9.7",
+      "io.dropwizard:dropwizard-core:$dropwizardVersion",
       "io.dropwizard:dropwizard-db:$dropwizardVersion",
       "io.dropwizard:dropwizard-jdbi:$dropwizardVersion",
       "io.dropwizard:dropwizard-auth:$dropwizardVersion",
