@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 import uk.gov.bis.lite.ogel.model.OgelCondition;
+import uk.gov.bis.lite.ogel.model.Rating;
 import uk.gov.bis.lite.ogel.model.SpireOgel;
 import uk.gov.bis.lite.ogel.spire.parsers.OgelTypeParser;
 
@@ -48,11 +49,24 @@ public class ParseOgelTypeTest extends SpireParseTest {
   @Test
   public void testRatings() {
     assertThat(ogels).filteredOn("id", A1).extracting(SpireOgel::getOgelConditions)
-        .extracting(cons -> cons.get(0)).flatExtracting(OgelCondition::getRatingList).asList().hasSize(3);
+        .extracting(cons -> cons.get(0)).flatExtracting(OgelCondition::getRatingList).asList().hasSize(2);
     assertThat(ogels).filteredOn("id", A2).extracting(SpireOgel::getOgelConditions)
-        .extracting(cons -> cons.get(0)).flatExtracting(OgelCondition::getRatingList).asList().hasSize(4);
+        .extracting(cons -> cons.get(0)).flatExtracting(OgelCondition::getRatingList).asList().hasSize(3);
     assertThat(ogels).filteredOn("id", A3).extracting(SpireOgel::getOgelConditions)
-        .extracting(cons -> cons.get(0)).flatExtracting(OgelCondition::getRatingList).asList().hasSize(5);
+        .extracting(cons -> cons.get(0)).flatExtracting(OgelCondition::getRatingList).asList().hasSize(4);
+  }
+
+  @Test
+  public void excludedRatingsAreExcludedFromRatingsList() {
+    assertOgelConditionDoesNotContainRating(A1, "RATING2");
+    assertOgelConditionDoesNotContainRating(A2, "RATING5");
+    assertOgelConditionDoesNotContainRating(A3, "RATING8");
+  }
+
+  private void assertOgelConditionDoesNotContainRating(String ogelId, String rating) {
+    assertThat(ogels).filteredOn("id", ogelId).extracting(SpireOgel::getOgelConditions)
+        .extracting(conditions -> conditions.get(0)).flatExtracting(OgelCondition::getRatingList)
+        .extracting(Rating::getRatingCode).doesNotContain(rating);
   }
 
   @Test
@@ -78,9 +92,5 @@ public class ParseOgelTypeTest extends SpireParseTest {
         .extracting(cons -> cons.get(0)).extracting("countryStatus").hasToString(EXCLUDED);
     assertThat(ogels).filteredOn("id", A3).extracting(SpireOgel::getOgelConditions)
         .extracting(cons -> cons.get(0)).flatExtracting(OgelCondition::getCountries).asList().hasSize(5);
-
   }
-
 }
-
-
