@@ -10,7 +10,6 @@ public class OgelCondition implements Serializable {
   private List<Rating> ratingList;
   private List<Country> countries;
   private CountryStatus countryStatus;
-  private List<Rating> secondaryRatingList;
 
   public enum CountryStatus {
     INCLUDED, EXCLUDED
@@ -45,33 +44,12 @@ public class OgelCondition implements Serializable {
     if (countryStatus.equals(this.countryStatus)) {
       return countries;
     }
-    return new ArrayList<>();
-  }
-
-  public CountryStatus getCountryStatus() {
-    return countryStatus;
-  }
-
-  public void setCountryStatus(CountryStatus countryStatus) {
-    this.countryStatus = countryStatus;
-  }
-
-  public List<Rating> getSecondaryRatingList() {
-    return secondaryRatingList;
-  }
-
-  public void setSecondaryRatingList(List<Rating> secondaryRatingList) {
-    this.secondaryRatingList = secondaryRatingList;
+    return new ArrayList<>(0);
   }
 
   @Override
   public String toString() {
-    return "OgelCondition{" +
-        "id=" + id +
-        ", ratingList=" + ratingList +
-        ", countries=" + countries +
-        ", countryStatus=" + countryStatus.name() +
-        ", secondaryRatingList=" + secondaryRatingList +
-        '}';
+    return String.format("OgelCondition{id=%d, ratingList=%s, countries=%s, countryStatus=%s}", id, ratingList,
+        countries, countryStatus.name());
   }
 }

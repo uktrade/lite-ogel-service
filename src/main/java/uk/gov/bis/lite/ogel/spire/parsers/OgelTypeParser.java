@@ -1,6 +1,8 @@
 package uk.gov.bis.lite.ogel.spire.parsers;
 
 import com.google.common.base.Stopwatch;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,13 +39,13 @@ public class OgelTypeParser implements SpireParser<List<SpireOgel>> {
 
   private List<SpireOgel> getSitesFromNodes(List<Node> nodes) {
     Stopwatch stopwatch = Stopwatch.createStarted();
-    List<SpireOgel> ogels = parseSoapBody(nodes, xpath);
+    List<SpireOgel> ogels = parseSoapBody(nodes);
     stopwatch.stop();
-    LOGGER.info("The unmarshalling of the Spire Response took {} seconds", stopwatch.elapsed(TimeUnit.SECONDS));
+    LOGGER.info("The unmarshalling of the Spire Response took {} milliseconds", stopwatch.elapsed(TimeUnit.MILLISECONDS));
     return ogels;
   }
 
-  private List<SpireOgel> parseSoapBody(List<Node> nodes, XPath xpath) {
+  private List<SpireOgel> parseSoapBody(List<Node> nodes) {
     List<SpireOgel> spireOgels = new ArrayList<>();
 
     for (Node node : nodes) {
@@ -66,10 +68,10 @@ public class OgelTypeParser implements SpireParser<List<SpireOgel>> {
           if (lastUpdatedNode != null) {
             currentOgel.setLastUpdatedDate(lastUpdatedNode.getTextContent());
           }
-          List<OgelCondition> ogelConditions = unmarshallOgelConditions(xpath, currentNode);
+          List<OgelCondition> ogelConditions = unmarshallOgelConditions(currentNode);
           currentOgel.setOgelConditions(ogelConditions);
 
-          int ranking = unmarshallRanking(xpath, currentNode, currentOgel.getId());
+          int ranking = unmarshallRanking(currentNode, currentOgel.getId());
           currentOgel.setRanking(ranking);
           spireOgels.add(currentOgel);
         } catch (XPathExpressionException e) {
@@ -80,7 +82,7 @@ public class OgelTypeParser implements SpireParser<List<SpireOgel>> {
     return spireOgels;
   }
 
-  private int unmarshallRanking(XPath xpath, Node ogelNode, String ogelId) throws XPathExpressionException {
+  private int unmarshallRanking(Node ogelNode, String ogelId) throws XPathExpressionException {
     final String elementName = "OGL_RANKING";
     final int defaultValue = 999;
     final Node rankingNode = (Node) xpath.evaluate(elementName, ogelNode, XPathConstants.NODE);
@@ -102,43 +104,49 @@ public class OgelTypeParser implements SpireParser<List<SpireOgel>> {
     }
   }
 
-  private List<OgelCondition> unmarshallOgelConditions(XPath xpath, Node ogelNode) throws XPathExpressionException {
+  private List<OgelCondition> unmarshallOgelConditions(Node ogelNode) throws XPathExpressionException {
     final Node conditionsNode = (Node) xpath.evaluate("CONDITIONS_LIST", ogelNode, XPathConstants.NODE);
     NodeList nodeList = conditionsNode.getChildNodes();
+    List<OgelCondition> conditions = new ArrayList<>();
     if (nodeList != null) {
-      List<OgelCondition> conditions = new ArrayList<>();
       for (int j = 0; j < nodeList.getLength(); j++) {
         OgelCondition condition = new OgelCondition();
         Node node = nodeList.item(j);
         if (node != null && node.getNodeType() == Node.ELEMENT_NODE) {
 
           int conditionNo = Integer.parseInt(((Node) xpath.evaluate("CONDITION_NO", node, XPathConstants.NODE)).getTextContent());
-          condition.setRatingList(unmarshallRatings(xpath, node, "RATINGS_LIST"));
+
+          List<Rating> includedRatings = unmarshallRatings(node, "RATINGS_LIST");
+          List<Rating> excludedRatings = unmarshallRatings(node, "EXCLUDED_RATINGS_LIST");
+          Set<String> excludedRatingCodes = excludedRatings.stream().map(Rating::getRatingCode).collect(Collectors.toSet());
+          condition.setRatingList(
+            includedRatings.stream()
+              .filter(rating -> !excludedRatingCodes.contains(rating.getRatingCode()))
+              .collect(Collectors.toList())
+          );
 
           // Included and excluded countries
-          List<Country> included = unmarshallCountries(xpath, node, "DEST_COUNTRY_INCLUDE_LIST");
-          List<Country> excluded = unmarshallCountries(xpath, node, "DEST_COUNTRY_EXCLUDE_LIST");
+          List<Country> includedCountries = unmarshallCountries(node, "DEST_COUNTRY_INCLUDE_LIST");
+          List<Country> excludedCountries = unmarshallCountries(node, "DEST_COUNTRY_EXCLUDE_LIST");
 
           // We expect either a list of included countries or a list of excluded countries, not both
-          if (included != null && !included.isEmpty()) {
-            condition.setCountries(included, OgelCondition.CountryStatus.INCLUDED);
-          } else if (excluded != null && !excluded.isEmpty()) {
-            condition.setCountries(excluded, OgelCondition.CountryStatus.EXCLUDED);
+          if (includedCountries != null && !includedCountries.isEmpty()) {
+            condition.setCountries(includedCountries, OgelCondition.CountryStatus.INCLUDED);
+          } else if (excludedCountries != null && !excludedCountries.isEmpty()) {
+            condition.setCountries(excludedCountries, OgelCondition.CountryStatus.EXCLUDED);
           }
           // Logs data if both includedCountries list and excludedCountries list are populated
-          logUnexpectedData(conditionNo, included, excluded);
+          logUnexpectedData(conditionNo, includedCountries, excludedCountries);
 
           condition.setId(conditionNo);
           conditions.add(condition);
         }
       }
-      return conditions;
     }
-    return null;
+    return conditions;
   }
 
-  private List<Rating> unmarshallRatings(XPath xpath, Node ogelNode,
-                                         String xPathExpression) throws XPathExpressionException {
+  private List<Rating> unmarshallRatings(Node ogelNode, String xPathExpression) throws XPathExpressionException {
     List<Rating> ratings = new ArrayList<>();
     final Node ratingListNode = (Node) xpath.evaluate(xPathExpression, ogelNode, XPathConstants.NODE);
     NodeList conditionsNodeList = ratingListNode.getChildNodes();
@@ -154,8 +162,7 @@ public class OgelTypeParser implements SpireParser<List<SpireOgel>> {
     return ratings;
   }
 
-  private List<Country> unmarshallCountries(XPath xpath, Node ogelNode,
-                                            String xPathExpression) throws XPathExpressionException {
+  private List<Country> unmarshallCountries(Node ogelNode, String xPathExpression) throws XPathExpressionException {
     Node countriesNode = (Node) xpath.evaluate(xPathExpression, ogelNode, XPathConstants.NODE);
     NodeList countriesNodeList = countriesNode.getChildNodes();
     if (countriesNodeList != null) {
