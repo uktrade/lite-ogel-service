@@ -5,7 +5,7 @@ Maintains and provides information about OGELs (Open General Export Licences) fo
 ## Running locally
 
 * `git clone git@github.com:uktrade/lite-ogel-service.git`
-* `cd lite-ogel-service` 
+* `cd lite-ogel-service`
 * `cp src/main/resources/sample-config.yaml src/main/resources/config.yaml`
 * `./gradlew run`
 
@@ -17,10 +17,10 @@ A PostgreSQL database is used. To populate it, you can use bootstrap data from t
 
 ## Service overview
 
-This service combines OGEL data retrieved from SPIRE (`SpireOgel`) with locally maintained content data (`LocalOgel`) 
+This service combines OGEL data retrieved from SPIRE (`SpireOgel`) with locally maintained content data (`LocalOgel`)
 for display in a frontend application (see `OgelFullView`). The local data is stored in a PostgreSQL database and maintained
 using REST endpoints.
- 
+
 The service also provides OGEL matching logic for the permissions finder, based on the SPIRE OGEL specifications.
 
 ## Endpoint summary
@@ -36,7 +36,7 @@ Used by the permissions finder to find a list of OGELs to offer to a user.
 
 * `/ogels` (`OgelResource`)
 
-Maintains and exposes additional content data about an OGEL - namely the plain English "can/can't/must/how to use" lists 
+Maintains and exposes additional content data about an OGEL - namely the plain English "can/can't/must/how to use" lists
 which are displayed in the permissions finder. These are used instead of the standard legalese of the OGEL licence description.
 
 * `/virtual-eu` (`VirtualEuResource`)
@@ -52,3 +52,17 @@ in the `SpireOgelService`. The `RefreshCacheJob` refreshes this data on a daily 
 
 OGEL plain English descriptions are maintained in the `LocalOgelDAO`.
 
+### GDS PaaS Deployment
+
+This repo contains a pre-packed deployment file, lite-ogel-service-xxxx.jar.  This can be used to deploy this service manually from the CF cli.  Using the following command:
+
+* cf push [app_name] -p lite-ogel-service-xxxx.jar
+
+For this application to work the following dependencies need to be met:
+
+* Bound PG DB (all services share the same backend db)
+* Env VARs will need to be set
+
+### Archive state
+
+This repo is now archived. If you need to deploy this application, you can find a copy of the DB and VARs in the DIT AWS account.
